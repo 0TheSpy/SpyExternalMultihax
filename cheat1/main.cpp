@@ -339,6 +339,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 
 void SetWindowToTarget()
 {
+	tWnd = FindWindow(0, tWindowName);
+	if (tWnd)
+	{
+		GetWindowRect(tWnd, &tSize);
+		Width = tSize.right - tSize.left;
+		Height = tSize.bottom - tSize.top;
+		DWORD dwStyle = GetWindowLong(tWnd, GWL_STYLE);
+		if (dwStyle & WS_BORDER)
+		{
+			tSize.top += 23;
+			Height -= 23;
+		}
+		MoveWindow(hWnd, tSize.left, tSize.top, Width, Height, true);
+	}
+	else
+	{
+		char ErrorMsg[125];
+		sprintf(ErrorMsg, "Make sure %s is running!", tWindowName);
+		MessageBox(0, ErrorMsg, "Error - Cannot find the game!", MB_OK | MB_ICONERROR);
+		exit(1);
+	}
+
 	while (true)
 	{
 		tWnd = FindWindow(0, tWindowName);
@@ -357,9 +379,6 @@ void SetWindowToTarget()
 		}
 		else
 		{
-			char ErrorMsg[125];
-			sprintf(ErrorMsg, "Make sure %s is running!", tWindowName);
-			MessageBox(0, ErrorMsg, "Error - Cannot find the game!", MB_OK | MB_ICONERROR);
 			exit(1);
 		}
 		Sleep(1);
