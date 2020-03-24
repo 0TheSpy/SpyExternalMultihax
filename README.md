@@ -1,5 +1,5 @@
 # SpyExternalMultihax
-Cheat for Counter-Strike: Source
+Cheat for Counter-Strike: Source v34
 
  Microsoft DirectX SDK (June 2010) must be included 
  
