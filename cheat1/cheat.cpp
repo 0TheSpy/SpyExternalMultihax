@@ -444,28 +444,36 @@ void Flyhack()
 __declspec(naked) void FreeVisualAngles(void) //engine.dll+22AE70
 {
 	__asm {
-		cmp esp, 0x19e424// 0x19e418
-		jne fory
-		fld dword ptr ds : [0x24000000 + 0x3FD54C]
+		cmp esp, 0x19e424
+		je forx
+		cmp esp, 0x19e418
+		jne compy
+
+		forx :
+		fld dword ptr ds: [0x24000000 + 0x3FD54C]
 		je sexit
 
-		fory :
-		cmp esp, 0x19e420// 0x19e414
-			jne forz
-			fld dword ptr ds : [0x24000000 + 0x3FD550]
-			je sexit
+		compy :
+		cmp esp, 0x19e420
+		je fory
+		cmp esp, 0x19e414
+		jne forz
 
-			forz :
+		fory:
+		fld dword ptr ds : [0x24000000 + 0x3FD550]
+		je sexit
+
+		forz :
 		cmp esp, 0x19e3fc
-			jne originalcode
-			fld dword ptr ds : [0x1234D]
-			je sexit
+		jne originalcode
+		fld dword ptr ds : [0x1234D]
+		je sexit
 
-			originalcode :
+		originalcode :
 		fld dword ptr ds : [esp + 0x04]
 
-			sexit :
-			fld qword ptr ds : [0x00000000] //engine_dll_base + 0x2F8118
+		sexit :
+		fld qword ptr ds : [0x00000000] //engine_dll_base + 0x2F8118
 
 			nop
 			nop
@@ -536,7 +544,7 @@ void Spinbot()
 
 	freevisang = SpyInject(FreeVisualAngles, PVOID(aobang + 1)); 
 
-	wpm(DWORD(freevisang) + 0x38 + 0x3, engine_dll_base + 0x2F8118);
+	wpm(DWORD(freevisang) + 0x48 + 0x3, engine_dll_base + 0x2F8118);
 
 	SpyInjectAndJump(ZetToZero, PVOID(0x24000000 + 0x192B0), 4);
 
