@@ -11,9 +11,11 @@ Features:
 - Aimbot
 - Aimbot FOV
 - ESP
+(position, team, name, hp, armor, money, steamid, weapon)
 - Chams
 - Radarhack
 - Bombtimer
+- Crosshair
 - No Visual Recoil
 - No Recoil
 - No Spread
