@@ -6,3 +6,27 @@ Cheat for Counter-Strike: Source v34
  Game must be running in windowed mode
  
  Press Insert to open menu
+
+Features:
+- Aimbot
+- Aimbot FOV
+- ESP
+- Chams
+- Radarhack
+- Bombtimer
+- No Visual Recoil
+- No Recoil
+- No Spread
+- No Smoke
+- No Flash
+- No Hands
+- No Sky
+- Bunnyhop
+- Autostrafe
+- Speedhack
+- Spinbot
+- Antiaim
+- Visual Flyhack
+- Namestealer
+- Anti-HLDJ bypass
+- Fullbright
