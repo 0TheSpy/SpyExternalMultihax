@@ -8,27 +8,19 @@ Cheat for Counter-Strike: Source v34
  Press Insert to open menu
 
 Features:
-- Aimbot
-- Aimbot FOV
+- Aimbot & FOV
 - ESP
 (position, team, name, hp, armor, money, steamid, weapon)
-- Chams
+- Chameleon Wallhack, Fullbright
 - Radarhack
 - Bombtimer
-- Crosshair
-- No Visual Recoil
-- No Recoil
-- No Spread
-- No Smoke
-- No Flash
-- No Hands
-- No Sky
-- Bunnyhop
-- Autostrafe
+- Smart Crosshair
+- No Visual Recoil, No Recoil, No Spread
+- No Smoke, No Flash
+- No Hands, No Sky
+- Bunnyhop, Autostrafe
 - Speedhack
-- Spinbot
-- Antiaim
+- Spinbot, Antiaim
 - Visual Flyhack
 - Namestealer
 - Anti-HLDJ bypass
-- Fullbright
