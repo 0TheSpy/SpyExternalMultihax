@@ -72,15 +72,15 @@ stringstream ss;
 string s;
 BYTE who = 0, zero = 0, ret = 0xC3, jmp = 0xE9, nop = 0x90, call = 0xE8, push = 0x68, drawmenu = 0, menuselect = 0, myid, wepid, bDormant;
 DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base, localplayer, ptr, cmdptr, aobconsole, aobcmdnum, enginedelta, 
-svcheatsptr, timescaleptr, aobang, boneptr, steamidptr, vmatrixptr, entity, spec1, spec2, radarhackptr, scrCenterX, scrCenterY, entptr, radar3ptr, dip9;
+svcheatsptr, timescaleptr, boneptr, steamidptr, vmatrixptr, entity, spec1, spec2, radarhackptr, scrCenterX, scrCenterY, entptr, radar3ptr, dip9;
 float myposX, myposY, myangY, deltaX, deltaY, fi = 0.08, coords[3], radarcoords[2], xl, yl, wl, xl_closest = 0, yl_closest = 0,
 xl_closest_final = 0, yl_closest_final = 0, viewmatrix[4][4], hyp1, hyp2, deltaXold, deltaYold, deltaZ, myposZ, enemyDistance, 
 spinspeed, bomb, xd = 0, bombcoords[3], prevX, prevY, flickerCheck;
 int closest, closest_final, aimfov, menutop = 340, armor, money, i, hp, team, myteam, maxentityid, offs; 
 char name[32], esphp[4], espid[3], esparm[4], espmon[6], *cstr = &s[0];
 char* espname[32], espwep[24], steamid[20];
-BOOL boostsleep = 0, angleshack = 0, visnorec = 0, bombplanted = 0;
-PVOID blockanglemove, freevisang, asmWHcave;
+BOOL boostsleep = 0, angleshack = 0, bombplanted = 0;
+PVOID rotating, freevisangX, freevisangY, freevisangZ, asmWHcave, fakePredict;
 byte sf[] = { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
 
