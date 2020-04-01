@@ -133,16 +133,10 @@ void myInit() {
 	aobconsole = ExternalAoBScan(hProcess, engine_dll_base, pattern3, mask3);
 	SendCMD("alias name; alias stm \"-moveleft; -moveright; -forward; -back\"");
 
-	char pattern4[] = "\xC3\xD9\x44\x24\x04\xDD\x05\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xD8";
-	char mask4[] = "xxxxxxx????x????x";
-	aobang = ExternalAoBScan(hProcess, engine_dll_base, pattern4, mask4);
-#ifdef DEBUG
-	printf("NoSpread AOBscan result = %0x\n", aobang);
-#endif
 	spec1 = DWORD(SpyInjectAndJump(Spec1, LPVOID(0x24000000 + 0x2076BE), 4));
 	spec2 = DWORD(SpyInject(Spec2, LPVOID(0x24000000 + 0x257351))); //2
 
-	blockanglemove = SpyInject(BlockAngleMovingg, PVOID(0x24000000 + 0xF85A4));
+	rotating = SpyInject(Rotatingg, PVOID(0x24000000 + 0xF85A4));
 
 	//for chams colors
 	byte chamscolors[] = { 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF };
@@ -336,6 +330,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 	}
 	return 0;
 }
+
 
 void SetWindowToTarget()
 {
