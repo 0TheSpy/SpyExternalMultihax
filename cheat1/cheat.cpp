@@ -340,6 +340,7 @@ void Bunnyhop()
 							wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 						}
 					}
+					
 					else
 					{
 						if (VisYd < 0.0f)
@@ -353,7 +354,8 @@ void Bunnyhop()
 							wpm(0x24000000 + 0x3E725C, 1); //+moveleft
 						}
 					}
-					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 0); //reset Z angle
+					
+					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
 					VisY = VisYnew; //set New Y as old Y
 				}
 
@@ -364,7 +366,7 @@ void Bunnyhop()
 			}
 			wpm(0x24000000 + 0x3E7250, 0); //-moveright 
 			wpm(0x24000000 + 0x3E725C, 0); //-moveleft
-			wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 0); //reset Z angle
+			wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
 		}
 
 		Sleep(1);
@@ -441,47 +443,31 @@ void Flyhack()
 	}
 }
 
-__declspec(naked) void FreeVisualAngles(void) //engine.dll+22AE70
+__declspec(naked) void FreeVisualAnglesX(void)
 {
 	__asm {
-		cmp esp, 0x19e424
-		je forx
-		cmp esp, 0x19e418
-		jne compy
-
-		forx :
-		fld dword ptr ds: [0x24000000 + 0x3FD54C]
-		je sexit
-
-		compy :
-		cmp esp, 0x19e420
-		je fory
-		cmp esp, 0x19e414
-		jne forz
-
-		fory:
-		fld dword ptr ds : [0x24000000 + 0x3FD550]
-		je sexit
-
-		forz :
-		cmp esp, 0x19e3fc
-		jne originalcode
-		fld dword ptr ds : [0x1234D]
-		je sexit
-
-		originalcode :
-		fld dword ptr ds : [esp + 0x04]
-
-		sexit :
-		fld qword ptr ds : [0x00000000] //engine_dll_base + 0x2F8118
-
-			nop
-			nop
+		mov ecx, dword ptr ds : [0x12345]
+		push 0x10
 	}
 }
 
+__declspec(naked) void FreeVisualAnglesY(void)
+{
+	__asm {
+		mov ecx, dword ptr ds : [0x12349] //
+		push 0x10
+	}
+}
 
-__declspec(naked) void BlockAngleMovingg(void)
+__declspec(naked) void FreeVisualAnglesZ(void)
+{
+	__asm {
+		mov ecx, dword ptr ds:[0x1234D]
+		push 0x08
+	}
+}
+
+__declspec(naked) void Rotatingg(void) 
 {
 	__asm {
 		jmp nospread
@@ -513,20 +499,24 @@ __declspec(naked) void BlockAngleMovingg(void)
 					fadd dword ptr ds : [0x12349] // plus real x
 					fstp dword ptr ds : [0x1234D] //store Z
 
-					nospread :
+					nospread : //no need, delete then
 
-							 mov ecx, DWORD PTR ds : [0x12345]
-							 mov[ebx], ecx
-							 mov edx, DWORD PTR ds : [0x12349]
+					mov ecx, [esp + 0x14]
+					mov[ebx], ecx
+					mov edx, [esp + 0x18]
 
-							 nop
-							 nop
-							 nop
+					//mov ecx, DWORD PTR ds : [0x12345]
+					//mov[ebx], ecx
+					//mov edx, DWORD PTR ds : [0x12349]
+
+					nop
+					nop
+					nop
 
 	}
 }
 
-__declspec(naked) void ZetToZero(void)
+__declspec(naked) void ZetToZero(void) //visual z
 {
 	__asm {
 		mov dword ptr[edi + 0x08], 0
@@ -534,6 +524,17 @@ __declspec(naked) void ZetToZero(void)
 	}
 }
 
+__declspec(naked) void FakePredict(void) //visual z
+{
+	__asm {
+		mov edx, dword ptr ds: [0x12345]
+		mov[eax + 0x0C], edx
+		mov edx, dword ptr ds : [0x12349]
+
+		mov[eax + 0x10], edx
+		mov edx, dword ptr ds : [0x1234D]
+	}
+}
 
 void Spinbot()
 {
@@ -542,9 +543,11 @@ void Spinbot()
 
 	float visYd = 0;
 
-	freevisang = SpyInject(FreeVisualAngles, PVOID(aobang + 1)); 
+	freevisangX = SpyInject(FreeVisualAnglesX, PVOID(0x2415D32E));
+	freevisangY = SpyInject(FreeVisualAnglesY, PVOID(0x2415D3A0));
+	freevisangZ = SpyInject(FreeVisualAnglesZ, PVOID(0x2415D412));
 
-	wpm(DWORD(freevisang) + 0x48 + 0x3, engine_dll_base + 0x2F8118);
+	fakePredict = SpyInject(FakePredict, PVOID(0x240D46F9));
 
 	SpyInjectAndJump(ZetToZero, PVOID(0x24000000 + 0x192B0), 4);
 
@@ -562,7 +565,7 @@ void Spinbot()
 
 			spinspeed = 44.0f;
 
-			wvm(blockanglemove, 4, 0xD93E9090);
+			wvm(rotating, 4, 0xD93E9090);
 
 			Sleep(1);
 			wpm(0x12345, 88.9f); //set X ang
@@ -572,7 +575,7 @@ void Spinbot()
 
 				if (GetAsyncKeyState(0x57) < 0 || GetAsyncKeyState(0x53) < 0) //w/s
 				{
-					visYd = 90.0f + spinspeed;
+					visYd = 90.0f;// +spinspeed;
 
 					if (GetAsyncKeyState(0x57) < 0 && GetAsyncKeyState(0x41) < 0) //w+a
 						visYd -= 45.0f;
@@ -592,16 +595,17 @@ void Spinbot()
 				{
 					if (GetAsyncKeyState(0x41) < 0) //a
 					{
-						visYd = 0 + spinspeed;
+						visYd = 0;// +spinspeed;
 						wpm(0x12330, visYd);
 					}
 					if (GetAsyncKeyState(0x44) < 0) //d
 					{
-						visYd = 180 + spinspeed;
+						visYd = 180;// +spinspeed;
 						wpm(0x12330, visYd);
 					}
 				}
 
+				wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //z
 				Sleep(1);
 			}
 			spinspeed = 0;
@@ -614,7 +618,7 @@ void Spinbot()
 			wpm(0x12334, 0); //rotation to 0
 			wpm(0x1234D, 0); //z to 0
 
-			wvm(blockanglemove, 4, 0xD93E5DEB);
+			wvm(rotating, 4, 0xD93E5DEB);
 		}
 
 		if (cheat("Spinbot & AntiAim") == 2) //UPSIDE-DOWN
@@ -1200,11 +1204,21 @@ void myDraw() {
 			else color = D3DCOLOR_ARGB(255, 255, 0, 0);
 
 			if (!bDormant && WorldToScreen(viewmatrix, coords, &xl, &yl, &wl)) {
-				if (cheat("ESP") == 1)
-					DrawBorderBox(xl - 10000 / enemyDistance, yl - 10, 20000 / enemyDistance, 40000 / enemyDistance, 3, color);
-				if (cheat("ESP") == 2)
+				if (cheat("ESP") == 1 || cheat("ESP") == 2)
 				{
 					DrawBorderBox(xl - 10000 / enemyDistance, yl - 10, 20000 / enemyDistance, 40000 / enemyDistance, 3, color);
+					//drawHPhere
+					DrawFilledRectangle(
+						xl - 10000 / enemyDistance,
+						yl - 18, 
+						xl - (10000 / enemyDistance) + (20000 / enemyDistance / 100 * hp) + 3,
+						yl - 15,
+						D3DCOLOR_XRGB(255, 255, 255));
+				}
+					
+				if (cheat("ESP") == 2)
+				{
+					color = D3DCOLOR_XRGB(255, 255, 255);
 					ID3DXFont* pFont;
 					D3DXCreateFont(p_Device, 12, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
 					rvm(PVOID(ptr + offset + 0x8 + i * PLRSZ), 32, &espname); 
@@ -1214,10 +1228,11 @@ void myDraw() {
 					itoa(hp, esphp, 10);
 					rvm(PVOID(entity + 0xA4C + 0x5c4), 4, &armor);
 					itoa(armor, esparm, 10);
-					DrawString((char*)"HP", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 1, color, pFont);
-					DrawString((char*)esphp, xl - 10000 / enemyDistance + 20000 / enemyDistance + 23, yl - 6 + 12 * 1, color, pFont);
-					DrawString((char*)"SUIT", xl - 10000 / enemyDistance + 20000 / enemyDistance + 45, yl - 6 + 12 * 1, color, pFont);
-					DrawString((char*)esparm, xl - 10000 / enemyDistance + 20000 / enemyDistance + 71, yl - 6 + 12 * 1, color, pFont);
+					
+					DrawString((char*)"H", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 1, color, pFont);
+					DrawString((char*)esphp, xl - 10000 / enemyDistance + 20000 / enemyDistance + 14, yl - 6 + 12 * 1, color, pFont);
+					DrawString((char*)"A", xl - 10000 / enemyDistance + 20000 / enemyDistance + 38, yl - 6 + 12 * 1, color, pFont);
+					DrawString((char*)esparm, xl - 10000 / enemyDistance + 20000 / enemyDistance + 45, yl - 6 + 12 * 1, color, pFont);
 
 					rvm(PVOID(engine_dll_base + 0x3958C8), 4, &steamidptr);
 					rvm(PVOID(steamidptr + 0x38), 4, &steamidptr);
@@ -1251,6 +1266,14 @@ void myDraw() {
 					entity = rpm(entity - 0x8);
 		
 					rvm(PVOID(entity + 0xA + 4), 24, &espwep);
+					
+					for (int i = 0; i < 24; i++)
+					{
+						if (espwep[i] == 0x40)
+							espwep[i] = 0x0;
+					}
+					
+
 					DrawString((char*)espwep, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 4, color, pFont);
 
 					pFont->Release();
@@ -1345,14 +1368,18 @@ void myDraw() {
 
 void disable() {
 	//freevisang revert
-	dword2bytes dw2b = { engine_dll_base + 0x2F8118 };
-	byte bytes1[] = { 0xD9, 0X44, 0X24, 0X04, 0XDD, 0X05, dw2b.bytes[0],dw2b.bytes[1],dw2b.bytes[2],dw2b.bytes[3] };
-	DWORD oldProtect = 0;
-	wvm(LPVOID(aobang + 1), sizeof(bytes1), bytes1);
+	wpm(0x2415D32E, 0xCE8B51106A0C4D8B);
+	wpm(0x2415D3A0, 0xCE8B51106A104D8B);
+	wpm(0x2415D412, 0xCE8B51086A144D8B);
 
-	//blockanglemove revert
+	//rotating revert
 	byte bytes2[] = { 0x8b, 0x4c, 0x24, 0x14, 0x89, 0x0b, 0x8b, 0x54, 0x24, 0x18 };
 	wvm(PVOID(0x24000000 + 0xF85A4), sizeof(bytes2), bytes2);
+
+	//predict revert
+	wpm(0x240D46F9, 0x8B0C5089);
+	wpm(0x240D46F9+4, 0x50891051);
+	wpm(0x240D46F9+8, 0x14518b10);
 }
 
 void visnrec(bool d) {
@@ -1360,7 +1387,7 @@ void visnrec(bool d) {
 	{
 		wvm(LPVOID(0x24000000 + 0x192d2 + 0x2), sizeof(DWORD), 0);
 		wvm(LPVOID(0x24000000 + 0x192dc + 0x2), sizeof(DWORD), 0);
-		visnorec = 1;
+		//visnorec = 1;
 #ifdef DEBUG
 		cout << "visual norecoil enabled\n";
 #endif
@@ -1369,9 +1396,47 @@ void visnrec(bool d) {
 	{
 		wvm(PVOID(0x24000000 + 0x192d2 + 0x2), 4, 0X00000bb0);
 		wvm(PVOID(0x24000000 + 0x192dc + 0x2), 4, 0X00000BB4);
-		visnorec = 0;
+		//visnorec = 0;
 #ifdef DEBUG
 		cout << "visual norecoil disabled\n";
+#endif
+	}
+}
+
+void Angleshack(bool d) {
+	if (d)
+	{
+		angleshack = 1;
+
+		SpyJmp(PVOID(0x2415D32E), freevisangX, 0);
+		SpyJmp(PVOID(0x2415D3A0), freevisangY, 0);
+		SpyJmp(PVOID(0x2415D412), freevisangZ, 0);
+		SpyJmp(PVOID(0x240D46F9), fakePredict, 7);
+		//wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //z
+
+		SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);
+		//cl_predictweapons 1 kill
+		wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
+		SendCMD("cl_predictweapons 0");
+		Sleep(500);
+#ifdef DEBUG
+		cout << "angleshack enabled\n";
+#endif
+	}
+	else
+	{
+		angleshack = 0;
+
+		disable();
+
+		//set Z to 0 
+		wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 0);
+
+		//cl_predictweapons 1 back
+		wpm(0x24000000 + 0x1e2858, 0x83068bFFFF2803E8);
+
+#ifdef DEBUG
+		cout << "angleshack disabled\n";
 #endif
 	}
 }
@@ -1388,7 +1453,7 @@ void TriggerCheck()
 #endif
 	timescaleptr = rpm(0x24000000 + 0x3E1D20);
 
-	float boostang = 40.0f;
+	float boostang = 40.0f; 
 	int sleeptim = 30;
 
 	while (true)
@@ -1398,19 +1463,28 @@ void TriggerCheck()
 
 			while (GetAsyncKeyState(VK_SPACE) < 0)
 			{
-				if (boostsleep)
-				{
-					Sleep(300);
-					boostsleep = 0;
+				if (cheat("Spinbot & AntiAim") != 1) {
+					if (boostsleep)
+					{
+						Sleep(300);
+						boostsleep = 0;
+					}
+					wpm(0x24000000 + 0x3E7250, 0); //-moveright
+					wpm(0x24000000 + 0x3E725C, 1); //+moveleft
+					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, boostang); //set z ang
+					Sleep(sleeptim);
+					wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+					wpm(0x24000000 + 0x3E7250, 1); //+moveright
+					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, -boostang); //set z ang
+					Sleep(sleeptim);
+
 				}
-				wpm(0x24000000 + 0x3E7250, 0); //-moveright
-				wpm(0x24000000 + 0x3E725C, 1); //+moveleft
-				wpm(engine_dll_base + 0x39541c + 4 - enginedelta, boostang); //set z ang
-				Sleep(sleeptim);
-				wpm(0x24000000 + 0x3E725C, 0); //-moveleft
-				wpm(0x24000000 + 0x3E7250, 1); //+moveright
-				wpm(engine_dll_base + 0x39541c + 4 - enginedelta, -boostang); //set z ang
-				Sleep(sleeptim);
+				else
+				{
+					wpm(0x12330, 180.0f);
+					Sleep(sleeptim);
+				}
+
 			}
 			wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 			wpm(0x24000000 + 0x3E7250, 0); //-moveright
@@ -1443,25 +1517,21 @@ void TriggerCheck()
 			}
 			Sleep(200);
 		}
-		//
+		
 		if (cheat.Triggered("No Recoil & Spread"))
 		{
 			cheat.Update("No Recoil & Spread");
-			if (cheat("No Recoil & Spread") == 3 && !angleshack)
+
+			if (cheat("No Recoil & Spread") != 0)
 				visnrec(1);
+			else
+				visnrec(0);
 
 			if (cheat("No Recoil & Spread") == 1)
 			{
 				if (!angleshack)
 				{
-					angleshack = 1;
-					SpyJmp(PVOID(aobang + 1), freevisang, 5);
-					if (!visnorec)
-						visnrec(1);
-
-					SpyJmp(PVOID(0x24000000 + 0xF85A4), blockanglemove, 5);
-					//cl_predictweapons 1 kill
-					wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
+					Angleshack(1);
 					SendCMD("cl_predictweapons 0");
 					Sleep(50);
 				}
@@ -1470,72 +1540,25 @@ void TriggerCheck()
 			if (cheat("No Recoil & Spread") != 1)
 			{
 				if (cheat("Spinbot & AntiAim") == 0 && angleshack) {
-					angleshack = 0;
-
-					disable();
-
-					//set Z to 0 
-					wpm(engine_dll_base + 0x39541c + 4 + enginedelta, 0);
-
-					//cl_predictweapons 1 back
-					wpm(0x24000000 + 0x1e2858, 0x83068bFFFF2803E8);
-
+					Angleshack(0);
 					SendCMD("bind w +forward; bind s +back; bind d +moveright; bind a +moveleft; stm");
 				}
-			}
-			if (cheat("No Recoil & Spread") == 0 && cheat("Spinbot & AntiAim") == 0 && visnorec) {
-				visnrec(0);
 			}
 		}
 
 		if (cheat.Triggered("Spinbot & AntiAim"))
 		{
 			cheat.Update("Spinbot & AntiAim");
-			if (cheat("Spinbot & AntiAim").enabled > 0 && !angleshack)
+			if (cheat("Spinbot & AntiAim").enabled > 0)
 			{
-				angleshack = 1;
-				visnorec = 1;
-#ifdef DEBUG
-				cout << "angle function found at 0x" << hex << aobang << endl;
-#endif
-				SpyJmp(PVOID(aobang + 1), freevisang, 5);
-
-				visnrec(1);
-
-				SpyJmp(PVOID(0x24000000 + 0xF85A4), blockanglemove, 5);
-
-				//cl_predictweapons 1 kill
-				wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
-				//SendCMD("cl_predictweapons 0");
-				if (cheat("Spinbot & AntiAim") == 1)
-					SendCMD("cl_predictweapons 0; bind a +moveleft; bind w +moveleft; bind d +moveleft; bind s +moveright; stm");
-				else
-					SendCMD("cl_predictweapons 0; bind w + back; bind s + forward; bind a + moveright; bind d + moveleft; stm");///change
-
+				if (!angleshack)
+				Angleshack(1);
 				Sleep(50);
 			}
-
-			if (cheat("Spinbot & AntiAim") == 0 && cheat("No Recoil & Spread") != 1)
+			else
 			{
-
-				if (angleshack) {
-					angleshack = 0;
-
-					disable();
-#ifdef DEBUG
-					cout << hex << "angle function found at 0x" << aobang << endl;
-#endif
-					if (cheat("No Recoil & Spread") == 0)
-						visnrec(0);
-
-					//set Z to 0 
-					wpm(engine_dll_base + 0x39541c + 4 + enginedelta, 0);
-
-					//cl_predictweapons 1 back
-					wpm(0x24000000 + 0x1e2858, 0x83068bFFFF2803E8);
-
-					SendCMD("bind w +forward; bind s +back; bind d +moveright; bind a +moveleft; stm");
-				}
+				if (cheat("No Recoil & Spread")!=1)
+				Angleshack(0);
 			}
 		}
 
@@ -1642,8 +1665,8 @@ void TriggerCheck()
 		{
 			cheat.Update("Smart Crosshair");
 			if (cheat("Smart Crosshair") == 1)
-				SendCMD("crosshair 0");
-			else SendCMD("crosshair 1");
+				wpm(0x24000000 + 0x3E208C, 0);
+			else wpm(0x24000000 + 0x3E208C, 1);
 #ifdef DEBUG
 			std::cout << "xhair triggered\n";
 #endif
@@ -1671,6 +1694,6 @@ void TriggerCheck()
 			cheat.Update("Chameleon Wallhack");
 		}
 
-		Sleep(1);
+		Sleep(10);
 	}
 }
