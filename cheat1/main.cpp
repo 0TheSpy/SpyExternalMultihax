@@ -60,11 +60,9 @@ void DisExit() {
 	wvm(PVOID(engine_dll_base + 0x2E15C8), size, static_cast<void*>(discmsg));
 #endif
 
-	Sleep(200);
+	Sleep(500);
 	p_Device->Release();
 	p_Object->Release();
-
-	SendCMD("crosshair 1; bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm");
 
 	_Exit(1);
 }
