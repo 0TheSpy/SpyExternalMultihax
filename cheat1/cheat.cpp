@@ -470,8 +470,6 @@ __declspec(naked) void FreeVisualAnglesZ(void)
 __declspec(naked) void Rotatingg(void) 
 {
 	__asm {
-		jmp nospread
-
 		//ROTATE OUR PLAYER
 		fld dword ptr ds : [0x12349] //real Y
 		fadd dword ptr ds : [0x12334] //33.0f
@@ -499,20 +497,10 @@ __declspec(naked) void Rotatingg(void)
 					fadd dword ptr ds : [0x12349] // plus real x
 					fstp dword ptr ds : [0x1234D] //store Z
 
-					nospread : //no need, delete then
-
+					//originalcode
 					mov ecx, [esp + 0x14]
 					mov[ebx], ecx
 					mov edx, [esp + 0x18]
-
-					//mov ecx, DWORD PTR ds : [0x12345]
-					//mov[ebx], ecx
-					//mov edx, DWORD PTR ds : [0x12349]
-
-					nop
-					nop
-					nop
-
 	}
 }
 
@@ -563,7 +551,7 @@ void Spinbot()
 
 			spinspeed = 44.0f;
 
-			wvm(rotating, 4, 0xD93E9090);
+			SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);
 
 			Sleep(1);
 			wpm(0x12345, 88.9f); //set X ang
@@ -611,7 +599,8 @@ void Spinbot()
 			wpm(0x12334, 0); //rotation to 0
 			wpm(0x1234D, 0); //z to 0
 
-			wvm(rotating, 4, 0xD93E5DEB);
+			byte bytes2[] = { 0x8b, 0x4c, 0x24, 0x14, 0x89, 0x0b, 0x8b, 0x54, 0x24, 0x18 };
+			wvm(PVOID(0x24000000 + 0xF85A4), sizeof(bytes2), bytes2);
 		}
 
 		if (cheat("Spinbot & AntiAim") == 2) //UPSIDE-DOWN
@@ -819,7 +808,8 @@ void Aimbot()
 				}
 			}
 
-			if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("Aimbot") != 2 && cheat("No Recoil & Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
+			//if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("Aimbot") != 2 && cheat("No Recoil & Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
+			if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("No Recoil & Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
 			{
 				if (!aiming)
 				{
@@ -1354,28 +1344,11 @@ void myDraw() {
 }
 
 
-void disable() {
-	//freevisang revert
-	wpm(0x2415D32E, 0xCE8B51106A0C4D8B);
-	wpm(0x2415D3A0, 0xCE8B51106A104D8B);
-	wpm(0x2415D412, 0xCE8B51086A144D8B);
-
-	//rotating revert
-	byte bytes2[] = { 0x8b, 0x4c, 0x24, 0x14, 0x89, 0x0b, 0x8b, 0x54, 0x24, 0x18 };
-	wvm(PVOID(0x24000000 + 0xF85A4), sizeof(bytes2), bytes2);
-
-	//predict revert
-	wpm(0x240D46F9, 0x8B0C5089);
-	wpm(0x240D46F9+4, 0x50891051);
-	wpm(0x240D46F9+8, 0x14518b10);
-}
-
 void visnrec(bool d) {
 	if (d)
 	{
 		wvm(LPVOID(0x24000000 + 0x192d2 + 0x2), sizeof(DWORD), 0);
 		wvm(LPVOID(0x24000000 + 0x192dc + 0x2), sizeof(DWORD), 0);
-		//visnorec = 1;
 #ifdef DEBUG
 		cout << "visual norecoil enabled\n";
 #endif
@@ -1384,7 +1357,6 @@ void visnrec(bool d) {
 	{
 		wvm(PVOID(0x24000000 + 0x192d2 + 0x2), 4, 0X00000bb0);
 		wvm(PVOID(0x24000000 + 0x192dc + 0x2), 4, 0X00000BB4);
-		//visnorec = 0;
 #ifdef DEBUG
 		cout << "visual norecoil disabled\n";
 #endif
@@ -1400,9 +1372,7 @@ void Angleshack(bool d) {
 		SpyJmp(PVOID(0x2415D3A0), freevisangY, 0);
 		SpyJmp(PVOID(0x2415D412), freevisangZ, 0);
 		SpyJmp(PVOID(0x240D46F9), fakePredict, 7);
-		//wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //z
 
-		SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);
 		//cl_predictweapons 1 kill
 		wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
 
@@ -1414,14 +1384,23 @@ void Angleshack(bool d) {
 	{
 		angleshack = 0;
 
-		disable();
+		//freevisang revert
+		wpm(0x2415D32E, 0xCE8B51106A0C4D8B);
+		wpm(0x2415D3A0, 0xCE8B51106A104D8B);
+		wpm(0x2415D412, 0xCE8B51086A144D8B);
+
+		//predict revert
+		wpm(0x240D46F9, 0x8B0C5089);
+		wpm(0x240D46F9 + 4, 0x50891051);
+		wpm(0x240D46F9 + 8, 0x14518b10);
 
 		//set Z to 0 
 		wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 0);
 
 		//cl_predictweapons 1 back
 		wpm(0x24000000 + 0x1e2858, 0x83068bFFFF2803E8);
-
+		Sleep(100);
+		SendCMD("cl_predictweapons 1");
 #ifdef DEBUG
 		cout << "angleshack disabled\n";
 #endif
@@ -1550,7 +1529,7 @@ void TriggerCheck()
 			}
 			else
 			{
-				SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm; cl_predictweapons 0");
+				SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm");
 				if (cheat("No Recoil & Spread")!=1)
 				Angleshack(0);
 			}
