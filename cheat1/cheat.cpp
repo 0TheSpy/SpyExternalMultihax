@@ -559,8 +559,6 @@ void Spinbot()
 	{
 		if (cheat("Spinbot & AntiAim") == 1)
 		{
-			SendCMD("bind a +moveleft; bind w +moveleft; bind d +moveleft; bind s +moveright; stm");
-
 			Sleep(50);
 
 			spinspeed = 44.0f;
@@ -610,11 +608,6 @@ void Spinbot()
 			}
 			spinspeed = 0;
 
-			if (cheat("Spinbot & AntiAim") == 0)
-				SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm");
-			else
-				SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm");
-
 			wpm(0x12334, 0); //rotation to 0
 			wpm(0x1234D, 0); //z to 0
 
@@ -639,7 +632,6 @@ void Spinbot()
 
 		if (cheat("Spinbot & AntiAim") == 3) //BACKWARDS
 		{
-			SendCMD("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft; stm");
 
 			while (cheat("Spinbot & AntiAim") == 3)
 			{
@@ -657,10 +649,6 @@ void Spinbot()
 				Sleep(1);
 			}
 
-			if (cheat("Spinbot & AntiAim") == 0)
-				SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm");
-			else
-				SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm");
 		}
 		Sleep(1);
 	}
@@ -1417,8 +1405,7 @@ void Angleshack(bool d) {
 		SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);
 		//cl_predictweapons 1 kill
 		wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
-		SendCMD("cl_predictweapons 0");
-		Sleep(500);
+
 #ifdef DEBUG
 		cout << "angleshack enabled\n";
 #endif
@@ -1551,12 +1538,19 @@ void TriggerCheck()
 			cheat.Update("Spinbot & AntiAim");
 			if (cheat("Spinbot & AntiAim").enabled > 0)
 			{
+				if (cheat("Spinbot & AntiAim").enabled == 1)
+					SendCMD("bind a +moveleft; bind w +moveleft; bind d +moveleft; bind s +moveright; stm; cl_predictweapons 0");
+				if (cheat("Spinbot & AntiAim").enabled == 2)
+					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0");
+				if (cheat("Spinbot & AntiAim").enabled == 3)
+					SendCMD("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0");
 				if (!angleshack)
 				Angleshack(1);
 				Sleep(50);
 			}
 			else
 			{
+				SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm; cl_predictweapons 0");
 				if (cheat("No Recoil & Spread")!=1)
 				Angleshack(0);
 			}
