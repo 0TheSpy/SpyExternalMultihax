@@ -440,8 +440,25 @@ void Flyhack()
 __declspec(naked) void FreeVisualAnglesX(void)
 {
 	__asm {
+		push eax
+		jmp nospin4 //eb 20 3e a1
+
+		mov eax, dword ptr ds : [0x12204]
+		cmp eax, 1
+		je nospin4
+		
+
+		fild dword ptr ds:[0x12200] //0
+		fsub dword ptr ds : [0x12345] //x*(-1)
+		fstp dword ptr ds : [0x12345]
+
+		nospin4:
+		pop eax
+
 		mov ecx, dword ptr ds : [0x12345]
 		push 0x10
+
+		nop
 	}
 }
 
@@ -496,7 +513,7 @@ __declspec(naked) void Rotatingg(void)
 		aktion :
 		
 		//CALCULATE Z ANG
-		mov eax, 0x42B00000 //88.0f
+		mov eax, 0x42B40000 //90.0f
 		cmp eax, dword ptr ds : [0x12345]
 		je bigger
 
@@ -568,18 +585,18 @@ void Spinbot()
 	{
 		if (cheat("Spinbot & AntiAim") == 1)
 		{
-			spinspeed = 44.0f;
+			spinspeed = 45.0f;
 			SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);			
-			wpm(0x12345, 88.0f); //set X ang
 			wpm(0x12334, spinspeed); //set spinhack speed
-			visX = 88.0f;
+			visX = 90.0f; 
+			wpm(0x12345, visX); //set X ang
 			while (cheat("Spinbot & AntiAim") == 1) {
 				
 				if (GetAsyncKeyState(VK_LBUTTON) < 0)
 					wpm(0x12204, 1);
 				else {
 					wpm(0x12204, 0);
-					rvm(PVOID(0x12345), 4, &visX);
+					visX = -visX;
 					wpm(0x12345, -visX);
 				}
 
@@ -598,7 +615,6 @@ void Spinbot()
 						if (GetAsyncKeyState(0x53) < 0 && GetAsyncKeyState(0x44) < 0) //s+d
 							visYd -= 45.0f;
 					wpm(0x12330, visYd);
-					
 				}
 				else
 				{
@@ -617,7 +633,7 @@ void Spinbot()
 				wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //z
 				Sleep(1);
 			}
-			wpm(0x12204, 1); //
+			wpm(0x12204, 1); 
 
 			spinspeed = 0;
 
@@ -628,9 +644,39 @@ void Spinbot()
 			wvm(PVOID(0x24000000 + 0xF85A4), sizeof(bytes2), bytes2);
 		}
 
-		if (cheat("Spinbot & AntiAim") == 2) //UPSIDE-DOWN
+		if (cheat("Spinbot & AntiAim") == 2) //FAKE ANGLES
 		{
+			wpm(DWORD(freevisangX) + 1, 0xA13E9090);
+			wpm(0x12345, 179.99f);
 			while (cheat("Spinbot & AntiAim") == 2)
+			{
+				if (GetAsyncKeyState(VK_LBUTTON) == 0)
+				{
+					wpm(0x12204, 0);
+
+					rvm(PVOID(0x24000000 + 0x3FD54C + 4), 4, &visY);
+					visY += 180.0f;
+					if (visY > 180.0f) visY -= 360.0f;
+					if (visY < -180.0f) visY += 360.0f;
+					wpm(0x12349, visY);
+
+					rvm(PVOID(0x12345), 4, &visX);
+					if (visX != 179.99f && visX != -179.99f)
+						wpm(0x12345, 179.99f);
+				}
+				else
+					if (tWnd == GetForegroundWindow())
+						wpm(0x12204, 1);
+
+				Sleep(1);
+			}
+			wpm(0x12204, 1);
+			wpm(DWORD(freevisangX) + 1, 0xA13E20EB);
+		}
+
+		if (cheat("Spinbot & AntiAim") == 3) //UPSIDE-DOWN
+		{
+			while (cheat("Spinbot & AntiAim") == 3)
 			{
 
 				if (GetAsyncKeyState(VK_LBUTTON) == 0)
@@ -644,10 +690,10 @@ void Spinbot()
 			}
 		}
 
-		if (cheat("Spinbot & AntiAim") == 3) //BACKWARDS
+		if (cheat("Spinbot & AntiAim") == 4) //BACKWARDS
 		{
 
-			while (cheat("Spinbot & AntiAim") == 3)
+			while (cheat("Spinbot & AntiAim") == 4)
 			{
 
 				if (GetAsyncKeyState(VK_LBUTTON) == 0)
@@ -664,6 +710,7 @@ void Spinbot()
 			}
 
 		}
+
 		Sleep(1);
 	}
 }
@@ -693,7 +740,6 @@ void Aimbot()
 	double hyp;
 
 	bool aiming = 0;
-	bool spinxchanged = 0;
 
 	DWORD ecx, eax;
 	int randomseed;
@@ -755,9 +801,10 @@ void Aimbot()
 
 						aiming = 1;
 
-						if (cheat("Spinbot & AntiAim").enabled > 1 && cheat("No Recoil & Spread") != 1)
+						if (cheat("Spinbot & AntiAim").enabled > 1 && cheat("No Recoil & Spread") != 1) //metka1
 						{
-							if (cheat("Spinbot & AntiAim") == 2) {
+							if (cheat("Spinbot & AntiAim") == 2 || cheat("Spinbot & AntiAim") == 3)
+							{
 								newangle[0] = -(newangle[0] + 180.0f);
 								newangle[1] = newangle[1] + 180.0f;
 							}
@@ -784,7 +831,8 @@ void Aimbot()
 					else
 						rvm(PVOID(0x24000000 + 0x3FD54C), 8, &myang); //readvisang
 
-					if (cheat("Spinbot & AntiAim") == 2) {
+					if (cheat("Spinbot & AntiAim") == 2 || cheat("Spinbot & AntiAim") == 3) //metka2
+					{
 						myang[0] = -(myang[0] + 180.0f);
 						myang[1] = myang[1] + 180.0f;
 					}
@@ -803,7 +851,7 @@ void Aimbot()
 					xx = RandomFloat(-0.5f, 0.5f) + RandomFloat(-0.5f, 0.5f);
 					yy = RandomFloat(-0.5f, 0.5f) + RandomFloat(-0.5f, 0.5f);
 
-					if (cheat("Spinbot & AntiAim") != 2)
+					if (cheat("Spinbot & AntiAim") != 2 && cheat("Spinbot & AntiAim") != 3)
 					{
 						newangg[0] = myang[0] + (yy * 1.9f) - punch[0] * 1.9f;
 						newangg[1] = myang[1] + (xx * 1.9f) - punch[1] * 1.9f;
@@ -825,9 +873,6 @@ void Aimbot()
 					wpm((LPVOID)0x243E71D8, 1, &six);
 
 					Sleep(40);
-
-					if (cheat("Spinbot & AntiAim") == 1) wpm(0x12345, 88.0f);
-					Sleep(60);
 				}
 			}
 
@@ -836,7 +881,7 @@ void Aimbot()
 				if (!aiming)
 				{
 					rvm(PVOID(0x24000000 + 0x3FD54C), 8, &myang);
-					if (cheat("Spinbot & AntiAim") == 2)
+					if (cheat("Spinbot & AntiAim") == 2 || cheat("Spinbot & AntiAim") == 3) //metka3
 					{
 						myang[0] = -(myang[0] + 180.0f);
 						myang[1] = myang[1] + 180.0f;
@@ -850,7 +895,6 @@ void Aimbot()
 				}
 				wpm(PVOID(0x12345), 8, &myang);
 
-				spinxchanged = 1;
 			}
 
 			if (cheat("No Recoil & Spread") == 2)
@@ -875,12 +919,6 @@ void Aimbot()
 			aiming = 0;
 
 			Sleep(5);
-
-			if (spinxchanged && cheat("Spinbot & AntiAim") == 1)
-			{
-				wpm(0x12345, 88.0f);
-				spinxchanged = 0;
-			}
 		}
 		Sleep(1);
 	}
@@ -1538,12 +1576,15 @@ void TriggerCheck()
 			cheat.Update("Spinbot & AntiAim");
 			if (cheat("Spinbot & AntiAim").enabled > 0)
 			{
-				if (cheat("Spinbot & AntiAim").enabled == 1)
-					SendCMD("bind a +moveleft; bind w +moveleft; bind d +moveleft; bind s +moveright; stm; cl_predictweapons 0");
-				if (cheat("Spinbot & AntiAim").enabled == 2)
-					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0");
-				if (cheat("Spinbot & AntiAim").enabled == 3)
-					SendCMD("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0");
+				if (cheat("Spinbot & AntiAim") == 1)
+					SendCMD("bind a +moveleft; bind w +moveleft; bind d +moveleft; bind s +moveright; stm; cl_predictweapons 0"); //spinbot
+				if (cheat("Spinbot & AntiAim") == 2)
+					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //fakeangles
+				if (cheat("Spinbot & AntiAim") == 3)
+					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //upsidedown
+				if (cheat("Spinbot & AntiAim") == 4)
+					SendCMD("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //backwards
+				
 				if (!angleshack)
 				Angleshack(1);
 				Sleep(50);
