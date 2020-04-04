@@ -465,7 +465,13 @@ __declspec(naked) void FreeVisualAnglesX(void)
 __declspec(naked) void FreeVisualAnglesY(void)
 {
 	__asm {
-		mov ecx, dword ptr ds : [0x12349] //
+		push eax
+		mov eax, 0
+		sub eax, dword ptr ds: [0x12220]
+		mov dword ptr ds: [0x12220], eax
+		pop eax
+
+		mov ecx, dword ptr ds : [0x12349] 
 		push 0x10
 	}
 }
@@ -481,7 +487,6 @@ __declspec(naked) void FreeVisualAnglesZ(void)
 __declspec(naked) void Rotatingg(void) 
 {
 	__asm {
-		
 		push eax
 		mov eax, dword ptr ds : [0x12204]
 		cmp eax, 1
@@ -506,9 +511,14 @@ __declspec(naked) void Rotatingg(void)
 		fstp dword ptr ds : [0x12349]
 
 		//FLIP X
+		mov eax, dword ptr ds: [0x12220]
+		cmp eax, dword ptr ds: [0x12224]
+		je noflip
 		fild dword ptr ds : [0x12200] //0
 		fsub dword ptr ds : [0x12345] //x*(-1)
 		fstp dword ptr ds : [0x12345]
+		noflip:
+		mov dword ptr ds: [0x12224],eax
 
 		aktion :
 		
@@ -585,19 +595,22 @@ void Spinbot()
 	{
 		if (cheat("Spinbot & AntiAim") == 1)
 		{
-			spinspeed = 45.0f;
 			SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);			
-			wpm(0x12334, spinspeed); //set spinhack speed
-			visX = 90.0f; 
-			wpm(0x12345, visX); //set X ang
+			wpm(0x12334, 45.0f); //set spinhack speed
+			wpm(0x12345, 90.0f); //set X ang
+			wpm(0x12220, 1); //semaphore
 			while (cheat("Spinbot & AntiAim") == 1) {
 				
 				if (GetAsyncKeyState(VK_LBUTTON) < 0)
+				{	
+					if (tWnd == GetForegroundWindow())
 					wpm(0x12204, 1);
+				}
 				else {
 					wpm(0x12204, 0);
-					visX = -visX;
-					wpm(0x12345, -visX);
+					rvm(PVOID(0x12345), 4, &visX);
+					if (visX != 90.0f && visX != -90.0f)
+					wpm(0x12345, 90.0f);
 				}
 
 				if (GetAsyncKeyState(0x57) < 0 || GetAsyncKeyState(0x53) < 0) //w/s
@@ -633,9 +646,7 @@ void Spinbot()
 				wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //z
 				Sleep(1);
 			}
-			wpm(0x12204, 1); 
-
-			spinspeed = 0;
+			wpm(0x12204, 1);
 
 			wpm(0x12334, 0); //rotation to 0
 			wpm(0x1234D, 0); //z to 0
