@@ -187,7 +187,7 @@ void myInit() {
 	cheat.New("Speedhack",99);
 	cheat("Speedhack") = 10;
 	cheat("Speedhack").sleep = 60;
-	cheat.New("Spinbot & AntiAim",3); 
+	cheat.New("Spinbot & AntiAim",4); 
 	cheat.New("Visual Flyhack");
 	cheat.New("Namestealer");
 	cheat.New("Play HLDJ");
