@@ -373,9 +373,6 @@ void Bunnyhop()
 	}
 }
 
-
-
-
 __declspec(naked) void Fly(void)
 {
 	__asm {
@@ -383,9 +380,6 @@ __declspec(naked) void Fly(void)
 		mov eax, [eax + 0x0C]
 	}
 }
-
-
-DWORD flycave;
 
 void Flyhack()
 {
@@ -470,37 +464,61 @@ __declspec(naked) void FreeVisualAnglesZ(void)
 __declspec(naked) void Rotatingg(void) 
 {
 	__asm {
+		
+		push eax
+		mov eax, dword ptr ds : [0x12204]
+		cmp eax, 1
+		je aktion
+
 		//ROTATE OUR PLAYER
 		fld dword ptr ds : [0x12349] //real Y
 		fadd dword ptr ds : [0x12334] //33.0f
 
-		push eax
 		fcom dword ptr ds : [0x12300] //180.0
 		fnstsw ax
 		test ah, 0x41
 		jne next1
 		fsub dword ptr ds : [0x12308] //360.0
 		next1 :
-			  fcom dword ptr ds : [0x12304] //-180.0
-			  fnstsw ax
-			  test ah, 0x05
-			  jp next2
-			  fadd dword ptr ds : [0x12308] //360.0
-			  next2 :
-					pop eax
+		fcom dword ptr ds : [0x12304] //-180.0
+		fnstsw ax
+		test ah, 0x05
+		jp next2
+		fadd dword ptr ds : [0x12308] //360.0
+		next2 :
+		fstp dword ptr ds : [0x12349]
 
-					fstp dword ptr ds : [0x12349]
+		//FLIP X
+		fild dword ptr ds : [0x12200] //0
+		fsub dword ptr ds : [0x12345] //x*(-1)
+		fstp dword ptr ds : [0x12345]
 
-					//CALCULATE Z ANG
-					fld dword ptr ds : [0x12330] // load z angle (0)
-					fsub dword ptr ds : [0x243FD550] // minus visual x
-					fadd dword ptr ds : [0x12349] // plus real x
-					fstp dword ptr ds : [0x1234D] //store Z
+		aktion :
+		
+		//CALCULATE Z ANG
+		mov eax, 0x42B00000 //88.0f
+		cmp eax, dword ptr ds : [0x12345]
+		je bigger
 
-					//originalcode
-					mov ecx, [esp + 0x14]
-					mov[ebx], ecx
-					mov edx, [esp + 0x18]
+		fld dword ptr ds : [0x12200] //0
+		fsub dword ptr ds : [0x12330] // load -z angle
+		fadd dword ptr ds : [0x243FD550] // plus visual y 
+		fsub dword ptr ds : [0x12349] // minus real y 
+		jmp store
+
+		bigger :
+		fld dword ptr ds : [0x12330] // load z angle 
+		fsub dword ptr ds : [0x243FD550] // minus visual x
+		fadd dword ptr ds : [0x12349] // plus real x
+
+		store :
+		fstp dword ptr ds : [0x1234D] //store Z
+
+		pop eax
+		//originalcode
+		mov ecx, [esp + 0x14]
+		mov[ebx], ecx
+		mov edx, [esp + 0x18]
 	}
 }
 
@@ -515,6 +533,9 @@ __declspec(naked) void ZetToZero(void) //visual z
 __declspec(naked) void FakePredict(void) //visual z
 {
 	__asm {
+		push eax
+		pop eax
+
 		mov edx, dword ptr ds: [0x12345]
 		mov[eax + 0x0C], edx
 		mov edx, dword ptr ds : [0x12349]
@@ -547,22 +568,24 @@ void Spinbot()
 	{
 		if (cheat("Spinbot & AntiAim") == 1)
 		{
-			Sleep(50);
-
 			spinspeed = 44.0f;
-
-			SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);
-
-			Sleep(1);
-			wpm(0x12345, 88.9f); //set X ang
+			SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);			
+			wpm(0x12345, 88.0f); //set X ang
 			wpm(0x12334, spinspeed); //set spinhack speed
-
+			visX = 88.0f;
 			while (cheat("Spinbot & AntiAim") == 1) {
+				
+				if (GetAsyncKeyState(VK_LBUTTON) < 0)
+					wpm(0x12204, 1);
+				else {
+					wpm(0x12204, 0);
+					rvm(PVOID(0x12345), 4, &visX);
+					wpm(0x12345, -visX);
+				}
 
 				if (GetAsyncKeyState(0x57) < 0 || GetAsyncKeyState(0x53) < 0) //w/s
 				{
-					visYd = 90.0f;// +spinspeed;
-
+					visYd = 90.0f;
 					if (GetAsyncKeyState(0x57) < 0 && GetAsyncKeyState(0x41) < 0) //w+a
 						visYd -= 45.0f;
 					else
@@ -574,19 +597,19 @@ void Spinbot()
 					else
 						if (GetAsyncKeyState(0x53) < 0 && GetAsyncKeyState(0x44) < 0) //s+d
 							visYd -= 45.0f;
-
 					wpm(0x12330, visYd);
+					
 				}
 				else
 				{
 					if (GetAsyncKeyState(0x41) < 0) //a
 					{
-						visYd = 0;// +spinspeed;
+						visYd = 0;
 						wpm(0x12330, visYd);
 					}
 					if (GetAsyncKeyState(0x44) < 0) //d
 					{
-						visYd = 180;// +spinspeed;
+						visYd = 180;
 						wpm(0x12330, visYd);
 					}
 				}
@@ -594,6 +617,8 @@ void Spinbot()
 				wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //z
 				Sleep(1);
 			}
+			wpm(0x12204, 1); //
+
 			spinspeed = 0;
 
 			wpm(0x12334, 0); //rotation to 0
@@ -632,7 +657,7 @@ void Spinbot()
 					if (visY > 180.0f) visY -= 360.0f;
 					if (visY < -180.0f) visY += 360.0f;
 
-					wpm(0x12345, 88.90f);
+					wpm(0x12345, 88.0f);
 					wpm(0x12349, visY);
 				}
 				Sleep(1);
@@ -789,8 +814,6 @@ void Aimbot()
 						newangg[1] = myang[1] - (xx * 1.9f) - punch[1] * 1.9f;
 					}
 
-					if (cheat("Spinbot & AntiAim") == 1) newangg[1] -= spinspeed;
-
 					if (newangg[0] > 180.0f) newangg[0] -= 360.0f;
 					if (newangg[0] < -180.0f) newangg[0] += 360.0f;
 					if (newangg[1] > 180.0f) newangg[1] -= 360.0f;
@@ -803,12 +826,11 @@ void Aimbot()
 
 					Sleep(40);
 
-					if (cheat("Spinbot & AntiAim") == 1) wpm(0x12345, 88.9f);
+					if (cheat("Spinbot & AntiAim") == 1) wpm(0x12345, 88.0f);
 					Sleep(60);
 				}
 			}
 
-			//if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("Aimbot") != 2 && cheat("No Recoil & Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
 			if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("No Recoil & Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
 			{
 				if (!aiming)
@@ -826,7 +848,6 @@ void Aimbot()
 					myang[1] = newangle[1];
 
 				}
-				myang[1] -= spinspeed;
 				wpm(PVOID(0x12345), 8, &myang);
 
 				spinxchanged = 1;
@@ -857,7 +878,7 @@ void Aimbot()
 
 			if (spinxchanged && cheat("Spinbot & AntiAim") == 1)
 			{
-				wpm(0x12345, 88.9f);
+				wpm(0x12345, 88.0f);
 				spinxchanged = 0;
 			}
 		}
