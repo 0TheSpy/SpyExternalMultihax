@@ -441,16 +441,22 @@ __declspec(naked) void FreeVisualAnglesX(void)
 {
 	__asm {
 		push eax
-		jmp nospin4 //eb 20 3e a1
+		jmp nospin4 
 
 		mov eax, dword ptr ds : [0x12204]
 		cmp eax, 1
 		je nospin4
 		
+		mov eax, dword ptr ds:[0x12345]
+		cmp eax, 0x43326666//178.4f
+		je plusx
+		mov eax, 0x43326666//178.4f
+		jmp movx
+		plusx :
+		mov eax, 0x43328000 // 178.5f
+		movx :
+		mov dword ptr ds:[0x12345], eax
 
-		fild dword ptr ds:[0x12200] //0
-		fsub dword ptr ds : [0x12345] //x*(-1)
-		fstp dword ptr ds : [0x12345]
 
 		nospin4:
 		pop eax
@@ -672,8 +678,8 @@ void Spinbot()
 					wpm(0x12349, visY);
 
 					rvm(PVOID(0x12345), 4, &visX);
-					if (visX != 179.99f && visX != -179.99f)
-						wpm(0x12345, 179.99f);
+					if (visX != 178.3999939f && visX != 178.5f)
+						wpm(0x12345, 178.3999939f);
 				}
 				else
 					if (tWnd == GetForegroundWindow())
@@ -682,7 +688,7 @@ void Spinbot()
 				Sleep(1);
 			}
 			wpm(0x12204, 1);
-			wpm(DWORD(freevisangX) + 1, 0xA13E20EB);
+			wpm(DWORD(freevisangX) + 1, 0xA13E2AEB);
 		}
 
 		if (cheat("Spinbot & AntiAim") == 3) //UPSIDE-DOWN
