@@ -5,7 +5,6 @@
 __declspec(naked) void asmWH(void)
 {
 	__asm {
-		call dword ptr ds : [0x12420] //call ColorsCave
 		cmp dword ptr ds : [0x12435], 0x1
 		je backs
 
@@ -81,6 +80,7 @@ __declspec(naked) void asmWH(void)
 		mov byte ptr ds : [0x173e1], 0x02
 
 			paint :
+			call dword ptr ds : [0x12420] //call ColorsCave
 			mov dword ptr ds : [0x12410], 0
 
 			zdisable :
@@ -144,6 +144,8 @@ __declspec(naked) void asmWH(void)
 		mov dword ptr ds : [0x12435], 0x0
 			call edi
 			add esp, 0x1C
+
+			
 	}
 	endfunc
 }
