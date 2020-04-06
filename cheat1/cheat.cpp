@@ -1,6 +1,7 @@
 #pragma once
 
 #include "main.h"
+#include "asm.cpp"
 
 void SendCMD(const char *cmd)
 {
@@ -70,153 +71,6 @@ void menu()
 	pFont->Release();
 }
 
-__declspec(naked) void asmWH(void)
-{
-	__asm {
-		call dword ptr ds:[0x12420] //call ColorsCave
-
-		cmp dword ptr ds : [0x12435], 0x1
-		je backs
-
-		//ebp+0x20 - PrimCount, ebp+0x18 - NumVert
-
-		//CT model
-		cmp dword ptr ds : [ebp + 0x20], 433
-		jne try2
-		cmp dword ptr ds : [ebp + 0x18], 409
-		je paintCT
-		try2:
-		cmp dword ptr ds : [ebp + 0x20], 533
-		jne try3
-		cmp dword ptr ds : [ebp + 0x18], 499
-		je paintCT
-		try3 :
-		cmp dword ptr ds : [ebp + 0x20], 1007
-		jne try4
-		cmp dword ptr ds : [ebp + 0x18], 929
-		je paintCT
-		try4 :
-		cmp dword ptr ds : [ebp + 0x20], 1822
-		jne try5
-		cmp dword ptr ds : [ebp + 0x18], 1498
-		je paintCT
-		try5 :
-		cmp dword ptr ds : [ebp + 0x20], 2998
-		jne try6
-		cmp dword ptr ds : [ebp + 0x18], 2245
-		je paintCT
-		try6 :
-		cmp dword ptr ds : [ebp + 0x20], 5030
-		jne try7
-		cmp dword ptr ds : [ebp + 0x18], 3417
-		je paintCT
-		try7 :
-
-		//T model
-		cmp dword ptr ds : [ebp + 0x20], 344
-		jne try8
-		cmp dword ptr ds : [ebp + 0x18], 408
-		je paintT
-		try8:
-		cmp dword ptr ds : [ebp + 0x20], 509
-		jne try9
-		cmp dword ptr ds : [ebp + 0x18], 554
-		je paintT
-		try9 :
-		cmp dword ptr ds : [ebp + 0x20], 899
-		jne try10
-		cmp dword ptr ds : [ebp + 0x18], 835
-		je paintT
-		try10 :
-		cmp dword ptr ds : [ebp + 0x20], 1819
-		jne try11
-		cmp dword ptr ds : [ebp + 0x18], 1488
-		je paintT
-		try11 :
-		cmp dword ptr ds : [ebp + 0x20], 3015
-		jne try12
-		cmp dword ptr ds : [ebp + 0x18], 2292
-		je paintT
-		try12 :
-		cmp dword ptr ds : [ebp + 0x20], 4503
-		jne backs
-		cmp dword ptr ds : [ebp + 0x18], 3210
-		je paintT
-			
-		paintCT:
-		mov BYTE PTR ds:[0x173E1], 0x00
-		jmp paint
-
-		paintT:
-		mov byte ptr ds:[0x173e1], 0x02
-
-		paint:
-		mov dword ptr ds : [0x12410],0 
-
-		zdisable:
-		mov esi, esp
-		mov eax, dword ptr ds : [0x12410] 
-		push eax 
-		push 0x07
-		mov eax, [ebp + 0x08]
-		mov ecx, [eax]
-		mov edx, [ebp + 0x08]
-		push edx
-		mov eax, [ecx + 0xe4]
-		call eax
-		cmp esi, esp
-		repne jne settext
-
-		settext:
-		movzx eax, byte ptr ds:[0x173e1] //ct or t
-		add eax, dword ptr ds:[0x12410] 
-		mov esi, esp
-		mov ecx, dword ptr ds:[eax * 4 + 0x17574]//
-		push ecx
-		push 00
-		mov edx, [ebp + 0x08]
-		mov eax, [edx]
-		mov ecx, [ebp + 0x08]
-		push ecx
-		mov edx, [eax + 0x104]
-		call edx
-		cmp esi, esp
-		repne jne calldip
-
-		calldip:
-		mov esi, esp
-		mov eax, [ebp + 0x20]
-		push eax
-		mov ecx, [ebp + 0x1c]
-		push ecx
-		mov edx, [ebp + 0x18]
-		push edx
-		mov eax, [ebp + 0x14]
-		push eax
-		mov ecx, [ebp + 0x10]
-		push ecx
-		mov edx, [ebp + 0x0c]
-		push edx
-		mov eax, [ebp + 0x08]
-		push eax
-		mov dword ptr ds:[0x12435], 0x1
-		call dword ptr ds:[0x12440] //cal drawindexedprimitive
-		cmp esi,esp
-		repne jne zenable
-
-		zenable :
-		cmp dword ptr ds:[0x12410],1 
-		je backs 
-		add dword ptr ds : [0x12410],1 
-		jmp zdisable 
-
-		backs:
-		mov dword ptr ds:[0x12435],0x0
-		call edi
-		add esp, 0x1C
-	}
-}
-
 void WH() {
 	if (cheat("Chameleon Wallhack") == 1) {
 		SpyJmp(PVOID(d3d9_dll_base + dip9 + 0xCE), asmWHcave, 0);
@@ -226,6 +80,14 @@ void WH() {
 		byte bytes[] = { 0xFF, 0xD7, 0x83, 0xC4, 0x1c };
 		wvm(PVOID(d3d9_dll_base + dip9 + 0xCE), sizeof(bytes), bytes);
 		SendCMD("cl_ragdoll_physics_enable 1; cl_minmodels 0");
+
+		byte bytes2[] = { 0xEB, 0x05 };
+		wvm(PVOID((DWORD)whlight + 0xA), sizeof(bytes2), bytes2);
+	}
+
+	if (cheat("Chameleon Wallhack") == 2) {
+		byte bytes3[] = { 0x90, 0x90 };
+		wvm(PVOID((DWORD)whlight + 0xA), sizeof(bytes3), bytes3);
 	}
 }
 
@@ -314,6 +176,8 @@ void Bunnyhop()
 
 		if (cheat("Bunnyhop & Autostrafe") == 1 && tWnd == GetForegroundWindow() && GetAsyncKeyState(VK_SPACE) < 0)
 		{
+			SpyInjectAndJump(OngroundToZero, PVOID(0x24000000+0x220FBB), 1);
+			
 			rvm(PVOID(0x24000000 + 0x3FD550), 4, &VisY); //read Y
 			VisYnew = VisY;
 
@@ -367,19 +231,15 @@ void Bunnyhop()
 			wpm(0x24000000 + 0x3E7250, 0); //-moveright 
 			wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 			wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
+
+			byte bytes[] = { 0x83, 0x41, 0x20, 0xff, 0x89, 0x10};
+			wvm(PVOID(0x24000000+0x220FBB), sizeof(bytes), bytes);
 		}
 
 		Sleep(1);
 	}
 }
 
-__declspec(naked) void Fly(void)
-{
-	__asm {
-		mov edx, [eax + 0x08]
-		mov eax, [eax + 0x0C]
-	}
-}
 
 void Flyhack()
 {
@@ -437,147 +297,6 @@ void Flyhack()
 	}
 }
 
-__declspec(naked) void FreeVisualAnglesX(void)
-{
-	__asm {
-		push eax
-		jmp nospin4 
-
-		mov eax, dword ptr ds : [0x12204]
-		cmp eax, 1
-		je nospin4
-		
-		mov eax, dword ptr ds:[0x12345]
-		cmp eax, 0x43326666//178.4f
-		je plusx
-		mov eax, 0x43326666//178.4f
-		jmp movx
-		plusx :
-		mov eax, 0x43328000 // 178.5f
-		movx :
-		mov dword ptr ds:[0x12345], eax
-
-
-		nospin4:
-		pop eax
-
-		mov ecx, dword ptr ds : [0x12345]
-		push 0x10
-
-		nop
-	}
-}
-
-__declspec(naked) void FreeVisualAnglesY(void)
-{
-	__asm {
-		push eax
-		mov eax, 0
-		sub eax, dword ptr ds: [0x12220]
-		mov dword ptr ds: [0x12220], eax
-		pop eax
-
-		mov ecx, dword ptr ds : [0x12349] 
-		push 0x10
-	}
-}
-
-__declspec(naked) void FreeVisualAnglesZ(void)
-{
-	__asm {
-		mov ecx, dword ptr ds:[0x1234D]
-		push 0x08
-	}
-}
-
-__declspec(naked) void Rotatingg(void) 
-{
-	__asm {
-		push eax
-		mov eax, dword ptr ds : [0x12204]
-		cmp eax, 1
-		je aktion
-
-		//ROTATE OUR PLAYER
-		fld dword ptr ds : [0x12349] //real Y
-		fadd dword ptr ds : [0x12334] //33.0f
-
-		fcom dword ptr ds : [0x12300] //180.0
-		fnstsw ax
-		test ah, 0x41
-		jne next1
-		fsub dword ptr ds : [0x12308] //360.0
-		next1 :
-		fcom dword ptr ds : [0x12304] //-180.0
-		fnstsw ax
-		test ah, 0x05
-		jp next2
-		fadd dword ptr ds : [0x12308] //360.0
-		next2 :
-		fstp dword ptr ds : [0x12349]
-
-		//FLIP X
-		mov eax, dword ptr ds: [0x12220]
-		cmp eax, dword ptr ds: [0x12224]
-		je noflip
-		fild dword ptr ds : [0x12200] //0
-		fsub dword ptr ds : [0x12345] //x*(-1)
-		fstp dword ptr ds : [0x12345]
-		noflip:
-		mov dword ptr ds: [0x12224],eax
-
-		aktion :
-		
-		//CALCULATE Z ANG
-		mov eax, 0x42B40000 //90.0f
-		cmp eax, dword ptr ds : [0x12345]
-		je bigger
-
-		fld dword ptr ds : [0x12200] //0
-		fsub dword ptr ds : [0x12330] // load -z angle
-		fadd dword ptr ds : [0x243FD550] // plus visual y 
-		fsub dword ptr ds : [0x12349] // minus real y 
-		jmp store
-
-		bigger :
-		fld dword ptr ds : [0x12330] // load z angle 
-		fsub dword ptr ds : [0x243FD550] // minus visual x
-		fadd dword ptr ds : [0x12349] // plus real x
-
-		store :
-		fstp dword ptr ds : [0x1234D] //store Z
-
-		pop eax
-		//originalcode
-		mov ecx, [esp + 0x14]
-		mov[ebx], ecx
-		mov edx, [esp + 0x18]
-	}
-}
-
-__declspec(naked) void ZetToZero(void) //visual z
-{
-	__asm {
-		mov dword ptr[edi + 0x08], 0
-		mov ecx, DWORD PTR ds : [0x2439D4F4]
-	}
-}
-
-__declspec(naked) void FakePredict(void) //visual z
-{
-	__asm {
-		push eax
-		pop eax
-
-		mov edx, dword ptr ds: [0x12345]
-		mov[eax + 0x0C], edx
-		mov edx, dword ptr ds : [0x12349]
-
-		mov[eax + 0x10], edx
-		mov edx, dword ptr ds : [0x1234D]
-	}
-}
-
 void Spinbot()
 {
 	float visX;
@@ -589,7 +308,7 @@ void Spinbot()
 	freevisangY = SpyInject(FreeVisualAnglesY, PVOID(0x2415D3A0));
 	freevisangZ = SpyInject(FreeVisualAnglesZ, PVOID(0x2415D412));
 
-	fakePredict = SpyInject(FakePredict, PVOID(0x240D46F9));
+	fixPredict = SpyInject(FixPredict, PVOID(0x240D46F9));
 
 	SpyInjectAndJump(ZetToZero, PVOID(0x24000000 + 0x192B0), 4);
 
@@ -661,7 +380,7 @@ void Spinbot()
 			wvm(PVOID(0x24000000 + 0xF85A4), sizeof(bytes2), bytes2);
 		}
 
-		if (cheat("Spinbot & AntiAim") == 2) //FAKE ANGLES
+		if (cheat("Spinbot & AntiAim") == 2) //UPSIDE-DOWN
 		{
 			wpm(DWORD(freevisangX) + 1, 0xA13E9090);
 			wpm(0x12345, 179.99f);
@@ -691,20 +410,45 @@ void Spinbot()
 			wpm(DWORD(freevisangX) + 1, 0xA13E2AEB);
 		}
 
-		if (cheat("Spinbot & AntiAim") == 3) //UPSIDE-DOWN
+		if (cheat("Spinbot & AntiAim") == 3) //EXPERIMENTAL
 		{
+			byte bytes1[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
+			wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes1), bytes1); //comment for burst-fire
+			byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
+			wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes2), bytes2);
+
 			while (cheat("Spinbot & AntiAim") == 3)
 			{
-
 				if (GetAsyncKeyState(VK_LBUTTON) == 0)
 				{
-					rvm(PVOID(0x24000000 + 0x3FD54C), 4, &visX);
-					wpm(0x12345, -(visX + 180.0f));
 					rvm(PVOID(0x24000000 + 0x3FD54C + 4), 4, &visY);
-					wpm(0x12349, visY + 180.0f);
+					wpm(0x12349, visY);
+
+					wpm(engine_dll_base + 0x3953bc - enginedelta, 22);
+					wpm(engine_dll_base + 0x3953c0 - enginedelta, 31);
+					wpm(svcheatsptr + 0x314, 1);
+					wpm(timescaleptr + 0x108, 38.0f); //host_timescale
+					wpm(engine_dll_base + 0x4D2860 - enginedelta, 12.0f); //host_framerate
+					
+					wpm(0x24000000 + 0x3E71E4, 5); //jump
 				}
+				else
+					wpm(0x24000000 + 0x3E71E4, 4); //unjump
+				
 				Sleep(1);
 			}
+
+			dword2bytes dw2b3 = { engine_dll_base + 0x3953C0 - enginedelta };
+			dword2bytes dw2b4 = { engine_dll_base + 0x3953bc - enginedelta };
+			byte bytes3[] = { 0x83, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x01 };
+			wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes3), bytes3);
+			byte bytes4[] = { 0xA3, dw2b4.bytes[0],dw2b4.bytes[1],dw2b4.bytes[2],dw2b4.bytes[3], 0xC7, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x00, 0x00, 0x00, 0x00 };
+			wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes4), bytes4);
+
+			wpm(svcheatsptr + 0x314, 0);
+			wpm(timescaleptr + 0x108, 1.0f);
+			wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
+			wpm(0x24000000 + 0x3E71E4, 4);
 		}
 
 		if (cheat("Spinbot & AntiAim") == 4) //BACKWARDS
@@ -732,17 +476,16 @@ void Spinbot()
 	}
 }
 
-
 void CalcAngle(float *src, float *dst, float *angles)
 {
 	double delta[3] = { (src[0] - dst[0]), (src[1] - dst[1]), (src[2] - dst[2]) };
-	double hyp = sqrt(delta[0] * delta[0] + delta[1] * delta[1]);
-	angles[0] = (float)(asinf(delta[2] / hyp) * 57.295779513082f);
+	double hyp = sqrtss(delta[0] * delta[0] + delta[1] * delta[1]);
+	angles[0] = (float)(atan(delta[2] / hyp) * 180.0 / 3.14159265);
 	angles[1] = (float)(atanf(delta[1] / delta[0]) * 57.295779513082f);
 	angles[2] = 0.0f;
-	if (delta[0] >= 0.0) { angles[1] += 180.0f; }
-}
 
+	if (delta[0] >= 0.0) angles[1] += 180.0f;
+}
 
 void Aimbot()
 {
@@ -820,7 +563,7 @@ void Aimbot()
 
 						if (cheat("Spinbot & AntiAim").enabled > 1 && cheat("No Recoil & Spread") != 1) //metka1
 						{
-							if (cheat("Spinbot & AntiAim") == 2 || cheat("Spinbot & AntiAim") == 3)
+							if (cheat("Spinbot & AntiAim") == 2)
 							{
 								newangle[0] = -(newangle[0] + 180.0f);
 								newangle[1] = newangle[1] + 180.0f;
@@ -848,7 +591,7 @@ void Aimbot()
 					else
 						rvm(PVOID(0x24000000 + 0x3FD54C), 8, &myang); //readvisang
 
-					if (cheat("Spinbot & AntiAim") == 2 || cheat("Spinbot & AntiAim") == 3) //metka2
+					if (cheat("Spinbot & AntiAim") == 2) //metka2
 					{
 						myang[0] = -(myang[0] + 180.0f);
 						myang[1] = myang[1] + 180.0f;
@@ -898,7 +641,7 @@ void Aimbot()
 				if (!aiming)
 				{
 					rvm(PVOID(0x24000000 + 0x3FD54C), 8, &myang);
-					if (cheat("Spinbot & AntiAim") == 2 || cheat("Spinbot & AntiAim") == 3) //metka3
+					if (cheat("Spinbot & AntiAim") == 2) //metka3
 					{
 						myang[0] = -(myang[0] + 180.0f);
 						myang[1] = myang[1] + 180.0f;
@@ -914,10 +657,11 @@ void Aimbot()
 
 			}
 
-			if (cheat("No Recoil & Spread") == 2)
+			if (cheat("No Recoil & Spread") == 2 && cheat("Spinbot & AntiAim") != 3 )
 			{
 				wpm(svcheatsptr + 0x314, 1);
 				wpm(timescaleptr + 0x108, 2.0f); 
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 200.0f); //host_framerate
 
 				//set sequence
 				wpm(engine_dll_base + 0x3953bc - enginedelta, 0x6e);
@@ -930,7 +674,7 @@ void Aimbot()
 
 				wpm(svcheatsptr + 0x314, 0);
 				wpm(timescaleptr + 0x108, 1.0f);
-
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
 				Sleep(10); 
 			}
 			aiming = 0;
@@ -973,7 +717,6 @@ void noHandsSky() {
 		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
 		Sleep(500);
 		wpm(svcheatsptr + 0x314, 0);
-
 	}
 
 	if (cheat("No Hands & Sky") == 0) {
@@ -984,10 +727,7 @@ void noHandsSky() {
 		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
 		Sleep(500);
 		wpm(svcheatsptr + 0x314, 0);
-
-
 	}
-
 }
 
 
@@ -1002,7 +742,6 @@ bool WorldToScreen(float viewmatrix[][4], float coords[], float *x, float *y, fl
 
 	*x = *x / *w;
 	*y = *y / *w;
-
 
 	*x = (Width / 2 * *x) + (*x + Width / 2);
 	*y = -(Height / 2 * *y) + (*y + Height / 2);
@@ -1026,30 +765,6 @@ void timer() {
 	}
 	bomb = 0.00f;
 	xd = 0;
-}
-
-
-__declspec(naked) void Spec1(void)
-{
-	__asm {
-		mov[esi + 0x08], ebx
-		nop
-		nop
-		nop
-		nop
-		call dword ptr[eax + 0x000000CC]
-	}
-}
-
-__declspec(naked) void Spec2(void)
-{
-	__asm {
-		fstp dword ptr[edi]
-		mov dword ptr[edi], 0x3F800000
-		pop edi
-		pop esi
-		ret 0x000C
-	}
 }
 
 
@@ -1108,315 +823,321 @@ void myDraw() {
 		IDirect3DDevice9_Clear(p_Device, 1, &rect2, D3DCLEAR_TARGET, color, 0, 0);
 	}
 
-	rvm(PVOID(0x24000000 + 0x3FD5C4), 4, &myposX);
-	rvm(PVOID(0x24000000 + 0x3EE0C8), 4, &myposY);
-	rvm(PVOID(0x24000000 + 0x3FD550), 4, &myangY);
-
-	rvm(PVOID(0x24000000 + 0x3FD5CC), 4, &myposZ);
-
-	myangY -= 90;
-
-	yl_closest = 1000; xl_closest = 1000;
-
-
-	if (cheat("ESP") == 3) {
-		ID3DXFont* pFont;
-		D3DXCreateFont(p_Device, 12, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
-		color = D3DCOLOR_XRGB(255, 255, 255);
-		offs = 0;
-
-		maxentityid = rpm(0x24000000 + 0x3CF208);
-		for (i = 0; i <= maxentityid; i++)
-		{
-			rvm(PVOID(0x24000000 + 0x3BF1D4 + 0x10 * i), 4, &boneptr);
-			rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
-
-			rvm(PVOID(boneptr + 0x0c), 4, &coords[0]);
-			rvm(PVOID(boneptr + 0x1c), 4, &coords[1]);
-			rvm(PVOID(boneptr + 0x2c), 4, &coords[2]);
-
-			if (WorldToScreen(viewmatrix, coords, &xl, &yl, &wl)) {
-
-				ss << hex << i;
-				s = ss.str();
-
-				entity = rpm(0x24000000 + 0x3CF20C + 8 * i);
-				entity = rpm(entity);
-				entity = rpm(entity - 0x4);
-				entity = rpm(entity - 0x8);
-				espwep[0] = 0x0;
-				rvm(PVOID(entity + 0x8), 24, &espwep);
-
-				if ((char*)espwep[0] == 0x0) //Unknown entity
-				{
-					ss.str("");
-					continue;
-				}
-				s += ": ";
-
-				if (abs(prevX - xl) < 5 && abs(prevY - yl) < 5)
-				{
-					DrawString(cstr, xl, yl + offs * 10, color, pFont);
-					DrawString((char*)(espwep), xl + 20, yl + offs * 10, color, pFont);
-					offs++;
-				}
-				else
-				{
-					DrawString(cstr, xl, yl, color, pFont);
-					DrawString((char*)(espwep), xl + 20, yl, color, pFont);
-				}
-
-				prevX = xl; prevY = yl;
-				ss.str("");
-
-			}
-		}
-		pFont->Release();
-	}
-	for (i = -1; i < 63; i++)
+	if (cheat("Aimbot").enabled > 0 || cheat("Radarhack & Bombtimer").enabled == 1 || cheat("ESP").enabled > 0 && rpm(engine_dll_base + 0x53B55C - enginedelta) != 0 )
 	{
-		rvm(PVOID(0x24000000 + 0x39D4FC), 1, &myid);
-		if (i + 2 == (int)myid)
-			continue;
 
-		if (cheat("Aimbot") != 2)
-			rvm((PVOID)(ptr + 0x228 + 0x30 + i * 0x140), 12, &coords);
-		else {
-			rvm(PVOID(0x24000000 + 0x3BF1F4 + 0x10 * i), 4, &boneptr);
+		rvm(PVOID(0x24000000 + 0x3FD5C4), 4, &myposX);
+		rvm(PVOID(0x24000000 + 0x3EE0C8), 4, &myposY);
+		rvm(PVOID(0x24000000 + 0x3FD550), 4, &myangY);
 
-			if (!boneptr) {
-				coords[0] = 0; coords[1] = 0; coords[2] = 0;
+		rvm(PVOID(0x24000000 + 0x3FD5CC), 4, &myposZ);
+
+		myangY -= 90;
+
+		yl_closest = 1000; xl_closest = 1000;
+
+
+		if (cheat("ESP") == 3) {
+			ID3DXFont* pFont;
+			D3DXCreateFont(p_Device, 12, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
+			color = D3DCOLOR_XRGB(255, 255, 255);
+			offs = 0;
+
+			maxentityid = rpm(0x24000000 + 0x3CF208);
+			for (i = 0; i <= maxentityid; i++)
+			{
+				rvm(PVOID(0x24000000 + 0x3BF1D4 + 0x10 * i), 4, &boneptr);
+				rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
+
+				rvm(PVOID(boneptr + 0x0c), 4, &coords[0]);
+				rvm(PVOID(boneptr + 0x1c), 4, &coords[1]);
+				rvm(PVOID(boneptr + 0x2c), 4, &coords[2]);
+
+				if (WorldToScreen(viewmatrix, coords, &xl, &yl, &wl)) {
+
+					ss << hex << i;
+					s = ss.str();
+
+					entity = rpm(0x24000000 + 0x3CF20C + 8 * i);
+					entity = rpm(entity);
+					entity = rpm(entity - 0x4);
+					entity = rpm(entity - 0x8);
+					espwep[0] = 0x0;
+					rvm(PVOID(entity + 0x8), 24, &espwep);
+
+					if ((char*)espwep[0] == 0x0) //Unknown entity
+					{
+						ss.str("");
+						continue;
+					}
+					s += ": ";
+
+					if (abs(prevX - xl) < 5 && abs(prevY - yl) < 5)
+					{
+						DrawString(cstr, xl, yl + offs * 10, color, pFont);
+						DrawString((char*)(espwep), xl + 20, yl + offs * 10, color, pFont);
+						offs++;
+					}
+					else
+					{
+						DrawString(cstr, xl, yl, color, pFont);
+						DrawString((char*)(espwep), xl + 20, yl, color, pFont);
+					}
+
+					prevX = xl; prevY = yl;
+					ss.str("");
+
+				}
 			}
-			else {
-				rvm(PVOID(boneptr + 0x24), 4, &boneptr);
-				rvm(PVOID(boneptr + 0x34), 4, &boneptr);
+			pFont->Release();
+		}
+		for (i = -1; i < 63; i++)
+		{
+			rvm(PVOID(0x24000000 + 0x39D4FC), 1, &myid);
+			if (i + 2 == (int)myid)
+				continue;
 
+			if (cheat("Aimbot") != 2)
+				rvm((PVOID)(ptr + 0x228 + 0x30 + i * 0x140), 12, &coords);
+			else {
+				rvm(PVOID(0x24000000 + 0x3BF1F4 + 0x10 * i), 4, &boneptr);
 
 				if (!boneptr) {
 					coords[0] = 0; coords[1] = 0; coords[2] = 0;
 				}
 				else {
+					rvm(PVOID(boneptr + 0x24), 4, &boneptr);
+					rvm(PVOID(boneptr + 0x34), 4, &boneptr);
 
-					rvm(PVOID(boneptr + 0x158), 4, &boneptr);
 
 					if (!boneptr) {
 						coords[0] = 0; coords[1] = 0; coords[2] = 0;
 					}
 					else {
-						rvm((PVOID)(boneptr + 0x60 + 0x24C), 4, &coords[0]);
-						rvm((PVOID)(boneptr + 0x60 + 0x25C), 4, &coords[1]);
-						rvm((PVOID)(boneptr + 0x60 + 0x26C), 4, &coords[2]);
 
-						coords[2] = coords[2] + 1;
+						rvm(PVOID(boneptr + 0x158), 4, &boneptr);
+
+						if (!boneptr) {
+							coords[0] = 0; coords[1] = 0; coords[2] = 0;
+						}
+						else {
+							rvm((PVOID)(boneptr + 0x60 + 0x24C), 4, &coords[0]);
+							rvm((PVOID)(boneptr + 0x60 + 0x25C), 4, &coords[1]);
+							rvm((PVOID)(boneptr + 0x60 + 0x26C), 4, &coords[2]);
+
+							coords[2] = coords[2] + 1;
+						}
 					}
 				}
 			}
-		}
 
-		rvm((PVOID)(ptr + 0x228 + 0x30 + i * 0x140), 12, &radarcoords);
-		rvm(PVOID(ptr + offset + 0x2c + i * PLRSZ), 4, &hp);
-		rvm(PVOID(ptr + offset + 0x6 + i * PLRSZ), 1, &team);
+			rvm((PVOID)(ptr + 0x228 + 0x30 + i * 0x140), 12, &radarcoords);
+			rvm(PVOID(ptr + offset + 0x2c + i * PLRSZ), 4, &hp);
+			rvm(PVOID(ptr + offset + 0x6 + i * PLRSZ), 1, &team);
 
-		if (radarcoords[0] != 0 && hp > 0) {
-			//Radar trigonometry
-			deltaX = myposX - radarcoords[0];
-			deltaY = myposY - radarcoords[1];
+			if (radarcoords[0] != 0 && hp > 0) {
+				//Radar trigonometry
+				deltaX = myposX - radarcoords[0];
+				deltaY = myposY - radarcoords[1];
 
-			deltaZ = myposZ - coords[2];
+				deltaZ = myposZ - coords[2];
 
-			deltaXold = deltaX; deltaYold = deltaY;
+				deltaXold = deltaX; deltaYold = deltaY;
 
-			deltaX = deltaXold * cos(myangY * PI / 180) + deltaYold * sin(myangY* PI / 180);
-			deltaY = -deltaXold * sin(myangY* PI / 180) + deltaYold * cos(myangY* PI / 180);
+				deltaX = deltaXold * cos(myangY * PI / 180) + deltaYold * sin(myangY* PI / 180);
+				deltaY = -deltaXold * sin(myangY* PI / 180) + deltaYold * cos(myangY* PI / 180);
 
-			if (sqrtss(pow(deltaX, 2) + pow(deltaY, 2)) > 1500) {
-				float k = 1500 / sqrtss(pow(deltaX, 2) + pow(deltaY, 2));
-				deltaX = k * deltaX;
-				deltaY = k * deltaY;
-			}
+				if (sqrtss(pow(deltaX, 2) + pow(deltaY, 2)) > 1500) {
+					float k = 1500 / sqrtss(pow(deltaX, 2) + pow(deltaY, 2));
+					deltaX = k * deltaX;
+					deltaY = k * deltaY;
+				}
 
-			if (cheat("Radarhack & Bombtimer") == 1) {
+				if (cheat("Radarhack & Bombtimer") == 1) {
+					if ((int)team == (int)myteam)
+						color = D3DCOLOR_ARGB(255, 0, 255, 0);
+					else
+						color = D3DCOLOR_ARGB(255, 255, 0, 0);
+					DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, color);
+				}
+
+				rvm(PVOID(vmatrixptr + 0x5a0), 4, &flickerCheck);
+				if (flickerCheck <= -1.0f)
+					rvm(PVOID(vmatrixptr + 0x5B4), 64, &viewmatrix);
+
+				//get3Ddist
+				enemyDistance = sqrtss(deltaXold*deltaXold + deltaYold * deltaYold + deltaZ * deltaZ);
+
+				entity = rpm(0x24000000 + 0x3CF20C + 8 * (i + 2));
+				rvm(PVOID(entity + 0x138), 1, &bDormant);
+
 				if ((int)team == (int)myteam)
 					color = D3DCOLOR_ARGB(255, 0, 255, 0);
-				else
-					color = D3DCOLOR_ARGB(255, 255, 0, 0);
-				DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, color);
-			}
+				else color = D3DCOLOR_ARGB(255, 255, 0, 0);
 
-			rvm(PVOID(vmatrixptr + 0x5a0), 4, &flickerCheck);
-			if (flickerCheck <= -1.0f)
-				rvm(PVOID(vmatrixptr + 0x5B4), 64, &viewmatrix);
-
-			//get3Ddist
-			enemyDistance = sqrtss(deltaXold*deltaXold + deltaYold * deltaYold + deltaZ * deltaZ);
-
-			entity = rpm(0x24000000 + 0x3CF20C + 8 * (i + 2));
-			rvm(PVOID(entity + 0x138), 1, &bDormant);
-
-			if ((int)team == (int)myteam)
-				color = D3DCOLOR_ARGB(255, 0, 255, 0);
-			else color = D3DCOLOR_ARGB(255, 255, 0, 0);
-
-			if (!bDormant && WorldToScreen(viewmatrix, coords, &xl, &yl, &wl)) {
-				if (cheat("ESP") == 1 || cheat("ESP") == 2)
-				{
-					DrawBorderBox(xl - 10000 / enemyDistance, yl - 10, 20000 / enemyDistance, 40000 / enemyDistance, 3, color);
-					//drawHPhere
-					DrawFilledRectangle(
-						xl - 10000 / enemyDistance,
-						yl - 18, 
-						xl - (10000 / enemyDistance) + (20000 / enemyDistance / 100 * hp) + 3,
-						yl - 15,
-						D3DCOLOR_XRGB(255, 255, 255));
-				}
-					
-				if (cheat("ESP") == 2)
-				{
-					color = D3DCOLOR_XRGB(255, 255, 255);
-					ID3DXFont* pFont;
-					D3DXCreateFont(p_Device, 12, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
-					rvm(PVOID(ptr + offset + 0x8 + i * PLRSZ), 32, &espname); 
-					itoa(i + 2, espid, 10);
-					DrawString((char*)espid, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 0, color, pFont);
-					DrawString((char*)espname, xl - 10000 / enemyDistance + 20000 / enemyDistance + 21, yl - 6 + 12 * 0, color, pFont);
-					itoa(hp, esphp, 10);
-					rvm(PVOID(entity + 0xA4C + 0x5c4), 4, &armor);
-					itoa(armor, esparm, 10);
-					
-					DrawString((char*)"H", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 1, color, pFont);
-					DrawString((char*)esphp, xl - 10000 / enemyDistance + 20000 / enemyDistance + 14, yl - 6 + 12 * 1, color, pFont);
-					DrawString((char*)"A", xl - 10000 / enemyDistance + 20000 / enemyDistance + 38, yl - 6 + 12 * 1, color, pFont);
-					DrawString((char*)esparm, xl - 10000 / enemyDistance + 20000 / enemyDistance + 45, yl - 6 + 12 * 1, color, pFont);
-
-					rvm(PVOID(engine_dll_base + 0x3958C8), 4, &steamidptr);
-					rvm(PVOID(steamidptr + 0x38), 4, &steamidptr);
-
-					if (steamidptr == 0)
+				if (!bDormant && WorldToScreen(viewmatrix, coords, &xl, &yl, &wl)) {
+					if (cheat("ESP") == 1 || cheat("ESP") == 2)
 					{
-						steamidptr = rpm(engine_dll_base + 0x3958A8);
-						steamidptr = rpm(steamidptr + 0x38);
-
-						rvm(PVOID(steamidptr + 0x24), 4, &steamidptr);
-						rvm(PVOID(steamidptr + 0x14 + (0x28 * (i + 1))), 4, &steamidptr);
-						rvm(PVOID(steamidptr + 0x24), 20, &steamid);
-					}
-					else {
-						rvm(PVOID(steamidptr + 0x24), 4, &steamidptr);
-						rvm(PVOID(steamidptr + 0x14 + (0x28 * (i + 1))), 4, &steamidptr);
-						rvm(PVOID(steamidptr + 0x24), 20, &steamid);
+						DrawBorderBox(xl - 10000 / enemyDistance, yl - 10, 20000 / enemyDistance, 40000 / enemyDistance, 3, color);
+						//drawHPhere
+						DrawFilledRectangle(
+							xl - 10000 / enemyDistance,
+							yl - 18,
+							xl - (10000 / enemyDistance) + (20000 / enemyDistance / 100 * hp) + 3,
+							yl - 15,
+							D3DCOLOR_XRGB(255, 255, 255));
 					}
 
-					DrawString((char*)steamid, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 2, color, pFont);
-
-					rvm(PVOID(entity + 0xA4C - 0xC + 0x5c4), 4, &money);
-					itoa(money, espmon, 10);
-					DrawString((char*)"$", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 3, color, pFont);
-					DrawString((char*)espmon, xl - 10000 / enemyDistance + 20000 / enemyDistance + 13, yl - 6 + 12 * 3, color, pFont);
-
-					rvm(PVOID(entity + 0x56C + 0x5c4), 1, &wepid);
-					entity = rpm(0x24000000 + 0x3CF20C + 8 * wepid);
-					entity = rpm(entity);
-					entity = rpm(entity - 0x4);
-					entity = rpm(entity - 0x8);
-		
-					rvm(PVOID(entity + 0xA + 4), 24, &espwep);
-					
-					for (int i = 0; i < 24; i++)
+					if (cheat("ESP") == 2)
 					{
-						if (espwep[i] == 0x40)
-							espwep[i] = 0x0;
+						color = D3DCOLOR_XRGB(255, 255, 255);
+						ID3DXFont* pFont;
+						D3DXCreateFont(p_Device, 12, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
+						rvm(PVOID(ptr + offset + 0x8 + i * PLRSZ), 32, &espname);
+						itoa(i + 2, espid, 10);
+						DrawString((char*)espid, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 0, color, pFont);
+						DrawString((char*)espname, xl - 10000 / enemyDistance + 20000 / enemyDistance + 21, yl - 6 + 12 * 0, color, pFont);
+						itoa(hp, esphp, 10);
+						rvm(PVOID(entity + 0xA4C + 0x5c4), 4, &armor);
+						itoa(armor, esparm, 10);
+
+						DrawString((char*)"H", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 1, color, pFont);
+						DrawString((char*)esphp, xl - 10000 / enemyDistance + 20000 / enemyDistance + 14, yl - 6 + 12 * 1, color, pFont);
+						DrawString((char*)"A", xl - 10000 / enemyDistance + 20000 / enemyDistance + 38, yl - 6 + 12 * 1, color, pFont);
+						DrawString((char*)esparm, xl - 10000 / enemyDistance + 20000 / enemyDistance + 45, yl - 6 + 12 * 1, color, pFont);
+
+						rvm(PVOID(engine_dll_base + 0x3958C8), 4, &steamidptr);
+						rvm(PVOID(steamidptr + 0x38), 4, &steamidptr);
+
+						if (steamidptr == 0)
+						{
+							steamidptr = rpm(engine_dll_base + 0x3958A8);
+							steamidptr = rpm(steamidptr + 0x38);
+
+							rvm(PVOID(steamidptr + 0x24), 4, &steamidptr);
+							rvm(PVOID(steamidptr + 0x14 + (0x28 * (i + 1))), 4, &steamidptr);
+							rvm(PVOID(steamidptr + 0x24), 20, &steamid);
+						}
+						else {
+							rvm(PVOID(steamidptr + 0x24), 4, &steamidptr);
+							rvm(PVOID(steamidptr + 0x14 + (0x28 * (i + 1))), 4, &steamidptr);
+							rvm(PVOID(steamidptr + 0x24), 20, &steamid);
+						}
+
+						DrawString((char*)steamid, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 2, color, pFont);
+
+						rvm(PVOID(entity + 0xA4C - 0xC + 0x5c4), 4, &money);
+						itoa(money, espmon, 10);
+						DrawString((char*)"$", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 3, color, pFont);
+						DrawString((char*)espmon, xl - 10000 / enemyDistance + 20000 / enemyDistance + 13, yl - 6 + 12 * 3, color, pFont);
+
+						rvm(PVOID(entity + 0x56C + 0x5c4), 1, &wepid);
+						entity = rpm(0x24000000 + 0x3CF20C + 8 * wepid);
+						entity = rpm(entity);
+						entity = rpm(entity - 0x4);
+						entity = rpm(entity - 0x8);
+
+						rvm(PVOID(entity + 0xA + 4), 24, &espwep);
+
+						for (int i = 0; i < 24; i++)
+						{
+							if (espwep[i] == 0x40)
+								espwep[i] = 0x0;
+						}
+
+
+						DrawString((char*)espwep, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 4, color, pFont);
+
+						pFont->Release();
 					}
-					
-
-					DrawString((char*)espwep, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 4, color, pFont);
-
-					pFont->Release();
-				}
-				//Calculate target that closest to the crosshair
-				if (cheat("Aimbot").enabled > 0 && (int)team != (int)myteam)
-				{
-					hyp1 = sqrtss((xl - Width / 2) * (xl - Width / 2) + (yl - Height / 2) * (yl - Height / 2));
-					hyp2 = sqrtss((xl_closest - Width / 2) * (xl_closest - Width / 2) + (yl_closest - Height / 2) * (yl_closest - Height / 2));
-
-					if (hyp1 < hyp2 && hyp1 < aimfov)
+					//Calculate target that closest to the crosshair
+					if (cheat("Aimbot").enabled > 0 && (int)team != (int)myteam)
 					{
-						xl_closest = xl;
-						yl_closest = yl;
-						closest = i;
+						hyp1 = sqrtss((xl - Width / 2) * (xl - Width / 2) + (yl - Height / 2) * (yl - Height / 2));
+						hyp2 = sqrtss((xl_closest - Width / 2) * (xl_closest - Width / 2) + (yl_closest - Height / 2) * (yl_closest - Height / 2));
+
+						if (hyp1 < hyp2 && hyp1 < aimfov)
+						{
+							xl_closest = xl;
+							yl_closest = yl;
+							closest = i;
+						}
 					}
 				}
 			}
 		}
-	}
 
-	if (xl_closest != 1000) {
-		xl_closest_final = xl_closest;
-		yl_closest_final = yl_closest;
-		closest_final = closest;
-	}
-	else
-	{
-		xl_closest_final = 0 + Width / 2;
-		yl_closest_final = 0 + Height / 2;
-		closest_final = -2;
-	}
+		if (xl_closest != 1000) {
+			xl_closest_final = xl_closest;
+			yl_closest_final = yl_closest;
+			closest_final = closest;
+		}
+		else
+		{
+			xl_closest_final = 0 + Width / 2;
+			yl_closest_final = 0 + Height / 2;
+			closest_final = -2;
+		}
 
-	if (cheat("Radarhack & Bombtimer") == 1) {
-		DrawFilledRectangle(144, 144, 151, 151, 100, 0, 255, 255); //white square on the center of the radar
-		bombplanted = rpm(0x24000000 + 0x3FAB68); //we have a bomb?
-		if (bombplanted) {
-			if (xd == 0) {
+		if (cheat("Radarhack & Bombtimer") == 1)
+		{
+			DrawFilledRectangle(144, 144, 151, 151, 100, 0, 255, 255); //white square on the center of the radar
+			bombplanted = rpm(0x24000000 + 0x3FAB68); //we have a bomb?
+			if (bombplanted) {
+				if (xd == 0) {
 #ifdef DEBUG
-				cout << "Finding bomb ID..\n";
+					cout << "Finding bomb ID..\n";
 #endif
-				maxentityid = rpm(0x24000000 + 0x3CF208);
-				if (maxentityid > 0x1000) maxentityid = 0x1000;
-				for (i = 64; i <= maxentityid; i++) {
-					entity = rpm(0x24000000 + 0x3CF20C + 8 * i);
-					entity = rpm(entity);
-					entity = rpm(entity - 0x4);
-					entity = rpm(entity - 0x8);
+					maxentityid = rpm(0x24000000 + 0x3CF208);
+					if (maxentityid > 0x1000) maxentityid = 0x1000;
+					for (i = 64; i <= maxentityid; i++) {
+						entity = rpm(0x24000000 + 0x3CF20C + 8 * i);
+						entity = rpm(entity);
+						entity = rpm(entity - 0x4);
+						entity = rpm(entity - 0x8);
 
-					espwep[0] = 0x0;
-					rvm(PVOID(entity + 0x8), 24, &espwep);
+						espwep[0] = 0x0;
+						rvm(PVOID(entity + 0x8), 24, &espwep);
 
-					if (!strcmp((char*)espwep, (char*)".?AVC_PlantedC4@@"))
-					{
+						if (!strcmp((char*)espwep, (char*)".?AVC_PlantedC4@@"))
+						{
 #ifdef DEBUG
-						cout << "We have a bomb (id " << hex << i << dec << ") ";
+							cout << "We have a bomb (id " << hex << i << dec << ") ";
 #endif
-						CreateThread(0, 0, (LPTHREAD_START_ROUTINE)timer, 0, 0, 0);
-						rvm(PVOID(0x24000000 + 0x3BF1D4 + 0x10 * i), 4, &boneptr);
-						rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
-						rvm(PVOID(boneptr + 0x0c), 4, &bombcoords[0]);
-						rvm(PVOID(boneptr + 0x1c), 4, &bombcoords[1]);
-						break;
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)timer, 0, 0, 0);
+							rvm(PVOID(0x24000000 + 0x3BF1D4 + 0x10 * i), 4, &boneptr);
+							rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
+							rvm(PVOID(boneptr + 0x0c), 4, &bombcoords[0]);
+							rvm(PVOID(boneptr + 0x1c), 4, &bombcoords[1]);
+							break;
+						}
 					}
 				}
+				ID3DXFont* pFont;
+				D3DXCreateFont(p_Device, 20, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
+				DrawBorderBox(Width / 2 - 285, Height / 2 + 295, 565, 45, 5, D3DCOLOR_XRGB(7, 231, 171));
+				DrawFilledRectangle(Width / 2 - 280, Height / 2 + 300, Width / 2 - 280 + xd, Height / 2 + 340, D3DCOLOR_ARGB(150, 10, 45, 41));
+				DrawString((char*)(std::to_string(bomb).c_str()), Width / 2 - 5, Height / 2 + 310, 4, D3DCOLOR_XRGB(255, 255, 255), pFont);
+				pFont->Release();
+
+				deltaX = myposX - bombcoords[0];
+				deltaY = myposY - bombcoords[1];
+
+				deltaXold = deltaX; deltaYold = deltaY;
+
+				deltaX = deltaXold * cos(myangY * PI / 180) + deltaYold * sin(myangY* PI / 180);
+				deltaY = -deltaXold * sin(myangY* PI / 180) + deltaYold * cos(myangY* PI / 180);
+
+				if (sqrtss(pow(deltaX, 2) + pow(deltaY, 2)) > 1500) {
+					float k = 1500 / sqrtss(pow(deltaX, 2) + pow(deltaY, 2));
+					deltaX = k * deltaX;
+					deltaY = k * deltaY;
+				}
+				DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, D3DCOLOR_XRGB(200, 200, 200));
 			}
-			ID3DXFont* pFont;
-			D3DXCreateFont(p_Device, 20, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
-			DrawBorderBox(Width / 2 - 285, Height / 2 + 295, 565, 45, 5, D3DCOLOR_XRGB(7, 231, 171));
-			DrawFilledRectangle(Width / 2 - 280, Height / 2 + 300, Width / 2 - 280 + xd, Height / 2 + 340, D3DCOLOR_ARGB(150, 10, 45, 41));
-			DrawString((char*)(std::to_string(bomb).c_str()), Width / 2 - 5, Height / 2 + 310, 4, D3DCOLOR_XRGB(255, 255, 255), pFont);
-			pFont->Release();
-
-			deltaX = myposX - bombcoords[0];
-			deltaY = myposY - bombcoords[1];
-
-			deltaXold = deltaX; deltaYold = deltaY;
-
-			deltaX = deltaXold * cos(myangY * PI / 180) + deltaYold * sin(myangY* PI / 180);
-			deltaY = -deltaXold * sin(myangY* PI / 180) + deltaYold * cos(myangY* PI / 180);
-
-			if (sqrtss(pow(deltaX, 2) + pow(deltaY, 2)) > 1500) {
-				float k = 1500 / sqrtss(pow(deltaX, 2) + pow(deltaY, 2));
-				deltaX = k * deltaX;
-				deltaY = k * deltaY;
-			}
-			DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, D3DCOLOR_XRGB(200, 200, 200));
 		}
-	}
+
+	} //esp,radar,aim>0
 }
 
 
@@ -1447,7 +1168,7 @@ void Angleshack(bool d) {
 		SpyJmp(PVOID(0x2415D32E), freevisangX, 0);
 		SpyJmp(PVOID(0x2415D3A0), freevisangY, 0);
 		SpyJmp(PVOID(0x2415D412), freevisangZ, 0);
-		SpyJmp(PVOID(0x240D46F9), fakePredict, 7);
+		SpyJmp(PVOID(0x240D46F9), fixPredict, 7);
 
 		//cl_predictweapons 1 kill
 		wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
@@ -1485,8 +1206,6 @@ void Angleshack(bool d) {
 
 void TriggerCheck()
 {
-	BOOL fullbright = 0;
-
 	float speed;
 
 	svcheatsptr = rpm(0x24000000 + 0x3BEA44);
@@ -1549,13 +1268,17 @@ void TriggerCheck()
 		if (tWnd == GetForegroundWindow() && GetAsyncKeyState(0x46) < 0) { //F
 			if (!fullbright)
 			{
-				wpm(engine_dll_base + 0x4F0C44 - enginedelta, 1);
+				byte bytes[] = { 0x90, 0x90 };
+				wvm(PVOID((DWORD)whlight), sizeof(bytes), bytes);
 				fullbright = 1;
+				SendCMD("r_decals 0");
 			}
 			else
 			{
-				wpm(engine_dll_base + 0x4F0C44 - enginedelta, 0);
+				byte bytes[] = { 0xEB, 0x08 };
+				wvm(PVOID((DWORD)whlight), sizeof(bytes), bytes);
 				fullbright = 0;
+				SendCMD("r_decals 900");
 			}
 			Sleep(200);
 		}
@@ -1598,7 +1321,7 @@ void TriggerCheck()
 				if (cheat("Spinbot & AntiAim") == 2)
 					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //fakeangles
 				if (cheat("Spinbot & AntiAim") == 3)
-					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //upsidedown
+					SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm; cl_predictweapons 0"); //upsidedown
 				if (cheat("Spinbot & AntiAim") == 4)
 					SendCMD("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //backwards
 				
@@ -1613,7 +1336,6 @@ void TriggerCheck()
 				Angleshack(0);
 			}
 		}
-
 
 		if (cheat.Triggered("Play HLDJ"))
 		{
