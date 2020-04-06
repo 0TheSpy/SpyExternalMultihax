@@ -52,7 +52,8 @@ void DisExit() {
 	for (i = 0; i < cheat.Count(); i++)
 		cheat(i) = 0;
 
-	wpm(engine_dll_base + 0x4F0C44 - enginedelta, 0); //fullbright = 0
+	byte bytes[] = { 0x89, 0x84, 0xb2, 0xa8, 0x13, 0x00, 0x00 };
+	wvm(PVOID(nvd3dum_dll_base + 0x8B6D86), sizeof(bytes), bytes);
 
 #ifdef DISCMSG
 	char* discmsg = (char*)"Disconnect by user.";
@@ -66,7 +67,6 @@ void DisExit() {
 
 	_Exit(1);
 }
-
 
 void myInit() {
 	position.x = 20;
@@ -172,12 +172,14 @@ void myInit() {
 	wvm(PVOID(engine_dll_base + 0x2E15C8), size, static_cast<void*>(discmsg));
 #endif
 
+	whlight = SpyInjectAndJump(TransparentWalls, PVOID(nvd3dum_dll_base + 0x8B6D86), 2);
+
 	cheat.New("Aimbot", 2);
 	cheat.New("Aimbot FOV", 99); 
 	cheat("Aimbot FOV").sleep = 30;
 	cheat("Aimbot FOV") = 45;
 	cheat.New("ESP", 3);
-	cheat.New("Chameleon Wallhack");
+	cheat.New("Chameleon Wallhack",2);
 	cheat.New("Radarhack & Bombtimer", 3);
 	cheat.New("Smart Crosshair");
 	cheat.New("No Recoil & Spread", 3);
