@@ -699,20 +699,17 @@ void Aimbot()
 
 void noSmokeFlash() {
 	if (cheat("No Smoke & Flash") == 1) {
-
-		WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x8E4F5), &nop, sizeof(BYTE), NULL);
-		WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x8E4F5 + 1), &nop, sizeof(BYTE), NULL);
-		WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x8E4F5 + 2), &nop, sizeof(BYTE), NULL);
-		WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x3E9C34), &zero, sizeof(BYTE), NULL);
-
+		wpm(0x24000000 + 0x3E9C34, 0); //r_drawparticles 0
+		SpyInjectAndJump(NoSmoke, PVOID(0x24000000+0x8E4F3), 0);
 		BYTE twobytes[] = { 0x90, 0xE9 };
 		wpm(PVOID(0x24000000 + 0x1D1D5D), 2, &twobytes);
 	}
-
 	if (cheat("No Smoke & Flash") == 0) {
-		wpm(0x24000000 + 0x3E9C34, 1);
+		wpm(0x24000000 + 0x3E9C34, 1); //r_drawparticles 1
 		BYTE twobytes[] = { 0x0F, 0x8B };
 		wpm(PVOID(0x24000000 + 0x1D1D5D), 2, &twobytes);
+		BYTE fivebytes[] = { 0x8B, 0x01, 0xFF, 0x50, 0x04 };
+		wpm(PVOID(0x24000000 + 0x8E4F3), sizeof(fivebytes), &fivebytes); //0x24000000 + 0x1D1D4A
 	}
 #ifdef DEBUG
 	std::cout << "NoSmoke & NoFlash triggered\n";
