@@ -1,6 +1,18 @@
 #pragma once
-
 #define endfunc __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC
+
+__declspec(naked) void NoSmoke(void)
+{
+	__asm {
+		mov eax, [ecx]
+		cmp eax, 0x24336C98
+		jne nosmoke
+		call dword ptr[eax + 04]
+		nosmoke:
+		nop
+	}
+	endfunc
+}
 
 __declspec(naked) void asmWH(void)
 {
