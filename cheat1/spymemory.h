@@ -172,7 +172,7 @@ template <class dataType>
 	pushbytes[0] = 0x68;
 	pushbytes[5] = 0xC3;
 	memcpy(pushbytes + 1, &dBack, sizeof(DWORD));
-	wvm(LPVOID((DWORD)Cave+funcsize), 5 + nops, pushbytes);
+	wvm(LPVOID((DWORD)Cave + funcsize), 6, pushbytes);
 	delete[] pushbytes;
 	
 	return Cave;
