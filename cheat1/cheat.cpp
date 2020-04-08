@@ -1244,8 +1244,6 @@ void Angleshack(bool d) {
 
 		//cl_predictweapons 1 back
 		wpm(0x24000000 + 0x1e2858, 0x83068bFFFF2803E8);
-		Sleep(100);
-		SendCMD("cl_predictweapons 1");
 #ifdef DEBUG
 		cout << "angleshack disabled\n";
 #endif
@@ -1282,18 +1280,6 @@ void TriggerCheck()
 				wpm(0x24000000 + 0x3E71E4, 5); //unjump
 		}
 		
-
-		if (tWnd == GetForegroundWindow() && cheat("No Recoil & Spread") == 2 && GetAsyncKeyState(VK_LBUTTON) < 0)
-		{
-			wpm(svcheatsptr + 0x314, 1);
-			SendCMD("cl_predict 0");
-			while (tWnd == GetForegroundWindow() && cheat("No Recoil & Spread") == 2 && GetAsyncKeyState(VK_LBUTTON) < 0)
-				Sleep(10);
-			SendCMD("cl_predict 1");
-			Sleep(100);
-			wpm(svcheatsptr + 0x314, 1);
-		}
-
 		if (tWnd == GetForegroundWindow() && cheat("Bunnyhop & Autostrafe") == 1 && GetAsyncKeyState(VK_SPACE) < 0)
 		{
 
