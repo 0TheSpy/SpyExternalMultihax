@@ -21,6 +21,7 @@ Features:
 - Bunnyhop, Autostrafe
 - Speedhack
 - Spinbot, Antiaim
+- Fake Lag
 - Visual Flyhack
 - Namestealer
 - Anti-HLDJ bypass
