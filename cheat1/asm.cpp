@@ -1,6 +1,38 @@
 #pragma once
 #define endfunc __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC
 
+__declspec(naked) void FakeLag(void)
+{
+	__asm {
+		push eax
+		push edx
+
+		mov eax, dword ptr ds:[0x12444]
+		cmp eax, 0x10 //// if packet number == 0x10
+		je yes
+
+		mov edx, dword ptr ds:[0x12204] //if we fire
+		cmp edx, 1
+		je yes
+
+		mov[ebp - 0x0C], 0 //bSendPacket =  1
+		jmp nexttt
+
+		yes :
+		mov dword ptr ds:[0x12444], 0
+		mov eax, 0
+		mov[ebp - 0x0C], 1 //bSendPacket = 0
+
+		nexttt:
+		inc eax
+		mov dword ptr ds:[0x12444], eax
+
+		pop edx
+		pop eax
+	}
+	endfunc
+}
+
 __declspec(naked) void NoSmoke(void)
 {
 	__asm {
@@ -9,7 +41,6 @@ __declspec(naked) void NoSmoke(void)
 		jne nosmoke
 		call dword ptr[eax + 04]
 		nosmoke:
-		nop
 	}
 	endfunc
 }
