@@ -71,6 +71,50 @@ void menu()
 	pFont->Release();
 }
 
+void fakeLag() {
+	
+	
+			if (cheat("Fake Lag") == 1)
+				SpyInjectAndJump(FakeLag, PVOID(aobfakelag), 1);
+			if (cheat("Fake Lag") != 1)
+			{
+				byte bytes[] = { 0x0F, 0x94, 0xC0, 0x88, 0x45, 0xF4 };
+				wvm(PVOID(aobfakelag), sizeof(bytes), bytes);
+			}
+
+			if (cheat("Fake Lag") == 2) //EXPERIMENTAL
+			{
+				wpm(0x12345, 0);
+				byte bytes1[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
+				wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes1), bytes1); //comment for burst-fire
+				byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
+				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes2), bytes2);
+
+				wpm(engine_dll_base + 0x3953bc - enginedelta, 22);
+				wpm(engine_dll_base + 0x3953c0 - enginedelta, 31);
+
+				wpm(svcheatsptr + 0x314, 1); //sv cheats 1
+				wpm(timescaleptr + 0x108, 38.0f); //host_timescale
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 12.0f); //host_framerate
+			}
+
+			if (cheat("Fake Lag") != 2) 
+			{
+				dword2bytes dw2b3 = { engine_dll_base + 0x3953C0 - enginedelta };
+				dword2bytes dw2b4 = { engine_dll_base + 0x3953bc - enginedelta };
+				byte bytes3[] = { 0x83, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x01 };
+				wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes3), bytes3);
+				byte bytes4[] = { 0xA3, dw2b4.bytes[0],dw2b4.bytes[1],dw2b4.bytes[2],dw2b4.bytes[3], 0xC7, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x00, 0x00, 0x00, 0x00 };
+				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes4), bytes4);
+
+				wpm(svcheatsptr + 0x314, 0); //sv cheats 0
+				wpm(timescaleptr + 0x108, 1.0f);	//host_timescale
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
+				wpm(0x24000000 + 0x3E71E4, 4);
+			}
+
+}
+
 void WH() {
 	if (cheat("Chameleon Wallhack") == 1) {
 		SpyJmp(PVOID(d3d9_dll_base + dip9 + 0xCE), asmWHcave, 0);
@@ -81,14 +125,16 @@ void WH() {
 		wvm(PVOID(d3d9_dll_base + dip9 + 0xCE), sizeof(bytes), bytes);
 		SendCMD("cl_ragdoll_physics_enable 1; cl_minmodels 0");
 
-		byte bytes2[] = { 0xEB, 0x05 };
-		wvm(PVOID((DWORD)whlight + 0xA), sizeof(bytes2), bytes2);
+		//byte bytes2[] = { 0xEB, 0x05 };
+		//wvm(PVOID((DWORD)whlight + 0xA), sizeof(bytes2), bytes2);
 	}
 
+	/*
 	if (cheat("Chameleon Wallhack") == 2) {
 		byte bytes3[] = { 0x90, 0x90 };
 		wvm(PVOID((DWORD)whlight + 0xA), sizeof(bytes3), bytes3);
 	}
+	*/
 }
 
 void Namestealer() {
@@ -211,7 +257,7 @@ void Bunnyhop()
 				}
 
 				rvm( PVOID(0x24000000 + 0x3E71E4), sizeof(currJumpState), &currJumpState);
-				if (rpm(0x24000000 + 0x3E9FE4)) //onGround?
+				if (rpm(0x24000000 + 0x3EA03C)) //onGround?
 				{
 					currJumpState |= FORCE_JUMP_BITMASK;
 					wpm( PVOID(0x24000000 + 0x3E71E4), sizeof(currJumpState), &currJumpState);
@@ -329,6 +375,7 @@ void Spinbot()
 
 	while (true)
 	{
+
 		if (cheat("Spinbot & AntiAim") == 1)
 		{
 			SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);			
@@ -337,13 +384,8 @@ void Spinbot()
 			wpm(0x12220, 1); //semaphore
 			while (cheat("Spinbot & AntiAim") == 1) {
 				
-				if (GetAsyncKeyState(VK_LBUTTON) < 0)
+				if (GetAsyncKeyState(VK_LBUTTON) == 0)
 				{	
-					if (tWnd == GetForegroundWindow())
-					wpm(0x12204, 1);
-				}
-				else {
-					wpm(0x12204, 0);
 					rvm(PVOID(0x12345), 4, &visX);
 					if (visX != 90.0f && visX != -90.0f)
 					wpm(0x12345, 90.0f);
@@ -399,8 +441,6 @@ void Spinbot()
 			{
 				if (GetAsyncKeyState(VK_LBUTTON) == 0)
 				{
-					wpm(0x12204, 0);
-
 					rvm(PVOID(0x24000000 + 0x3FD54C + 4), 4, &visY);
 					visY += 180.0f;
 					if (visY > 180.0f) visY -= 360.0f;
@@ -411,19 +451,16 @@ void Spinbot()
 					if (visX != 178.3999939f && visX != 178.5f)
 						wpm(0x12345, 178.3999939f);
 				}
-				else
-					if (tWnd == GetForegroundWindow())
-						wpm(0x12204, 1);
 
 				Sleep(1);
 			}
-			wpm(0x12204, 1);
 			wpm(DWORD(freevisangX) + 1, 0xA13E2AEB);
 		}
 
+		/*
 		if (cheat("Spinbot & AntiAim") == 3) //EXPERIMENTAL
 		{
-			wpm(0x12345, 0); //reset X
+			wpm(0x12345, 0);
 			byte bytes1[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
 			wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes1), bytes1); //comment for burst-fire
 			byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
@@ -462,11 +499,12 @@ void Spinbot()
 			wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
 			wpm(0x24000000 + 0x3E71E4, 4);
 		}
+		*/
 
-		if (cheat("Spinbot & AntiAim") == 4) //BACKWARDS
+		if (cheat("Spinbot & AntiAim") == 3) //BACKWARDS
 		{
 
-			while (cheat("Spinbot & AntiAim") == 4)
+			while (cheat("Spinbot & AntiAim") == 3)
 			{
 
 				if (GetAsyncKeyState(VK_LBUTTON) == 0)
@@ -623,7 +661,7 @@ void Aimbot()
 					xx = RandomFloat(-0.5f, 0.5f) + RandomFloat(-0.5f, 0.5f);
 					yy = RandomFloat(-0.5f, 0.5f) + RandomFloat(-0.5f, 0.5f);
 
-					if (cheat("Spinbot & AntiAim") != 2 && cheat("Spinbot & AntiAim") != 3)
+					if (cheat("Spinbot & AntiAim") != 2)
 					{
 						newangg[0] = myang[0] + (yy * 1.9f) - punch[0] * 1.9f;
 						newangg[1] = myang[1] + (xx * 1.9f) - punch[1] * 1.9f;
@@ -669,7 +707,7 @@ void Aimbot()
 
 			}
 
-			if (cheat("No Recoil & Spread") == 2 && cheat("Spinbot & AntiAim") != 3 )
+			if (cheat("No Recoil & Spread") == 2 )
 			{
 				//wpm(svcheatsptr + 0x314, 1);
 				wpm(timescaleptr + 0x108, 2.0f); 
@@ -1229,6 +1267,23 @@ void TriggerCheck()
 
 	while (true)
 	{
+
+		
+		if (GetAsyncKeyState(VK_LBUTTON) < 0)
+		{
+			if (tWnd == GetForegroundWindow())
+				wpm(0x12204, 1);
+			if (cheat("Fake Lag") == 2)
+				wpm(0x24000000 + 0x3E71E4, 4); //jump
+		}
+		else
+		{
+			wpm(0x12204, 0);
+			if (cheat("Fake Lag") == 2)
+				wpm(0x24000000 + 0x3E71E4, 5); //unjump
+		}
+		
+
 		if (tWnd == GetForegroundWindow() && cheat("No Recoil & Spread") == 2 && GetAsyncKeyState(VK_LBUTTON) < 0)
 		{
 			wpm(svcheatsptr + 0x314, 1);
@@ -1289,17 +1344,19 @@ void TriggerCheck()
 		if (tWnd == GetForegroundWindow() && GetAsyncKeyState(0x46) < 0) { //F
 			if (!fullbright)
 			{
-				byte bytes[] = { 0x90, 0x90 };
-				wvm(PVOID((DWORD)whlight), sizeof(bytes), bytes);
+				//byte bytes[] = { 0x90, 0x90 };
+				//wvm(PVOID((DWORD)whlight), sizeof(bytes), bytes);
 				fullbright = 1;
-				SendCMD("r_decals 0");
+				//SendCMD("r_decals 0");
+				wpm(engine_dll_base + 0x4F0C44 - enginedelta, 1);
 			}
 			else
 			{
-				byte bytes[] = { 0xEB, 0x08 };
-				wvm(PVOID((DWORD)whlight), sizeof(bytes), bytes);
+				//byte bytes[] = { 0xEB, 0x08 };
+				//wvm(PVOID((DWORD)whlight), sizeof(bytes), bytes);
 				fullbright = 0;
-				SendCMD("r_decals 900");
+				//SendCMD("r_decals 900");
+				wpm(engine_dll_base + 0x4F0C44 - enginedelta, 0);
 			}
 			Sleep(200);
 		}
@@ -1341,9 +1398,9 @@ void TriggerCheck()
 					SendCMD("bind a +moveleft; bind w +moveleft; bind d +moveleft; bind s +moveright; stm; cl_predictweapons 0"); //spinbot
 				if (cheat("Spinbot & AntiAim") == 2)
 					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //fakeangles
+				//if (cheat("Spinbot & AntiAim") == 3)
+				//	SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm; cl_predictweapons 0"); //upsidedown
 				if (cheat("Spinbot & AntiAim") == 3)
-					SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm; cl_predictweapons 0"); //upsidedown
-				if (cheat("Spinbot & AntiAim") == 4)
 					SendCMD("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //backwards
 
 				if (!angleshack)
@@ -1499,6 +1556,12 @@ void TriggerCheck()
 				wvm(PVOID(0x24000000 + 0x220FBB), sizeof(bytes), bytes);
 			}
 			cheat.Update("Bunnyhop & Autostrafe");
+		}
+
+		if (cheat.Triggered("Fake Lag"))
+		{
+			fakeLag();
+			cheat.Update("Fake Lag");
 		}
 
 		Sleep(10);
