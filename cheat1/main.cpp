@@ -196,9 +196,10 @@ void myInit() {
 	cheat("Speedhack") = 10;
 	cheat("Speedhack").sleep = 60;
 	cheat.New("Spinbot & AntiAim",3); 
-	cheat.New("Fake Lag",2);
-	cheat.New("Visual Flyhack");
 	cheat.New("Namestealer");
+	cheat.New("Fake Lag", 2);
+	cheat.New("SteamID Spoofer");
+	cheat.New("Visual Flyhack");
 	cheat.New("Play HLDJ");
 	cheat.New("Disable All & Exit");
 
