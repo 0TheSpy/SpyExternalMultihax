@@ -1268,7 +1268,6 @@ void TriggerCheck()
 	while (true)
 	{
 
-		
 		if (GetAsyncKeyState(VK_LBUTTON) < 0)
 		{
 			if (tWnd == GetForegroundWindow())
@@ -1556,6 +1555,28 @@ void TriggerCheck()
 		{
 			fakeLag();
 			cheat.Update("Fake Lag");
+		}
+
+		if (cheat.Triggered("SteamID Spoofer"))
+		{
+			if (cheat("SteamID Spoofer") == 1) 
+			{
+				byte bytes[] = { 0x90, 0x90, 0x90 };
+				wvm(PVOID(steam_dll_base + 0xB715), sizeof(bytes), bytes);
+				wvm(PVOID(steam_dll_base + 0xB774), sizeof(bytes), bytes);
+			}
+			else
+			{
+				byte bytes1[] = { 0x88, 0x04, 0x3E };
+				wvm(PVOID(steam_dll_base + 0xB715), sizeof(bytes1), bytes1);
+				byte bytes2[] = { 0x89, 0x47, 0x54 };
+				wvm(PVOID(steam_dll_base + 0xB774), sizeof(bytes2), bytes2);
+			}
+			cheat.Update("SteamID Spoofer");
+		}
+		if (cheat("SteamID Spoofer") == 1) {
+			wpm(steam_dll_base + 0x4B170, rand()*rand());
+			wpm(engine_dll_base + 0x394BF0 - enginedelta, rand()*rand());
 		}
 
 		Sleep(10);
