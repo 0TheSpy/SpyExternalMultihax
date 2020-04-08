@@ -215,7 +215,7 @@ template <class dataType>
  }
 
  extern char tWindowName[256];
- extern DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base;
+ extern DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base, steam_dll_base;
 
  HANDLE get_process_handle()
  {
@@ -287,6 +287,15 @@ template <class dataType>
 #endif
 					 d3d9_dll_base = (DWORD)hMods[i];
 				 }
+
+				 if (_tcsstr(szModName, _T("\\Steam.dll")) != NULL)
+				 {
+#ifdef DEBUG
+					 printf("steam.dll base: %08X\n", hMods[i]);
+#endif
+					 steam_dll_base = (DWORD)hMods[i];
+				 }
+				 
 			 }
 		 }
 	 }
