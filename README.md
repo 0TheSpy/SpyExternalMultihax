@@ -21,7 +21,8 @@ Features:
 - Bunnyhop, Autostrafe
 - Speedhack
 - Spinbot, Antiaim
-- Fake Lag
-- Visual Flyhack
 - Namestealer
+- Fake Lag
+- SteamID Spoofer
+- Visual Flyhack
 - Anti-HLDJ bypass
