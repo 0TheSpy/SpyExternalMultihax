@@ -52,8 +52,7 @@ void DisExit() {
 	for (i = 0; i < cheat.Count(); i++)
 		cheat(i) = 0;
 
-	byte bytes[] = { 0x89, 0x84, 0xb2, 0xa8, 0x13, 0x00, 0x00 };
-	wvm(PVOID(nvd3dum_dll_base + 0x8B6D86), sizeof(bytes), bytes);
+	wpm(engine_dll_base + 0x4F0C44 - enginedelta, 0);
 
 #ifdef DISCMSG
 	char* discmsg = (char*)"Disconnect by user.";
@@ -61,7 +60,7 @@ void DisExit() {
 	wvm(PVOID(engine_dll_base + 0x2E15C8), size, static_cast<void*>(discmsg));
 #endif
 
-	Sleep(500);
+	Sleep(1000);
 	p_Device->Release();
 	p_Object->Release();
 
@@ -69,9 +68,11 @@ void DisExit() {
 }
 
 void myInit() {
+
 	position.x = 20;
 	position.y = 20;
 
+	
 	ptr = rpm( rpm(0x24000000 + 0x3E1A44) + 0x4);
 
 	rvm(PVOID(vgui2_dll_base + 0x6cbc8), 4, &cmdptr);
@@ -172,14 +173,19 @@ void myInit() {
 	wvm(PVOID(engine_dll_base + 0x2E15C8), size, static_cast<void*>(discmsg));
 #endif
 
-	whlight = SpyInjectAndJump(TransparentWalls, PVOID(nvd3dum_dll_base + 0x8B6D86), 2);
+	char pattern4[] = "\x0F\x94\xC0\x88\x45\xF4\xE8";
+	char mask4[] = "xxxxxxx";
+	aobfakelag = ExternalAoBScan(hProcess, engine_dll_base, pattern4, mask4);
+#ifdef DEBUG
+	printf("FakeLag AOBscan result = %0x\n", aobfakelag);
+#endif
 
 	cheat.New("Aimbot", 2);
 	cheat.New("Aimbot FOV", 99); 
 	cheat("Aimbot FOV").sleep = 30;
 	cheat("Aimbot FOV") = 45;
 	cheat.New("ESP", 3);
-	cheat.New("Chameleon Wallhack",2);
+	cheat.New("Chameleon Wallhack");
 	cheat.New("Radarhack & Bombtimer", 3);
 	cheat.New("Smart Crosshair");
 	cheat.New("No Recoil & Spread", 3);
@@ -189,7 +195,8 @@ void myInit() {
 	cheat.New("Speedhack",99);
 	cheat("Speedhack") = 10;
 	cheat("Speedhack").sleep = 60;
-	cheat.New("Spinbot & AntiAim",4); 
+	cheat.New("Spinbot & AntiAim",3); 
+	cheat.New("Fake Lag",2);
 	cheat.New("Visual Flyhack");
 	cheat.New("Namestealer");
 	cheat.New("Play HLDJ");
