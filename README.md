@@ -12,8 +12,7 @@ Features:
 - ESP
 (position, team, name, hp, armor, money, steamid, weapon)
 - Chameleon Wallhack, Fullbright
-- Radarhack
-- Bombtimer
+- Radarhack, Bombtimer
 - Smart Crosshair
 - No Visual Recoil, No Recoil, No Spread
 - No Smoke, No Flash
