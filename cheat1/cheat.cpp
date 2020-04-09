@@ -63,7 +63,10 @@ void menu()
 			}
 			else
 			{
-				DrawString((char*)(std::to_string((float)cheat(i).enabled / (float)10.f).c_str()), 248, menutop, 3, color, pFont);
+				if (cheat(i).enabled != 100)
+					DrawString((char*)(std::to_string((float)cheat(i).enabled / (float)10.f).c_str()), 248, menutop, 3, color, pFont);
+				else
+					DrawString((char*)"OMG", 255 - 20, menutop, color, pFont);
 			}
 			menutop += 25;
 		}
@@ -1279,8 +1282,19 @@ void TriggerCheck()
 		{
 			speed = (float)cheat("Speedhack").enabled / 10;
 			wpm(svcheatsptr + 0x314, 1);
-			wpm(timescaleptr + 0x108, speed);
-			wpm(engine_dll_base + 0x4D2860 - enginedelta, 500.0f / speed); //fps max/timescale
+
+			if (cheat("Speedhack").enabled != 100) {
+				wpm(timescaleptr + 0x108, speed);
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 500.0f / speed); //fps max/timescale
+			}
+			else 
+			{
+				byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
+				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes2), bytes2);
+				wpm(timescaleptr + 0x108, 100.0f);
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 50.0f); 
+			}
+
 			//waiting
 			while (GetAsyncKeyState(0x12) < 0)
 				Sleep(1);
@@ -1288,6 +1302,12 @@ void TriggerCheck()
 			wpm(svcheatsptr + 0x314, 0);
 			wpm(timescaleptr + 0x108, 1.0f);
 			wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); 
+			if (cheat("Speedhack").enabled == 100) {
+				dword2bytes dw2b3 = { engine_dll_base + 0x3953C0 - enginedelta };
+				dword2bytes dw2b4 = { engine_dll_base + 0x3953bc - enginedelta };
+				byte bytes4[] = { 0xA3, dw2b4.bytes[0],dw2b4.bytes[1],dw2b4.bytes[2],dw2b4.bytes[3], 0xC7, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x00, 0x00, 0x00, 0x00 };
+				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes4), bytes4);
+			}
 		}
 
 		if (tWnd == GetForegroundWindow() && GetAsyncKeyState(0x46) < 0 && !rpm(vguimatsurface_dll_base + 0xB10F8)) { //F pressed & not in menu
