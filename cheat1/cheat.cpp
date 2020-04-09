@@ -770,7 +770,8 @@ void timer() {
 void myDraw() {
 
 		menu();
-		if (rpm(engine_dll_base + 0x53B55C - enginedelta) != 0) {
+		if (rpm(engine_dll_base + 0x53B55C - enginedelta)) //in server?
+		{
 			if (cheat("Radarhack & Bombtimer") == 2) {
 				rvm(PVOID(0x24000000 + 0x3BA3C0), 4, &radarhackptr);
 				if (radarhackptr)
@@ -1136,7 +1137,7 @@ void myDraw() {
 					}
 				}
 
-			} //esp,radar,aim enabled
+			} //esp,radar,aim enabled?
 		} //we on server?
 }
 
@@ -1289,7 +1290,7 @@ void TriggerCheck()
 			wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); 
 		}
 
-		if (tWnd == GetForegroundWindow() && GetAsyncKeyState(0x46) < 0 && !rpm(vguimatsurface_dll_base + 0xB10F8)) { //F
+		if (tWnd == GetForegroundWindow() && GetAsyncKeyState(0x46) < 0 && !rpm(vguimatsurface_dll_base + 0xB10F8)) { //F pressed & not in menu
 			if (!fullbright)
 			{
 				fullbright = 1;
