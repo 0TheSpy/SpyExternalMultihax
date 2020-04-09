@@ -166,6 +166,7 @@
     <ClInclude Include="random.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="spymemory.h" />
+	<ClInclude Include="asm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
