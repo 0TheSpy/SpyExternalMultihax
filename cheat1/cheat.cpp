@@ -124,17 +124,7 @@ void WH() {
 		byte bytes[] = { 0xFF, 0xD7, 0x83, 0xC4, 0x1c };
 		wvm(PVOID(d3d9_dll_base + dip9 + 0xCE), sizeof(bytes), bytes);
 		SendCMD("cl_ragdoll_physics_enable 1; cl_minmodels 0");
-
-		//byte bytes2[] = { 0xEB, 0x05 };
-		//wvm(PVOID((DWORD)whlight + 0xA), sizeof(bytes2), bytes2);
 	}
-
-	/*
-	if (cheat("Chameleon Wallhack") == 2) {
-		byte bytes3[] = { 0x90, 0x90 };
-		wvm(PVOID((DWORD)whlight + 0xA), sizeof(bytes3), bytes3);
-	}
-	*/
 }
 
 void Namestealer() {
