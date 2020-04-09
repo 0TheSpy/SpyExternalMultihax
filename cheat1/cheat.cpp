@@ -118,12 +118,14 @@ void fakeLag() {
 void WH() {
 	if (cheat("Chameleon Wallhack") == 1) {
 		SpyJmp(PVOID(d3d9_dll_base + dip9 + 0xCE), asmWHcave, 0);
-		SendCMD("cl_ragdoll_physics_enable 0; cl_minmodels 1; cl_min_ct 3; cl_min_t 3");
+		SendCMD("cl_ragdoll_physics_enable 0; cl_min_ct 3; cl_min_t 3");
+		wpm(0x24000000 + 0x3F95EC, 1); //minmodels 1
 	}
 	if (cheat("Chameleon Wallhack") == 0) {
 		byte bytes[] = { 0xFF, 0xD7, 0x83, 0xC4, 0x1c };
 		wvm(PVOID(d3d9_dll_base + dip9 + 0xCE), sizeof(bytes), bytes);
-		SendCMD("cl_ragdoll_physics_enable 1; cl_minmodels 0");
+		SendCMD("cl_ragdoll_physics_enable 1");
+		wpm(0x24000000 + 0x3F95EC, 0); //minmodels 0
 	}
 }
 
