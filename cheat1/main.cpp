@@ -130,7 +130,7 @@ void myInit() {
 	char pattern3[] = "\xF3\xA4\x8B\x43\x40";
 	char mask3[] = "xxxxx";
 	aobconsole = ExternalAoBScan(hProcess, engine_dll_base, pattern3, mask3);
-	SendCMD("alias name; alias stm \"-moveleft; -moveright; -forward; -back\"");
+	SendCMD("alias name");
 
 	spec1 = DWORD(SpyInjectAndJump(Spec1, LPVOID(0x24000000 + 0x2076BE), 4));
 	spec2 = DWORD(SpyInject(Spec2, LPVOID(0x24000000 + 0x257351))); //2
