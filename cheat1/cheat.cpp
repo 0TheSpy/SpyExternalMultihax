@@ -393,7 +393,11 @@ void Spinbot()
 
 				if (GetAsyncKeyState(0x57) < 0 || GetAsyncKeyState(0x53) < 0) //w/s
 				{
-					visYd = 90.0f;
+					if (GetAsyncKeyState(0x57) < 0) //w
+						visYd = 90.0f;
+					else //s
+						visYd = -90.0f;
+					//
 					if (GetAsyncKeyState(0x57) < 0 && GetAsyncKeyState(0x41) < 0) //w+a
 						visYd -= 45.0f;
 					else
@@ -456,50 +460,6 @@ void Spinbot()
 			}
 			wpm(DWORD(freevisangX) + 1, 0xA13E2AEB);
 		}
-
-		/*
-		if (cheat("Spinbot & AntiAim") == 3) //EXPERIMENTAL
-		{
-			wpm(0x12345, 0);
-			byte bytes1[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
-			wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes1), bytes1); //comment for burst-fire
-			byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90};
-			wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes2), bytes2);
-
-			while (cheat("Spinbot & AntiAim") == 3)
-			{
-				if (GetAsyncKeyState(VK_LBUTTON) == 0)
-				{
-					rvm(PVOID(0x24000000 + 0x3FD54C + 4), 4, &visY);
-					wpm(0x12349, visY);
-
-					wpm(engine_dll_base + 0x3953bc - enginedelta, 22);
-					wpm(engine_dll_base + 0x3953c0 - enginedelta, 31);
-					wpm(svcheatsptr + 0x314, 1);
-					wpm(timescaleptr + 0x108, 38.0f); //host_timescale
-					wpm(engine_dll_base + 0x4D2860 - enginedelta, 12.0f); //host_framerate
-					
-					wpm(0x24000000 + 0x3E71E4, 5); //jump
-				}
-				else
-					wpm(0x24000000 + 0x3E71E4, 4); //unjump
-				
-				Sleep(1);
-			}
-
-			dword2bytes dw2b3 = { engine_dll_base + 0x3953C0 - enginedelta };
-			dword2bytes dw2b4 = { engine_dll_base + 0x3953bc - enginedelta };
-			byte bytes3[] = { 0x83, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x01 };
-			wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes3), bytes3);
-			byte bytes4[] = { 0xA3, dw2b4.bytes[0],dw2b4.bytes[1],dw2b4.bytes[2],dw2b4.bytes[3], 0xC7, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x00, 0x00, 0x00, 0x00 };
-			wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes4), bytes4);
-
-			wpm(svcheatsptr + 0x314, 0);
-			wpm(timescaleptr + 0x108, 1.0f);
-			wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
-			wpm(0x24000000 + 0x3E71E4, 4);
-		}
-		*/
 
 		if (cheat("Spinbot & AntiAim") == 3) //BACKWARDS
 		{
@@ -1250,6 +1210,15 @@ void Angleshack(bool d) {
 	}
 }
 
+void StopMoving() {
+	wpm(0x24000000 + 0x3E7274, 0);
+	wpm(0x24000000 + 0x3E7268, 0);
+	wpm(0x24000000 + 0x3E725C, 0);
+	wpm(0x24000000 + 0x3E7250, 0);
+	SendCMD("-moveleft; -moveright; -forward; -back");
+}
+
+
 void TriggerCheck()
 {
 	float speed;
@@ -1265,7 +1234,7 @@ void TriggerCheck()
 
 	while (true)
 	{
-
+		
 		if (GetAsyncKeyState(VK_LBUTTON) < 0)
 		{
 			if (tWnd == GetForegroundWindow())
@@ -1280,6 +1249,7 @@ void TriggerCheck()
 				wpm(0x24000000 + 0x3E71E4, 5); //unjump
 		}
 		
+
 		if (tWnd == GetForegroundWindow() && cheat("Bunnyhop & Autostrafe") == 1 && GetAsyncKeyState(VK_SPACE) < 0)
 		{
 
@@ -1317,16 +1287,17 @@ void TriggerCheck()
 			speed = (float)cheat("Speedhack").enabled / 10;
 			wpm(svcheatsptr + 0x314, 1);
 			wpm(timescaleptr + 0x108, speed);
-
+			wpm(engine_dll_base + 0x4D2860 - enginedelta, 500.0f / speed); //fps max/timescale
 			//waiting
 			while (GetAsyncKeyState(0x12) < 0)
 				Sleep(1);
 
 			wpm(svcheatsptr + 0x314, 0);
 			wpm(timescaleptr + 0x108, 1.0f);
+			wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); 
 		}
 
-		if (tWnd == GetForegroundWindow() && GetAsyncKeyState(0x46) < 0) { //F
+		if (tWnd == GetForegroundWindow() && GetAsyncKeyState(0x46) < 0 && !rpm(vguimatsurface_dll_base + 0xB10F8)) { //F
 			if (!fullbright)
 			{
 				fullbright = 1;
@@ -1363,7 +1334,6 @@ void TriggerCheck()
 			{
 				if (cheat("Spinbot & AntiAim") == 0 && angleshack) {
 					Angleshack(0);
-					SendCMD("bind w +forward; bind s +back; bind d +moveright; bind a +moveleft; stm");
 				}
 			}
 		}
@@ -1373,22 +1343,74 @@ void TriggerCheck()
 			cheat.Update("Spinbot & AntiAim");
 			if (cheat("Spinbot & AntiAim").enabled > 0)
 			{
-				if (cheat("Spinbot & AntiAim") == 1)
-					SendCMD("bind a +moveleft; bind w +moveleft; bind d +moveleft; bind s +moveright; stm; cl_predictweapons 0"); //spinbot
-				if (cheat("Spinbot & AntiAim") == 2)
-					SendCMD("bind w +forward; bind s +back; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //fakeangles
-				//if (cheat("Spinbot & AntiAim") == 3)
-				//	SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm; cl_predictweapons 0"); //upsidedown
-				if (cheat("Spinbot & AntiAim") == 3)
-					SendCMD("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft; stm; cl_predictweapons 0"); //backwards
+				if (cheat("Spinbot & AntiAim") == 1) //SPINBOT
+				{
+					// a is moveleft
+					wpm(0x243E797C + 0x18, 0x240F6CE0);
+					wpm(0x243E79A0 + 0x18, 0x240F6CF0);
+					// w is moveleft
+					wpm(0x243E7814 + 0x18, 0x240F6CE0);
+					wpm(0x243E7838 + 0x18, 0x240F6CF0);
+					// d is moveleft
+					wpm(0x243E79C4 + 0x18, 0x240F6CE0);
+					wpm(0x243E79E8 + 0x18, 0x240F6CF0);
+					// s is moveleft
+					wpm(0x243E785C + 0x18, 0x240F6CE0);
+					wpm(0x243E7880 + 0x18, 0x240F6CF0);
+					StopMoving();
+				}
+				if (cheat("Spinbot & AntiAim") == 2) //UPSIDE-DOWN
+				{
+					// a is moveright
+					wpm(0x243E797C + 0x18, 0x240F6D70);
+					wpm(0x243E79A0 + 0x18, 0x240F6D80);
+					// w is forward
+					wpm(0x243E7814 + 0x18, 0x240F6AA0);
+					wpm(0x243E7838 + 0x18, 0x240F6AB0);
+					// d is moveleft
+					wpm(0x243E79C4 + 0x18, 0x240F6CE0);
+					wpm(0x243E79E8 + 0x18, 0x240F6CF0);
+					// s is back
+					wpm(0x243E785C + 0x18, 0x240F6B30);
+					wpm(0x243E7880 + 0x18, 0x240F6B40);
+					StopMoving();
+				}
+				if (cheat("Spinbot & AntiAim") == 3) //BACKWARDS
+				{
+					// a is moveright
+					wpm(0x243E797C + 0x18, 0x240F6D70);
+					wpm(0x243E79A0 + 0x18, 0x240F6D80);
+					// w is back
+					wpm(0x243E7814 + 0x18, 0x240F6B30);
+					wpm(0x243E7838 + 0x18, 0x240F6B40);
+					// d is moveleft
+					wpm(0x243E79C4 + 0x18, 0x240F6CE0);
+					wpm(0x243E79E8 + 0x18, 0x240F6CF0);
+					// s is forward
+					wpm(0x243E785C + 0x18, 0x240F6AA0);
+					wpm(0x243E7880 + 0x18, 0x240F6AB0);
+					StopMoving();
+				}
 
 				if (!angleshack)
 					Angleshack(1);
 				Sleep(50);
 			}
-			else
+			else //RESET
 			{
-				SendCMD("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright; stm");
+				// a is moveleft
+				wpm(0x243E797C + 0x18, 0x240F6CE0);
+				wpm(0x243E79A0 + 0x18, 0x240F6CF0);
+				// w is forward
+				wpm(0x243E7814 + 0x18, 0x240F6AA0);
+				wpm(0x243E7838 + 0x18, 0x240F6AB0);
+				// d is moveright
+				wpm(0x243E79C4 + 0x18, 0x240F6D70);
+				wpm(0x243E79E8 + 0x18, 0x240F6D80);
+				// s is back
+				wpm(0x243E785C + 0x18, 0x240F6B30);
+				wpm(0x243E7880 + 0x18, 0x240F6B40);
+				StopMoving();
 				if (cheat("No Recoil & Spread") != 1)
 					Angleshack(0);
 			}
