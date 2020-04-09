@@ -18,7 +18,7 @@ Features:
 - No Smoke, No Flash
 - No Hands, No Sky
 - Bunnyhop, Autostrafe
-- Speedhack (slow, fast, superfast)
+- Speedhack (freeze, slow, fast, superfast)
 - Spinbot, Antiaim
 - Namestealer
 - Fake Lag
