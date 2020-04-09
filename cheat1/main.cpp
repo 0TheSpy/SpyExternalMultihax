@@ -192,7 +192,7 @@ void myInit() {
 	cheat.New("No Smoke & Flash");
 	cheat.New("No Hands & Sky");
 	cheat.New("Bunnyhop & Autostrafe", 2);
-	cheat.New("Speedhack",99);
+	cheat.New("Speedhack",100);
 	cheat("Speedhack") = 10;
 	cheat("Speedhack").sleep = 60;
 	cheat.New("Spinbot & AntiAim",3); 
