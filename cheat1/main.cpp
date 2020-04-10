@@ -319,11 +319,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 	//
 	DWORD* vtablePtr = (DWORD*)(*((DWORD*)p_Device));
 	DWORD hD3D9 = (DWORD)GetModuleHandle("d3d9.dll");
-	dip9 = vtablePtr[82] - (DWORD)hD3D9;
+	dip9 = vtablePtr[82] - (DWORD)hD3D9; //DrawIndexedPrimitive
+	reset9 = vtablePtr[16] - (DWORD)hD3D9; //RESET
 	asmWHcave = SpyInject(asmWH, PVOID(d3d9_dll_base + dip9 + 0xCE));
 	wpm(0x12440, d3d9_dll_base + dip9);
 #ifdef DEBUG
 	cout << "DrawIndexedPrimitive9 = d3d9.dll+0x" << hex << dip9 << endl;
+	cout << "Reset9 = d3d9.dll+0x" << hex << reset9 << endl;
 #endif
 	//
 
