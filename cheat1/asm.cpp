@@ -69,9 +69,6 @@ __declspec(naked) void d3d9Reset(void)
 		call edx
 		cmp esi, esp
 
-		repne jne rnext1
-		rnext1 :
-
 		mov eax, 0x00000004
 		shl eax, 00
 		mov ecx, dword  ptr ds : [eax + 0x17574]//
@@ -84,9 +81,6 @@ __declspec(naked) void d3d9Reset(void)
 		mov edx, dword ptr ds : [ecx + 0x08]
 		call edx
 		cmp esi, esp
-
-		repne jne rnext2
-		rnext2 :
 
 		mov eax, 0x00000004
 		shl eax, 1
@@ -101,8 +95,6 @@ __declspec(naked) void d3d9Reset(void)
 		call edx
 		cmp esi, esp
 
-		repne jne rnext3
-		rnext3 :
 
 		mov eax, 0x00000004
 		imul ecx, eax, 0x03
@@ -116,9 +108,6 @@ __declspec(naked) void d3d9Reset(void)
 		mov edx, dword ptr ds : [ecx + 0x08]
 		call edx
 		cmp esi, esp
-
-		repne jne orig
-		orig :
 
 		pop esp
 		pop esi
@@ -227,9 +216,8 @@ __declspec(naked) void asmWH(void)
 			mov eax, [ecx + 0xe4]
 			call eax
 			cmp esi, esp
-			repne jne settext
 
-			settext :
+			//settexture :
 		movzx eax, byte ptr ds : [0x173e1] //ct or t
 			add eax, dword ptr ds : [0x12410]
 			mov esi, esp
@@ -243,9 +231,8 @@ __declspec(naked) void asmWH(void)
 			mov edx, [eax + 0x104]
 			call edx
 			cmp esi, esp
-			repne jne calldip
 
-			calldip :
+			//calldip :
 		mov esi, esp
 			mov eax, [ebp + 0x20]
 			push eax
@@ -262,11 +249,10 @@ __declspec(naked) void asmWH(void)
 			mov eax, [ebp + 0x08]
 			push eax
 			mov dword ptr ds : [0x12435], 0x1
-			call dword ptr ds : [0x12440] //cal drawindexedprimitive
+			call dword ptr ds : [0x12440] //call drawindexedprimitive
 			cmp esi, esp
-			repne jne zenable
 
-			zenable :
+			//zenable :
 		cmp dword ptr ds : [0x12410], 1
 			je backs
 			add dword ptr ds : [0x12410], 1
