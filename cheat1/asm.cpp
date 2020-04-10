@@ -55,6 +55,9 @@ __declspec(naked) void d3d9Reset(void)
 		push esi
 		push esp
 
+		cmp byte ptr ds : [0x173DB], 0
+		je orig 
+
 		mov byte ptr ds:[0x173DB], 00 //17403
 		mov eax, 0x00000004
 		imul ecx, eax, 00
@@ -109,6 +112,7 @@ __declspec(naked) void d3d9Reset(void)
 		call edx
 		cmp esi, esp
 
+		orig:
 		pop esp
 		pop esi
 		pop edx
