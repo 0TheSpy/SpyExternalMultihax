@@ -12,7 +12,7 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 #include <dwmapi.h>
-#pragma comment(lib, "dwmapi.lib")
+#pragma comment(lib, "dwmapi.lib")	
 #include <Psapi.h>
 #include <tchar.h>
 #include <math.h>
@@ -73,7 +73,7 @@ string s;
 BYTE who = 0, zero = 0, ret = 0xC3, jmp = 0xE9, nop = 0x90, call = 0xE8, push = 0x68, drawmenu = 0, menuselect = 0, myid, wepid, bDormant;
 DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base, steam_dll_base, localplayer, ptr, cmdptr,
 aobconsole, aobcmdnum, aobfakelag, enginedelta, svcheatsptr, timescaleptr, boneptr, steamidptr, vmatrixptr, entity, spec1, spec2, radarhackptr, 
-scrCenterX, scrCenterY, entptr, radar3ptr, dip9, flycave;
+scrCenterX, scrCenterY, entptr, radar3ptr, dip9, reset9, flycave;
 float myposX, myposY, myangY, deltaX, deltaY, fi = 0.08, coords[3], radarcoords[2], xl, yl, wl, xl_closest = 0, yl_closest = 0,
 xl_closest_final = 0, yl_closest_final = 0, viewmatrix[4][4], hyp1, hyp2, deltaXold, deltaYold, deltaZ, myposZ, enemyDistance, 
  bomb, xd = 0, bombcoords[3], prevX, prevY, flickerCheck;
