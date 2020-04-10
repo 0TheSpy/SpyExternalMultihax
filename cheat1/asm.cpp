@@ -45,6 +45,95 @@ __declspec(naked) void NoSmoke(void)
 	endfunc
 }
 
+__declspec(naked) void d3d9Reset(void)
+{
+	__asm {
+		push eax
+		push ebx
+		push ecx
+		push edx
+		push esi
+		push esp
+
+		mov byte ptr ds:[0x173DB], 00 //17403
+		mov eax, 0x00000004
+		imul ecx, eax, 00
+		mov edx, dword ptr ds : [ecx + 0x17574] //17570
+		mov eax, 0x00000004
+		imul ecx, eax, 00
+		mov eax, dword ptr ds : [ecx + 0x17574] //
+		mov ecx, [edx]
+		mov esi, esp
+		push eax
+		mov edx, dword ptr ds:[ecx + 0x08]
+		call edx
+		cmp esi, esp
+
+		repne jne rnext1
+		rnext1 :
+
+		mov eax, 0x00000004
+		shl eax, 00
+		mov ecx, dword  ptr ds : [eax + 0x17574]//
+		mov edx, 00000004
+		shl edx, 00
+		mov eax, dword ptr ds : [edx + 0x17574]//
+		mov ecx, [ecx]
+		mov esi, esp
+		push eax
+		mov edx, dword ptr ds : [ecx + 0x08]
+		call edx
+		cmp esi, esp
+
+		repne jne rnext2
+		rnext2 :
+
+		mov eax, 0x00000004
+		shl eax, 1
+		mov ecx, dword ptr ds : [eax + 0x17574]//
+		mov edx, 0x00000004
+		shl edx, 1
+		mov eax, dword ptr ds : [edx + 0x17574]//
+		mov ecx, [ecx]
+		mov esi, esp
+		push eax
+		mov edx, dword ptr ds : [ecx + 0x08]
+		call edx
+		cmp esi, esp
+
+		repne jne rnext3
+		rnext3 :
+
+		mov eax, 0x00000004
+		imul ecx, eax, 0x03
+		mov edx, dword ptr ds : [ecx + 0x17574]//
+		mov eax, 0x00000004
+		imul ecx, eax, 0x03
+		mov eax, dword ptr ds : [ecx + 0x17574]//
+		mov ecx, [edx]
+		mov esi, esp
+		push eax
+		mov edx, dword ptr ds : [ecx + 0x08]
+		call edx
+		cmp esi, esp
+
+		repne jne orig
+		orig :
+
+		pop esp
+		pop esi
+		pop edx
+		pop ecx
+		pop ebx
+		pop eax
+
+		mov edi, edi
+		push ebp
+		mov ebp, esp
+	}
+	endfunc
+}
+
 __declspec(naked) void asmWH(void)
 {
 	__asm {
