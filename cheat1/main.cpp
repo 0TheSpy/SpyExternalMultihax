@@ -188,9 +188,9 @@ void myInit() {
 	cheat.New("Chameleon Wallhack");
 	cheat.New("Radarhack & Bombtimer", 3);
 	cheat.New("Smart Crosshair");
-	cheat.New("No Recoil & Spread", 3);
-	cheat.New("No Smoke & Flash");
-	cheat.New("No Hands & Sky");
+	cheat.New("No Recoil & No Spread", 3);
+	cheat.New("No Smoke & No Flash");
+	cheat.New("No Hands & No Sky");
 	cheat.New("Bunnyhop & Autostrafe", 2);
 	cheat.New("Speedhack",100);
 	cheat("Speedhack") = 10;
@@ -198,7 +198,7 @@ void myInit() {
 	cheat.New("Spinbot & AntiAim",3); 
 	cheat.New("Namestealer");
 	cheat.New("Fake Lag", 2);
-	cheat.New("SteamID Spoofer");
+	cheat.New("SteamID Spoof & No MOTD");
 	cheat.New("Visual Flyhack");
 	cheat.New("Play HLDJ");
 	cheat.New("Disable All & Exit");
