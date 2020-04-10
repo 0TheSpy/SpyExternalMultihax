@@ -803,7 +803,7 @@ void myDraw() {
 			if (myteam == 3) myteam = 255;
 
 			if (cheat("Smart Crosshair") == 1) {
-				//wpm(0x22000000 + 0x5A4764, 1); //mp_playerid = 1
+				wpm(0x22000000 + 0x5A4764, 1); //mp_playerid = 1
 				rvm(PVOID(0x243E7208), 1, &who);
 				switch (who)
 				{
