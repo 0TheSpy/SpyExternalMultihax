@@ -1179,6 +1179,8 @@ void Angleshack(bool d) {
 
 		//cl_predictweapons 1 kill
 		wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
+		
+		SendCMD("cl_predictweapons 0");
 
 #ifdef DEBUG
 		cout << "angleshack enabled\n";
