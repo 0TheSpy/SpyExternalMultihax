@@ -22,6 +22,6 @@ Features:
 - Spinbot, Antiaim
 - Namestealer
 - Fake Lag
-- SteamID Spoofer (hCupa's, RevEmu)
+- SteamID Spoofer (hCupa's, RevEmu), No MOTD
 - Visual Flyhack
 - Anti-HLDJ bypass
