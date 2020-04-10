@@ -77,9 +77,9 @@ scrCenterX, scrCenterY, entptr, radar3ptr, dip9, reset9, flycave;
 float myposX, myposY, myangY, deltaX, deltaY, fi = 0.08, coords[3], radarcoords[2], xl, yl, wl, xl_closest = 0, yl_closest = 0,
 xl_closest_final = 0, yl_closest_final = 0, viewmatrix[4][4], hyp1, hyp2, deltaXold, deltaYold, deltaZ, myposZ, enemyDistance, 
  bomb, xd = 0, bombcoords[3], prevX, prevY, flickerCheck;
-int closest, closest_final, aimfov, menutop = 340, armor, money, i, hp, team, myteam, maxentityid, offs; 
-char name[32], esphp[4], espid[3], esparm[4], espmon[6], *cstr = &s[0];
-char* espname[32], espwep[24], steamid[20];
+int closest, closest_final, aimfov, menutop = 340, armor, money, ping, i, hp, team, myteam, maxentityid, offs; 
+char name[32], esphp[4], espid[3], esparm[4], espmon[6], espping[3], *cstr = &s[0];
+char* espname[32], espwep[24], steamid[21];
 BOOL boostsleep = 0, angleshack = 0, bombplanted = 0, fullbright = 0;
 PVOID rotating, freevisangX, freevisangY, freevisangZ, asmWHcave, fixPredict, whlight;
 byte sf[] = { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -90,7 +90,7 @@ struct Feature
 	string name;
 	int modes = 1;
 	int enabled = 0;
-	int trigger = 0; //-1
+	int trigger = 0; 
 	int sleep = 200;
 
 	void operator=(int enabled) {
