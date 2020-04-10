@@ -101,9 +101,6 @@ void myInit() {
 	WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x1BE2A2 + sizeof(BYTE)), &caveaddr, sizeof(DWORD), NULL);
 	WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x1BE2A2 + sizeof(BYTE) + sizeof(DWORD)), &nop, sizeof(BYTE), NULL);
 
-	//mp_playerid = 1
-	wpm(0x22000000 + 0x5A4764, 1);
-
 	DWORD colorifptr;
 	rvm(PVOID(gameui_dll_base + 0x1BB95C), 4, &colorifptr);
 	rvm(PVOID(colorifptr + 0x3A4), 4, &colorifptr);
