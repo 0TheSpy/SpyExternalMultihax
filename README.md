@@ -10,7 +10,7 @@ Cheat for Counter-Strike: Source v34
 Features:
 - Aimbot & FOV
 - ESP
-(position, team, name, hp, armor, money, steamid, weapon)
+(position, team, name, hp, armor, money, steamid, weapon, ping)
 - Chameleon Wallhack, Fullbright
 - Radarhack (custom, regular, spectator), Bombtimer
 - Smart Crosshair
