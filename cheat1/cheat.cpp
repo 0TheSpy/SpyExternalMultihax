@@ -123,6 +123,10 @@ void WH() {
 		SpyJmp(PVOID(d3d9_dll_base + dip9 + 0xCE), asmWHcave, 0);
 		SendCMD("cl_ragdoll_physics_enable 0; cl_min_ct 3; cl_min_t 3");
 		wpm(0x24000000 + 0x3F95EC, 1); //minmodels 1
+
+		//if (rpm(d3d9_dll_base + reset9) == 0xE483EC8B)
+		SpyInjectAndJump(d3d9Reset, PVOID(d3d9_dll_base + reset9), 0);
+
 	}
 	if (cheat("Chameleon Wallhack") == 0) {
 		byte bytes[] = { 0xFF, 0xD7, 0x83, 0xC4, 0x1c };
@@ -1179,9 +1183,8 @@ void Angleshack(bool d) {
 
 		//cl_predictweapons 1 kill
 		wpm(0x24000000 + 0x1e2858, 0x83068b9090909090);
-		
-		SendCMD("cl_predictweapons 0");
 
+		SendCMD("cl_predictweapons 0");
 #ifdef DEBUG
 		cout << "angleshack enabled\n";
 #endif
