@@ -366,7 +366,7 @@ void Spinbot()
 
 	fixPredict = SpyInject(FixPredict, PVOID(0x240D46F9));
 
-	SpyInjectAndJump(ZetToZero, PVOID(0x24000000 + 0x192B0), 4);
+	SpyInjectAndJump(ZetToZero, PVOID(0x24000000 + 0x192B0), 4); 
 
 	wpm(0x12300, 180.0f);
 	wpm(0x12304, -180.0f);
@@ -550,6 +550,7 @@ void Aimbot()
 				rvm(PVOID(0x24000000 + 0x3FD5C4), 12, &mycoords);
 
 				if (closest_final != -2) {
+					
 					rvm(PVOID(0x24000000 + 0x3BF1F4 + 0x10 * closest_final), 4, &boneptr);
 					rvm(PVOID(boneptr + 0x24), 4, &boneptr);
 					rvm(PVOID(boneptr + 0x34), 4, &boneptr);
@@ -558,7 +559,6 @@ void Aimbot()
 					rvm((PVOID)(boneptr + 0x60 + 0x25C), 4, &enemycoords[1]);
 					rvm((PVOID)(boneptr + 0x60 + 0x26C), 4, &enemycoords[2]);
 					enemycoords[2] = enemycoords[2] + 2;
-
 					CalcAngle(mycoords, enemycoords, newangle);
 
 					if (newangle[1] < -180.0f)
@@ -803,7 +803,7 @@ void myDraw() {
 			if (myteam == 3) myteam = 255;
 
 			if (cheat("Smart Crosshair") == 1) {
-				wpm(0x22000000 + 0x5A4764, 1); //mp_playerid = 1 
+				//wpm(0x22000000 + 0x5A4764, 1); //mp_playerid = 1
 				rvm(PVOID(0x243E7208), 1, &who);
 				switch (who)
 				{
@@ -1031,12 +1031,19 @@ void myDraw() {
 									rvm(PVOID(steamidptr + 0x24), 20, &steamid);
 								}
 
+								steamid[20] = 0x0;
 								DrawString((char*)steamid, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 2, color, pFont);
 
-								rvm(PVOID(entity + 0xA4C - 0xC + 0x5c4), 4, &money);
+								rvm(PVOID(entity + 0x1004), 4, &money);
 								itoa(money, espmon, 10);
 								DrawString((char*)"$", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 3, color, pFont);
 								DrawString((char*)espmon, xl - 10000 / enemyDistance + 20000 / enemyDistance + 13, yl - 6 + 12 * 3, color, pFont);
+
+								rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xC88 + 4*(i+1)), 4, &ping);
+								itoa(ping, espping, 10);
+								DrawString((char*)"ping: ", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 5, color, pFont);
+								DrawString((char*)espping, xl - 10000 / enemyDistance + 20000 / enemyDistance + 35, yl - 6 + 12 * 5, color, pFont);
+
 
 								rvm(PVOID(entity + 0x56C + 0x5c4), 1, &wepid);
 								entity = rpm(0x24000000 + 0x3CF20C + 8 * wepid);
@@ -1051,7 +1058,6 @@ void myDraw() {
 									if (espwep[i] == 0x40)
 										espwep[i] = 0x0;
 								}
-
 
 								DrawString((char*)espwep, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 4, color, pFont);
 
@@ -1595,6 +1601,7 @@ void TriggerCheck()
 			wpm(engine_dll_base + 0x394BF0 - enginedelta, rand()*rand()); //Cupa's 
 			wpm(rpm(rpm(rpm(0x24000000 + 0x403060) + 0x350) + 0x44) + 0x868, 0x160000); //no motd
 		}
+
 
 		Sleep(10);
 	}
