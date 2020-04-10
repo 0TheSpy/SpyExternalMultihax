@@ -519,7 +519,7 @@ void Aimbot()
 	while (true)
 	{
 		if (angleshack && GetAsyncKeyState(VK_LBUTTON) == 0 && cheat("Spinbot & AntiAim") == 0 ||
-			angleshack && cheat("No Recoil & Spread").enabled == 1 && cheat("Spinbot & AntiAim") == 0)
+			angleshack && cheat("No Recoil & No Spread").enabled == 1 && cheat("Spinbot & AntiAim") == 0)
 		{
 			rvm(PVOID(0x24000000 + 0x3FD54C), 8, &myang);
 
@@ -566,7 +566,7 @@ void Aimbot()
 
 						aiming = 1;
 
-						if (cheat("Spinbot & AntiAim").enabled > 1 && cheat("No Recoil & Spread") != 1) //metka1
+						if (cheat("Spinbot & AntiAim").enabled > 1 && cheat("No Recoil & No Spread") != 1) //metka1
 						{
 							if (cheat("Spinbot & AntiAim") == 2)
 							{
@@ -583,7 +583,7 @@ void Aimbot()
 				}
 			}
 
-			if (cheat("No Recoil & Spread") == 1)
+			if (cheat("No Recoil & No Spread") == 1)
 			{
 				if (tWnd == GetForegroundWindow() && GetAsyncKeyState(VK_LBUTTON) < 0)
 				{
@@ -641,7 +641,7 @@ void Aimbot()
 				}
 			}
 
-			if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("No Recoil & Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
+			if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("No Recoil & No Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
 			{
 				if (!aiming)
 				{
@@ -662,9 +662,9 @@ void Aimbot()
 
 			}
 
-			if (cheat("No Recoil & Spread") == 2 )
+			if (cheat("No Recoil & No Spread") == 2 )
 			{
-				//wpm(svcheatsptr + 0x314, 1);
+				wpm(svcheatsptr + 0x314, 1);
 				wpm(timescaleptr + 0x108, 2.0f); 
 				wpm(engine_dll_base + 0x4D2860 - enginedelta, 200.0f); //host_framerate
 
@@ -677,7 +677,7 @@ void Aimbot()
 
 				Sleep(5);
 
-				//wpm(svcheatsptr + 0x314, 0);
+				wpm(svcheatsptr + 0x314, 0);
 				wpm(timescaleptr + 0x108, 1.0f);
 				wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
 				Sleep(10); 
@@ -692,13 +692,13 @@ void Aimbot()
 
 
 void noSmokeFlash() {
-	if (cheat("No Smoke & Flash") == 1) {
+	if (cheat("No Smoke & No Flash") == 1) {
 		wpm(0x24000000 + 0x3E9C34, 0); //r_drawparticles 0
 		SpyInjectAndJump(NoSmoke, PVOID(0x24000000+0x8E4F3), 0);
 		BYTE twobytes[] = { 0x90, 0xE9 };
 		wpm(PVOID(0x24000000 + 0x1D1D5D), 2, &twobytes);
 	}
-	if (cheat("No Smoke & Flash") == 0) {
+	if (cheat("No Smoke & No Flash") == 0) {
 		wpm(0x24000000 + 0x3E9C34, 1); //r_drawparticles 1
 		BYTE twobytes[] = { 0x0F, 0x8B };
 		wpm(PVOID(0x24000000 + 0x1D1D5D), 2, &twobytes);
@@ -711,7 +711,7 @@ void noSmokeFlash() {
 }
 
 void noHandsSky() {
-	if (cheat("No Hands & Sky") == 1) {
+	if (cheat("No Hands & No Sky") == 1) {
 		wpm(0x24000000 + 0x3EEDFC, 0);
 		wpm(0x24000000 + 0x3EE78C, 1);
 
@@ -721,7 +721,7 @@ void noHandsSky() {
 		wpm(svcheatsptr + 0x314, 0);
 	}
 
-	if (cheat("No Hands & Sky") == 0) {
+	if (cheat("No Hands & No Sky") == 0) {
 		wpm(0x24000000 + 0x3EEDFC, 1);
 		wpm(0x24000000 + 0x3EE78C, 0);
 
@@ -1141,7 +1141,9 @@ void myDraw() {
 				}
 
 			} //esp,radar,aim enabled?
-		} //we on server?
+		} //we on server? 
+		else
+		cheat("Play HLDJ") = 0;
 }
 
 
@@ -1150,6 +1152,7 @@ void visnrec(bool d) {
 	{
 		wvm(LPVOID(0x24000000 + 0x192d2 + 0x2), sizeof(DWORD), 0);
 		wvm(LPVOID(0x24000000 + 0x192dc + 0x2), sizeof(DWORD), 0);
+		SendCMD("cl_predictweapons 0");
 #ifdef DEBUG
 		cout << "visual norecoil enabled\n";
 #endif
@@ -1324,31 +1327,22 @@ void TriggerCheck()
 			Sleep(200);
 		}
 
-		if (cheat.Triggered("No Recoil & Spread"))
+		if (cheat.Triggered("No Recoil & No Spread"))
 		{
-			cheat.Update("No Recoil & Spread");
+			cheat.Update("No Recoil & No Spread");
 
-			if (cheat("No Recoil & Spread") != 0)
+			if (cheat("No Recoil & No Spread") != 0)
 				visnrec(1);
 			else
 				visnrec(0);
 
-			if (cheat("No Recoil & Spread") == 1)
-			{
+			if (cheat("No Recoil & No Spread") == 1)
 				if (!angleshack)
-				{
 					Angleshack(1);
-					SendCMD("cl_predictweapons 0");
-					Sleep(50);
-				}
-			}
 
-			if (cheat("No Recoil & Spread") != 1)
-			{
-				if (cheat("Spinbot & AntiAim") == 0 && angleshack) {
+			if (cheat("No Recoil & No Spread") != 1)
+				if (cheat("Spinbot & AntiAim") == 0 && angleshack) 
 					Angleshack(0);
-				}
-			}
 		}
 
 		if (cheat.Triggered("Spinbot & AntiAim"))
@@ -1424,7 +1418,7 @@ void TriggerCheck()
 				wpm(0x243E785C + 0x18, 0x240F6B30);
 				wpm(0x243E7880 + 0x18, 0x240F6B40);
 				StopMoving();
-				if (cheat("No Recoil & Spread") != 1)
+				if (cheat("No Recoil & No Spread") != 1)
 					Angleshack(0);
 			}
 		}
@@ -1538,16 +1532,16 @@ void TriggerCheck()
 #endif
 		}
 
-		if (cheat.Triggered("No Smoke & Flash"))
+		if (cheat.Triggered("No Smoke & No Flash"))
 		{
 			noSmokeFlash();
-			cheat.Update("No Smoke & Flash");
+			cheat.Update("No Smoke & No Flash");
 		}
 
-		if (cheat.Triggered("No Hands & Sky"))
+		if (cheat.Triggered("No Hands & No Sky"))
 		{
 			noHandsSky();
-			cheat.Update("No Hands & Sky");
+			cheat.Update("No Hands & No Sky");
 		}
 
 		if (cheat.Triggered("Disable All & Exit"))
@@ -1578,9 +1572,9 @@ void TriggerCheck()
 			cheat.Update("Fake Lag");
 		}
 
-		if (cheat.Triggered("SteamID Spoofer"))
+		if (cheat.Triggered("SteamID Spoof & No MOTD"))
 		{
-			if (cheat("SteamID Spoofer") == 1) 
+			if (cheat("SteamID Spoof & No MOTD") == 1) 
 			{
 				byte bytes[] = { 0x90, 0x90, 0x90 };
 				wvm(PVOID(steam_dll_base + 0xB715), sizeof(bytes), bytes);
@@ -1593,11 +1587,12 @@ void TriggerCheck()
 				byte bytes2[] = { 0x89, 0x47, 0x54 };
 				wvm(PVOID(steam_dll_base + 0xB774), sizeof(bytes2), bytes2);
 			}
-			cheat.Update("SteamID Spoofer");
+			cheat.Update("SteamID Spoof & No MOTD");
 		}
-		if (cheat("SteamID Spoofer") == 1) {
-			wpm(steam_dll_base + 0x4B170, rand()*rand());
-			wpm(engine_dll_base + 0x394BF0 - enginedelta, rand()*rand());
+		if (cheat("SteamID Spoof & No MOTD") == 1) {
+			wpm(steam_dll_base + 0x4B170, rand()*rand()); //RevCrew's 
+			wpm(engine_dll_base + 0x394BF0 - enginedelta, rand()*rand()); //Cupa's 
+			wpm(rpm(rpm(rpm(0x24000000 + 0x403060) + 0x350) + 0x44) + 0x868, 0x160000); //no motd
 		}
 
 		Sleep(10);
