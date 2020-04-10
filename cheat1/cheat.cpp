@@ -124,7 +124,7 @@ void WH() {
 		SendCMD("cl_ragdoll_physics_enable 0; cl_min_ct 3; cl_min_t 3");
 		wpm(0x24000000 + 0x3F95EC, 1); //minmodels 1
 
-		//if (rpm(d3d9_dll_base + reset9) == 0xE483EC8B)
+		if (rpm(d3d9_dll_base + reset9) == 0x8B55FF8B)
 		SpyInjectAndJump(d3d9Reset, PVOID(d3d9_dll_base + reset9), 0);
 
 	}
@@ -1227,18 +1227,14 @@ void TriggerCheck()
 {
 	float speed;
 
-	svcheatsptr = rpm(0x24000000 + 0x3BEA44);
-#ifdef DEBUG
-	cout << "sv cheats pointer = 0x" << svcheatsptr << endl;
-#endif
-	timescaleptr = rpm(0x24000000 + 0x3E1D20);
-
 	float boostang = 40.0f; 
 	int sleeptim = 30;
 
 	while (true)
 	{
-		
+		svcheatsptr = rpm(0x24000000 + 0x3BEA44);
+		timescaleptr = rpm(0x24000000 + 0x3E1D20);
+
 		if (GetAsyncKeyState(VK_LBUTTON) < 0)
 		{
 			if (tWnd == GetForegroundWindow())
