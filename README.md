@@ -11,14 +11,14 @@ Features:
 - Aimbot & FOV
 - ESP
 (position, team, name, hp, armor, money, steamid, weapon, ping)
-- Chameleon Wallhack, Fullbright
+- Chameleon Wallhack, Fullbright (button F)
 - Radarhack (custom, regular, spectator), Bombtimer
 - Smart Crosshair
 - No Visual Recoil, No Recoil, No Spread
 - No Smoke, No Flash
 - No Hands, No Sky
 - Bunnyhop, Autostrafe
-- Speedhack (freeze, slow, fast, superfast)
+- Speedhack (button ALT) (freeze, slow, fast, superfast)
 - Spinbot, Antiaim
 - Namestealer
 - Fake Lag
