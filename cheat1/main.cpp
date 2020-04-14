@@ -183,7 +183,8 @@ void myInit() {
 	cheat("Aimbot FOV") = 45;
 	cheat.New("ESP", 3);
 	cheat.New("Chameleon Wallhack");
-	cheat.New("Radarhack & Bombtimer", 3);
+	cheat.New("Radarhack", 3);
+	cheat.New("Serverinfo & Bombtimer");
 	cheat.New("Smart Crosshair");
 	cheat.New("No Recoil & No Spread", 3);
 	cheat.New("No Smoke & No Flash");
@@ -324,8 +325,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 	cout << "DrawIndexedPrimitive9 = d3d9.dll+0x" << hex << dip9 << endl;
 	cout << "Reset9 = d3d9.dll+0x" << hex << reset9 << endl;
 #endif
-	//
-
 	for (;;)
 	{
 		if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
