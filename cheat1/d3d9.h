@@ -65,6 +65,15 @@ void DrawString(char* String, int x, int y, int len, D3DCOLOR color, ID3DXFont* 
 	font->DrawTextA(0, String, len, &FontPos, DT_NOCLIP, color);
 }
 
+
+void DrawStringW(wchar_t* String, int x, int y, int len, D3DCOLOR color, ID3DXFont* font)
+{
+	RECT FontPos;
+	FontPos.left = x;
+	FontPos.top = y;
+	font->DrawTextW(0, String, len, &FontPos, DT_NOCLIP, color);
+}
+
 LPDIRECT3DVERTEXBUFFER9 v_buffer = NULL;    // the pointer to the vertex buffer
 struct vertex {
 	FLOAT x, y, z,
