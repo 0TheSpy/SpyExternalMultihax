@@ -53,10 +53,13 @@ MSG Message;
 IDirect3DDevice9Ex* p_Device = 0;
 RECT rc;
 D3DCOLOR color;
-D3DCOLOR color2 = D3DCOLOR_ARGB(255, 255, 255, 255);
 D3DXVECTOR3 position;
 
 DWM_BLURBEHIND bb = { DWM_BB_ENABLE | DWM_BB_BLURREGION, true, CreateRectRgn(0, 0, -1, -1), true };
+
+D3DCOLOR colorprim = D3DCOLOR_ARGB(255, 203, 111, 111); //PRIMARY CHEAT COLOR 
+D3DCOLOR colorsec = D3DCOLOR_ARGB(200, 5, 0, 0); //SECONDARY CHEAT COLOR 
+int border = 4; //CHEAT BORDER
 
 union dword2bytes
 {
@@ -72,14 +75,13 @@ stringstream ss;
 string s;
 BYTE who = 0, zero = 0, ret = 0xC3, jmp = 0xE9, nop = 0x90, call = 0xE8, push = 0x68, drawmenu = 0, menuselect = 0, myid, wepid, bDormant;
 DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base, steam_dll_base, localplayer, ptr, cmdptr,
-aobconsole, aobcmdnum, aobfakelag, enginedelta, svcheatsptr, timescaleptr, boneptr, steamidptr, vmatrixptr, entity, spec1, spec2, radarhackptr, 
+aobconsole, aobcmdnum, aobfakelag, enginedelta, svcheatsptr, timescaleptr, boneptr, vmatrixptr, entity, spec1, spec2, radarhackptr, 
 scrCenterX, scrCenterY, entptr, radar3ptr, dip9, reset9, flycave;
 float myposX, myposY, myangY, deltaX, deltaY, fi = 0.08, coords[3], radarcoords[2], xl, yl, wl, xl_closest = 0, yl_closest = 0,
 xl_closest_final = 0, yl_closest_final = 0, viewmatrix[4][4], hyp1, hyp2, deltaXold, deltaYold, deltaZ, myposZ, enemyDistance, 
  bomb, xd = 0, bombcoords[3], prevX, prevY, flickerCheck;
-int closest, closest_final, aimfov, menutop = 340, armor, money, ping, i, hp, team, myteam, maxentityid, offs; 
-char name[32], esphp[4], espid[3], esparm[4], espmon[6], espping[3], *cstr = &s[0];
-char* espname[32], espwep[24], steamid[21];
+int closest, closest_final, aimfov, menutop = 340, i, hp, team, myteam, maxentityid, offs, playerscount;
+char esphp[4], *cstr = &s[0];
 BOOL boostsleep = 0, angleshack = 0, bombplanted = 0, fullbright = 0;
 PVOID rotating, freevisangX, freevisangY, freevisangZ, asmWHcave, fixPredict, whlight;
 byte sf[] = { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -195,6 +197,14 @@ bool operator!=(int enabled, Feature f)
 void MenuSelect();
 void DisExit();
 
+#include <locale>         // std::wstring_convert
+#include <codecvt>        // std::codecvt_utf8
+template <typename T>
+void fromUTF8(const string& source, basic_string<T, char_traits<T>, allocator<T>>& result)
+{
+	wstring_convert<codecvt_utf8_utf16<T>, T> convertor;
+	result = convertor.from_bytes(source);
+}
 
 
 #include "cheat.cpp"
