@@ -33,10 +33,10 @@ void menu()
 	DrawString((char*)"Spy External Multihax", 5, 5, 25, 255, 255, 255, pFont);
 
 	if (drawmenu == 1) {
-		DrawFilledRectangle(20, 300, 280, 350 + cheat.Count() * 25, 255, 7, 231, 171);
-		DrawFilledRectangle(25, 330, 275, 345 + cheat.Count() * 25, 100, 10, 45, 41);
+		DrawFilledRectangle(20, 300, 275 + border, 345 + border + cheat.Count() * 25, colorprim);
+		DrawFilledRectangle(20 + border, 330, 275, 345 + cheat.Count() * 25, colorsec);
 
-		DrawString((char*)"Spy External Multihax", 65, 305, 255, 10, 45, 41, pFont);
+		DrawString((char*)"Spy External Multihax", 65, 305, colorsec, pFont);
 
 		int menutop = 340;
 		for (byte i = 0; i < cheat.Count(); i++)
@@ -46,10 +46,10 @@ void menu()
 			}
 			else if (cheat(i).name == "Disable All & Exit")
 			{
-				color = D3DCOLOR_ARGB(255, 255, 255, 50);
+				color = D3DCOLOR_ARGB(255, 175, 125, 0);
 			}
 			else {
-				color = D3DCOLOR_ARGB(255, 7, 231, 175);
+				color = colorprim;
 			}
 
 			DrawString((char*)cheat(i).name.c_str(), 35, menutop, color, pFont);
@@ -137,8 +137,6 @@ void WH() {
 }
 
 void Namestealer() {
-
-	DWORD steamidptr;
 	TCHAR name[32];
 
 	int rando, old = 65;
@@ -156,29 +154,11 @@ void Namestealer() {
 			if (rando == old)
 				continue;
 
-			steamidptr = rpm(engine_dll_base + 0x3958C8);
-			steamidptr = rpm(steamidptr + 0x38);
-
-			if (steamidptr == 0)
-			{
-				steamidptr = rpm(engine_dll_base + 0x3958A8);
-				steamidptr = rpm(steamidptr + 0x38);
-				steamidptr = rpm(steamidptr + 0x24);
-				steamidptr = rpm(steamidptr + 0x14 + (0x28 * (rando + 1)));
-
-				name[0] = 0x0;
-
-				rvm(PVOID(steamidptr), 32, &name);
-			}
+			name[0] = 0x0;
+			if (enginedelta)
+				rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958A8) + 0x38) + 0x24) + 0x14 + (0x28 * (rando+i)))), 32, &name);
 			else
-			{
-				steamidptr = rpm(steamidptr + 0x24);
-				steamidptr = rpm(steamidptr + 0x14 + (0x28 * (rando + 1)));
-
-				name[0] = 0x0;
-
-				rvm(PVOID(steamidptr), 32, &name);
-			}
+				rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958C8) + 0x38) + 0x24) + 0x14 + (0x28 * (rando+i)))), 32, &name);
 
 			if ((int)name[0] > 0x20 || (int)name[0] < 0)
 			{
@@ -550,11 +530,9 @@ void Aimbot()
 				rvm(PVOID(0x24000000 + 0x3FD5C4), 12, &mycoords);
 
 				if (closest_final != -2) {
-					
-					rvm(PVOID(0x24000000 + 0x3BF1F4 + 0x10 * closest_final), 4, &boneptr);
-					rvm(PVOID(boneptr + 0x24), 4, &boneptr);
-					rvm(PVOID(boneptr + 0x34), 4, &boneptr);
-					rvm(PVOID(boneptr + 0x158), 4, &boneptr);
+
+					rvm(PVOID(0x24000000 + 0x3BF1E4 + 0x10 * closest_final), 4, &boneptr);
+					rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
 					rvm((PVOID)(boneptr + 0x60 + 0x24C), 4, &enemycoords[0]);
 					rvm((PVOID)(boneptr + 0x60 + 0x25C), 4, &enemycoords[1]);
 					rvm((PVOID)(boneptr + 0x60 + 0x26C), 4, &enemycoords[2]);
@@ -774,20 +752,269 @@ void timer() {
 }
 
 
+void Tab() {
+	wchar_t shield[3] = L"\U0001F6E1", cross[3] = L"\U0001F7A7", skull[3] = L"\u2620", gun[3] = L"\U0001F5E1", net[3] = L"\U0001F5B3", bomb[3] = L"\U0001f4a3";
+	wstring ustr;
+	string str;
+
+	int charsize;
+	int maxplayers;
+	
+	rvm(PVOID(engine_dll_base + 0x366E74), 4, &maxplayers);
+	if (maxplayers <= 32) charsize = 15; else charsize = 15 - (maxplayers - 32) / 10; 
+
+	ID3DXFont* pFont;
+	D3DXCreateFont(p_Device, charsize, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
+
+	DWORD entityT;
+	int ctcount, tcount, speccount;
+	int cti = 0, ti = 0, si = 0, ui = 0, topT, alivet = 0, alivect = 0;
+	int intbuf1, intbuf2; char charint[32]; byte bytebuf; __int16 twobytebuf;
+	D3DCOLOR colorT;
+	
+	int topoffset = (64 - maxplayers) * 4;
+	DrawFilledRectangle(305 - border, 20 + topoffset, 310 + (charsize*117.6) / 2 + border, 70 + border + (4 + maxplayers)*charsize + topoffset, colorprim ); 
+	DrawFilledRectangle(305, 50 + topoffset, 310 + (charsize*117.6) / 2, 70 + (4 + maxplayers)*charsize + topoffset, colorsec ); 
+
+	char hostname[64] = ""; char towrite[256] = "";
+	rvm(PVOID(rpm(rpm(rpm(0x24000000 + 0x403430) + 0x18) + 0x20) + 0xC), 63, &hostname);
+	
+	strcat_s(towrite, hostname);
+	strcat_s(towrite, " | ");
+	rvm(PVOID(engine_dll_base + 0x3909C4 - enginedelta), 21, &hostname);
+	strcat_s(towrite, hostname);
+	strcat_s(towrite, " | ");
+	rvm(PVOID(engine_dll_base + 0x390B41 - enginedelta), 21, &hostname);
+	strcat_s(towrite, hostname);
+	strcat_s(towrite, " | ");
+	itoa(playerscount, charint, 10);
+	strcat_s(towrite, charint);
+	charint[0] = 0x0;
+	strcat_s(towrite, "/");
+	itoa(maxplayers, charint, 10);
+	strcat_s(towrite, charint);
+	charint[0] = 0x0;
+	RECT FontPos{ 305,27 + topoffset,310 + (charsize*117.6) / 2,40 + topoffset };
+
+	str = (char*)towrite;
+	fromUTF8(str, ustr);
+	pFont->DrawTextW(0, (wchar_t*)ustr.c_str(), ustr.length(), &FontPos, DT_CENTER, D3DCOLOR_XRGB(10, 45, 41));
+	
+	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0x8) + 0x46C ), 4, &tcount);
+	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0xC) + 0x46C), 4, &ctcount);
+	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0x4) + 0x46C), 4, &speccount);
+
+	byte hasbomb = 0;
+	rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0x12A0), 1, &hasbomb); 
+
+	wpm(rpm(rpm(rpm(0x24000000 + 0x3E1A54) + 0x44) + 0x168) - 0x6d66, 6); //close showscores
+
+	for (int i = 0; i < maxplayers; i++) {
+		entityT = rpm(0x24000000 + 0x3CF214 + 8 * (i));
+
+		//STEAMID
+		intbuf2 = rpm(rpm(engine_dll_base + 0x3958C8) + 0x38);
+		if (enginedelta)
+			rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958A8) + 0x38) + 0x24) + 0x14 + (0x28 * i)) + 0x24), 32, &charint);
+		else
+			rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958C8) + 0x38) + 0x24) + 0x14 + (0x28 * i)) + 0x24), 32, &charint);
+		if ((int)charint[0] == 0x0) continue;
+
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xF91 + i), 1, &bytebuf); //isConnected
+		if (bytebuf != 0) 
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xFD8 + 4 * i), 4, &intbuf1); //TEAM
+		else intbuf1 = 0;
+		
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0x10d9 + i), 1, &bytebuf); //isAlive
+
+		switch (intbuf1) {
+		case(0): //unassigned
+			colorT = D3DCOLOR_XRGB(255, 255, 255);
+			topT = 55 + topoffset + (ctcount + tcount + speccount + ui + 4) * charsize;
+			ui++;
+			break;
+		case(1): //spec
+			colorT = D3DCOLOR_XRGB(255, 255, 255);
+			topT = 55 + topoffset + (ctcount + tcount + si + 3) * charsize;
+			si++;
+			break;
+		case(2): //t
+			if (bytebuf) //alive
+			{
+				colorT = D3DCOLOR_XRGB(255, 125, 0);
+				alivet++;
+			}
+			else
+				colorT = D3DCOLOR_XRGB(255, 0, 0);
+			topT = 55 + topoffset + (ctcount + ti + 2) * charsize;
+			ti++;
+			break;
+		case(3): //ct
+			if (bytebuf) { //alive
+				colorT = D3DCOLOR_XRGB(0, 255, 255);
+				alivect++;
+			}
+			else
+				colorT = D3DCOLOR_XRGB(125, 125, 255); 
+			topT = 55 + topoffset + (cti + 1) * charsize;
+			cti++;
+			break;
+		}
+		rvm(PVOID(0x24000000 + 0x39D4FC), 1, &myid);
+		if (i + 1 == (int)myid)
+			colorT = D3DCOLOR_XRGB(255, 255, 0);
+
+		//STEAMID
+		DrawString((char*)charint, 310 + (charsize * 89.6) / 2, topT, colorT, pFont);
+		charint[0] = 0x0;
+
+		//ID
+		itoa(i + 1, charint, 10);
+		DrawString((char*)charint, 310, topT, colorT, pFont);
+		charint[0] = 0x0;
+
+		//NAME
+		rvm(PVOID(ptr + offset - 0x138 + i * PLRSZ), 32, &charint);
+		// Unicode <-> UTF8
+		str = (char*)charint;
+		fromUTF8(str, ustr);
+		DrawStringW((wchar_t*)ustr.c_str(), 330, topT, ustr.length(), colorT, pFont); 
+		charint[0] = 0x0;
+
+		if (i+1 == hasbomb)
+		DrawStringW(bomb, 310 + (charsize * 32) / 2, topT, 2, colorT, pFont); //BOMB 
+
+		//KILLS
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xD8c + 4 * i), 4, &intbuf1);
+		itoa(intbuf1, charint, 10);
+		DrawStringW(gun, 310 + (charsize * 35) / 2, topT, 2, colorT, pFont); //KNIFE 
+		DrawString((char*)charint, 310 + (charsize * 37.5) / 2, topT, colorT, pFont);
+		charint[0] = 0x0;
+
+		//DEATHS
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xE90 + 4 * i), 4, &intbuf2);
+		itoa(intbuf2, charint, 10);
+		DrawStringW(skull, 310 + (charsize * 42.5) / 2, topT, 2, colorT, pFont); //SKULL 
+		DrawString((char*)charint, 310 + (charsize * 45) / 2, topT, colorT, pFont);
+		charint[0] = 0x0;
+
+		//K/D RATIO
+		if (intbuf2 == 0) intbuf2 = 1;
+		DrawString((char*)(std::to_string((float)intbuf1 / (float)intbuf2).c_str()), 310 + (charsize * 50) / 2, topT, 4, colorT, pFont);
+
+		//HP
+		DrawStringW(cross, 310 + (charsize * 55) / 2, topT, 2, colorT, pFont); //CROSS
+		rvm(PVOID(ptr + offset - 0x114 + i * PLRSZ), 4, &intbuf2);
+		itoa(intbuf2, charint, 10);
+		DrawString((char*)charint, 310 + (charsize * 56.8) / 2, topT, colorT, pFont);
+		charint[0] = 0x0;
+
+		if (entityT) {
+			//ARMOR
+			rvm(PVOID(entityT + 0xA4C + 0x5c4), 4, &intbuf1);
+			itoa(intbuf1, charint, 10);
+			DrawStringW(shield, 310 + (charsize * 60.8) / 2, topT, 2, colorT, pFont); //SHIELD 
+			DrawString((char*)charint, 310 + (charsize*62.6) / 2, topT, colorT, pFont);
+			charint[0] = 0x0;
+
+			//MONEY
+			DrawString((char*)"$", 310 + (charsize*66.6) / 2 , topT, colorT, pFont); 
+			rvm(PVOID(entityT + 0x1004), 4, &intbuf1);
+			itoa(intbuf1, charint, 10);
+			DrawString((char*)charint, 310 + (charsize * 67.6) / 2, topT, colorT, pFont);
+			charint[0] = 0x0;
+
+			//WEAPON
+			if (bytebuf) { //if Alive
+				rvm(PVOID(entityT + 0xB30), 2, &twobytebuf);
+				twobytebuf &= 0x0FFF;
+				rvm(PVOID(rpm(rpm(rpm(rpm(0x24000000 + 0x3CF20C + 8 * twobytebuf)) - 0x4) - 0x8) + 0xE), 24, &charint);
+				for (int i = 0; i < 24; i++)
+				{
+					if (charint[i] == 0x40)
+						charint[i] = 0x0;
+				}
+				DrawString((char*)charint, 310 + (charsize*73.6) / 2, topT, colorT, pFont);
+				charint[0] = 0x0;
+			}
+		}
+
+		//PING
+		DrawStringW(net, 310 + (charsize * 110.6) / 2, topT, 2, colorT, pFont); //COMPUTER 
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xC88 + 4 * i), 4, &intbuf1); 
+		itoa(intbuf1, charint, 10);
+		DrawString((char*)charint, 310 + (charsize * 112.6) / 2, topT, colorT, pFont);
+		charint[0] = 0x0;
+
+	}
+	playerscount = ctcount + tcount + speccount + ui;
+
+	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0xC) + 0x494), 4, &intbuf1); //ctwins
+	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0x8) + 0x494), 4, &intbuf2); //twins
+
+	//Counter-Terrorists | %alivect of %ctcount alive | %ct score
+	char towriteCT[256] = "Counter-Terrorists | ";
+	itoa(alivect, charint, 10);
+	strcat_s(towriteCT, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteCT, " of ");
+	itoa(ctcount, charint, 10);
+	strcat_s(towriteCT, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteCT, " alive | ");
+	itoa(intbuf1, charint, 10);
+	strcat_s(towriteCT, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteCT, " score");
+	DrawString((char*)towriteCT, 310, topoffset + 55, D3DCOLOR_XRGB(0, 255, 255), pFont);
+	
+	char towriteT[256] = "Terrorists | ";
+	itoa(alivet, charint, 10);
+	strcat_s(towriteT, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteT, " of ");
+	itoa(tcount, charint, 10);
+	strcat_s(towriteT, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteT, " alive | ");
+	itoa(intbuf2, charint, 10);
+	strcat_s(towriteT, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteT, " score");
+	DrawString((char*)towriteT, 310, topoffset + 55 + (ctcount + 1)*charsize, D3DCOLOR_XRGB(255, 125, 0), pFont);
+
+	char towriteS[256] = "Spectators | ";
+	itoa(speccount, charint, 10);
+	strcat_s(towriteS, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteS, " players");
+	DrawString((char*)towriteS, 310, topoffset + 55 + (ctcount + tcount + 2) * charsize, D3DCOLOR_XRGB(255, 255, 255), pFont);
+
+	char towriteU[256] = "Unassigned | ";
+	itoa(ui, charint, 10);
+	strcat_s(towriteU, charint);
+	charint[0] = 0x0;
+	strcat_s(towriteU, " players");
+	DrawString((char*)towriteU, 310, topoffset + 55 + (ctcount + tcount + speccount + 3) * charsize, D3DCOLOR_XRGB(255, 255, 255), pFont);
+
+	pFont->Release();
+}
+
 void myDraw() {
 
 		menu();
 		if (rpm(engine_dll_base + 0x53B55C - enginedelta)) //in server?
 		{
-			if (cheat("Radarhack & Bombtimer") == 2) {
+			
+			if (cheat("Radarhack") == 2) {
 				rvm(PVOID(0x24000000 + 0x3BA3C0), 4, &radarhackptr);
 				if (radarhackptr)
 					wpm(PVOID(radarhackptr + 0x13D8), 64, &sf);
 			}
 
-			if (cheat("Radarhack & Bombtimer") == 1) {
+			if (cheat("Radarhack") == 1) {
 				sprite->Begin(D3DXSPRITE_ALPHABLEND);
-				sprite->Draw(tex, NULL, NULL, &position, color2);
+				sprite->Draw(tex, NULL, NULL, &position, D3DCOLOR_ARGB(255, 255, 255, 255));
 				sprite->End();
 			}
 
@@ -830,7 +1057,7 @@ void myDraw() {
 				IDirect3DDevice9_Clear(p_Device, 1, &rect2, D3DCLEAR_TARGET, color, 0, 0);
 			}
 
-			if (cheat("Aimbot").enabled > 0 || cheat("Radarhack & Bombtimer").enabled == 1 || cheat("ESP").enabled > 0)
+			if (cheat("Aimbot").enabled > 0 || cheat("Radarhack").enabled == 1 || cheat("ESP").enabled > 0 || cheat("Serverinfo & Bombtimer") == 1)
 			{
 
 				rvm(PVOID(0x24000000 + 0x3FD5C4), 4, &myposX);
@@ -843,6 +1070,8 @@ void myDraw() {
 
 				yl_closest = 1000; xl_closest = 1000;
 
+				char charint[32]; int intbuf; short int shintbuf; byte bytebuf;
+				string str; wstring ustr;
 
 				if (cheat("ESP") == 3) {
 					ID3DXFont* pFont;
@@ -855,7 +1084,6 @@ void myDraw() {
 					{
 						rvm(PVOID(0x24000000 + 0x3BF1D4 + 0x10 * i), 4, &boneptr);
 						rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
-
 						rvm(PVOID(boneptr + 0x0c), 4, &coords[0]);
 						rvm(PVOID(boneptr + 0x1c), 4, &coords[1]);
 						rvm(PVOID(boneptr + 0x2c), 4, &coords[2]);
@@ -869,10 +1097,10 @@ void myDraw() {
 							entity = rpm(entity);
 							entity = rpm(entity - 0x4);
 							entity = rpm(entity - 0x8);
-							espwep[0] = 0x0;
-							rvm(PVOID(entity + 0x8), 24, &espwep);
+							charint[0] = 0x0;
+							rvm(PVOID(entity + 0x8), 24, &charint);
 
-							if ((char*)espwep[0] == 0x0) //Unknown entity
+							if ((char*)charint[0] == 0x0) //Unknown entity
 							{
 								ss.str("");
 								continue;
@@ -882,13 +1110,13 @@ void myDraw() {
 							if (abs(prevX - xl) < 5 && abs(prevY - yl) < 5)
 							{
 								DrawString(cstr, xl, yl + offs * 10, color, pFont);
-								DrawString((char*)(espwep), xl + 20, yl + offs * 10, color, pFont);
+								DrawString((char*)(charint), xl + 20, yl + offs * 10, color, pFont);
 								offs++;
 							}
 							else
 							{
 								DrawString(cstr, xl, yl, color, pFont);
-								DrawString((char*)(espwep), xl + 20, yl, color, pFont);
+								DrawString((char*)(charint), xl + 20, yl, color, pFont);
 							}
 
 							prevX = xl; prevY = yl;
@@ -898,51 +1126,29 @@ void myDraw() {
 					}
 					pFont->Release();
 				}
-				for (i = -1; i < 63; i++)
+				for (i = 0; i < 64; i++)
 				{
 					rvm(PVOID(0x24000000 + 0x39D4FC), 1, &myid);
-					if (i + 2 == (int)myid)
+					if (i + 1 == (int)myid)
 						continue;
 
 					if (cheat("Aimbot") != 2)
-						rvm((PVOID)(ptr + 0x228 + 0x30 + i * 0x140), 12, &coords);
+						rvm((PVOID)(ptr + 0x118 + i * 0x140), 12, &coords);
 					else {
-						rvm(PVOID(0x24000000 + 0x3BF1F4 + 0x10 * i), 4, &boneptr);
-
-						if (!boneptr) {
-							coords[0] = 0; coords[1] = 0; coords[2] = 0;
-						}
-						else {
-							rvm(PVOID(boneptr + 0x24), 4, &boneptr);
-							rvm(PVOID(boneptr + 0x34), 4, &boneptr);
-
-
-							if (!boneptr) {
-								coords[0] = 0; coords[1] = 0; coords[2] = 0;
-							}
-							else {
-
-								rvm(PVOID(boneptr + 0x158), 4, &boneptr);
-
-								if (!boneptr) {
-									coords[0] = 0; coords[1] = 0; coords[2] = 0;
-								}
-								else {
-									rvm((PVOID)(boneptr + 0x60 + 0x24C), 4, &coords[0]);
-									rvm((PVOID)(boneptr + 0x60 + 0x25C), 4, &coords[1]);
-									rvm((PVOID)(boneptr + 0x60 + 0x26C), 4, &coords[2]);
-
-									coords[2] = coords[2] + 1;
-								}
-							}
-						}
+						rvm(PVOID(0x24000000 + 0x3BF1E4 + 0x10 * i ), 4, &boneptr);
+						rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
+						rvm(PVOID(boneptr + 0x0c + 0x2A0), 4, &coords[0]);
+						rvm(PVOID(boneptr + 0x1c + 0x2A0), 4, &coords[1]);
+						rvm(PVOID(boneptr + 0x2c + 0x2A0), 4, &coords[2]);
+						coords[2] = coords[2] + 1;
 					}
 
-					rvm((PVOID)(ptr + 0x228 + 0x30 + i * 0x140), 12, &radarcoords);
-					rvm(PVOID(ptr + offset + 0x2c + i * PLRSZ), 4, &hp);
-					rvm(PVOID(ptr + offset + 0x6 + i * PLRSZ), 1, &team);
+					rvm((PVOID)(ptr + 0x118 + i * 0x140), 12, &radarcoords);
+					rvm(PVOID(ptr + offset - 0x114 + i * PLRSZ), 4, &hp);
+					rvm(PVOID(ptr + offset - 0x13A + i * PLRSZ), 1, &team);
 
-					if (radarcoords[0] != 0 && hp > 0) {
+					rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0x10d9 + i), 1, &bytebuf); //isAlive
+					if (radarcoords[0] != 0 && bytebuf) { 
 						//Radar trigonometry
 						deltaX = myposX - radarcoords[0];
 						deltaY = myposY - radarcoords[1];
@@ -960,7 +1166,7 @@ void myDraw() {
 							deltaY = k * deltaY;
 						}
 
-						if (cheat("Radarhack & Bombtimer") == 1) {
+						if (cheat("Radarhack") == 1) {
 							if ((int)team == (int)myteam)
 								color = D3DCOLOR_ARGB(255, 0, 255, 0);
 							else
@@ -975,18 +1181,17 @@ void myDraw() {
 						//get3Ddist
 						enemyDistance = sqrtss(deltaXold*deltaXold + deltaYold * deltaYold + deltaZ * deltaZ);
 
-						entity = rpm(0x24000000 + 0x3CF20C + 8 * (i + 2));
+						entity = rpm(0x24000000 + 0x3CF214 + 8 * i );
 						rvm(PVOID(entity + 0x138), 1, &bDormant);
 
 						if ((int)team == (int)myteam)
 							color = D3DCOLOR_ARGB(255, 0, 255, 0);
 						else color = D3DCOLOR_ARGB(255, 255, 0, 0);
 
-						if (!bDormant && WorldToScreen(viewmatrix, coords, &xl, &yl, &wl)) {
+						if (entity && !bDormant && WorldToScreen(viewmatrix, coords, &xl, &yl, &wl)) {
 							if (cheat("ESP") == 1 || cheat("ESP") == 2)
 							{
 								DrawBorderBox(xl - 10000 / enemyDistance, yl - 10, 20000 / enemyDistance, 40000 / enemyDistance, 3, color);
-								//drawHPhere
 								DrawFilledRectangle(
 									xl - 10000 / enemyDistance,
 									yl - 18,
@@ -1000,66 +1205,58 @@ void myDraw() {
 								color = D3DCOLOR_XRGB(255, 255, 255);
 								ID3DXFont* pFont;
 								D3DXCreateFont(p_Device, 12, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
-								rvm(PVOID(ptr + offset + 0x8 + i * PLRSZ), 32, &espname);
-								itoa(i + 2, espid, 10);
-								DrawString((char*)espid, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 0, color, pFont);
-								DrawString((char*)espname, xl - 10000 / enemyDistance + 20000 / enemyDistance + 21, yl - 6 + 12 * 0, color, pFont);
-								itoa(hp, esphp, 10);
-								rvm(PVOID(entity + 0xA4C + 0x5c4), 4, &armor);
-								itoa(armor, esparm, 10);
+								itoa(i + 1, charint, 10);
+								DrawString((char*)charint, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 0, color, pFont); 
+								charint[20] = 0x0;
 
+								rvm(PVOID(ptr + offset - 0x138 + i * PLRSZ), 32, &charint);
+								str = (char*)charint;
+								fromUTF8(str, ustr);
+								DrawStringW((wchar_t*)ustr.c_str(), xl - 10000 / enemyDistance + 20000 / enemyDistance + 21, yl - 6 + 12 * 0, ustr.length(), color, pFont);
+								charint[20] = 0x0;
+
+								itoa(hp, charint, 10);
 								DrawString((char*)"H", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 1, color, pFont);
-								DrawString((char*)esphp, xl - 10000 / enemyDistance + 20000 / enemyDistance + 14, yl - 6 + 12 * 1, color, pFont);
+								DrawString((char*)charint, xl - 10000 / enemyDistance + 20000 / enemyDistance + 14, yl - 6 + 12 * 1, color, pFont);
+								charint[0] = 0x0;
+
+								rvm(PVOID(entity + 0xA4C + 0x5c4), 4, &intbuf);
+								itoa(intbuf, charint, 10);
 								DrawString((char*)"A", xl - 10000 / enemyDistance + 20000 / enemyDistance + 38, yl - 6 + 12 * 1, color, pFont);
-								DrawString((char*)esparm, xl - 10000 / enemyDistance + 20000 / enemyDistance + 45, yl - 6 + 12 * 1, color, pFont);
+								DrawString((char*)charint, xl - 10000 / enemyDistance + 20000 / enemyDistance + 45, yl - 6 + 12 * 1, color, pFont);
+								charint[0] = 0x0;
 
-								rvm(PVOID(engine_dll_base + 0x3958C8), 4, &steamidptr);
-								rvm(PVOID(steamidptr + 0x38), 4, &steamidptr);
+								if (enginedelta)
+									rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958A8) + 0x38) + 0x24) + 0x14 + (0x28 * i)) + 0x24), 32, &charint);
+								else
+									rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958C8) + 0x38) + 0x24) + 0x14 + (0x28 * i)) + 0x24), 32, &charint);
+								
+								charint[20] = 0x0;
+								DrawString((char*)charint, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 2, color, pFont);
+								charint[0] = 0x0;
 
-								if (steamidptr == 0)
-								{
-									steamidptr = rpm(engine_dll_base + 0x3958A8);
-									steamidptr = rpm(steamidptr + 0x38);
-
-									rvm(PVOID(steamidptr + 0x24), 4, &steamidptr);
-									rvm(PVOID(steamidptr + 0x14 + (0x28 * (i + 1))), 4, &steamidptr);
-									rvm(PVOID(steamidptr + 0x24), 20, &steamid);
-								}
-								else {
-									rvm(PVOID(steamidptr + 0x24), 4, &steamidptr);
-									rvm(PVOID(steamidptr + 0x14 + (0x28 * (i + 1))), 4, &steamidptr);
-									rvm(PVOID(steamidptr + 0x24), 20, &steamid);
-								}
-
-								steamid[20] = 0x0;
-								DrawString((char*)steamid, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 2, color, pFont);
-
-								rvm(PVOID(entity + 0x1004), 4, &money);
-								itoa(money, espmon, 10);
+								rvm(PVOID(entity + 0x1004), 4, &intbuf);
+								itoa(intbuf, charint, 10);
 								DrawString((char*)"$", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 3, color, pFont);
-								DrawString((char*)espmon, xl - 10000 / enemyDistance + 20000 / enemyDistance + 13, yl - 6 + 12 * 3, color, pFont);
+								DrawString((char*)charint, xl - 10000 / enemyDistance + 20000 / enemyDistance + 13, yl - 6 + 12 * 3, color, pFont);
+								charint[0] = 0x0;
 
-								rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xC88 + 4*(i+1)), 4, &ping);
-								itoa(ping, espping, 10);
+								rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xC88 + 4*i), 4, &intbuf);
+								itoa(intbuf, charint, 10);
 								DrawString((char*)"ping: ", xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 5, color, pFont);
-								DrawString((char*)espping, xl - 10000 / enemyDistance + 20000 / enemyDistance + 35, yl - 6 + 12 * 5, color, pFont);
+								DrawString((char*)charint, xl - 10000 / enemyDistance + 20000 / enemyDistance + 35, yl - 6 + 12 * 5, color, pFont);
+								charint[0] = 0x0;
 
-
-								rvm(PVOID(entity + 0x56C + 0x5c4), 1, &wepid);
-								entity = rpm(0x24000000 + 0x3CF20C + 8 * wepid);
-								entity = rpm(entity);
-								entity = rpm(entity - 0x4);
-								entity = rpm(entity - 0x8);
-
-								rvm(PVOID(entity + 0xA + 4), 24, &espwep);
-
+								rvm(PVOID(entity + 0xB30), 2, &shintbuf);
+								shintbuf &= 0x0FFF;
+								rvm(PVOID(rpm(rpm(rpm(rpm(0x24000000 + 0x3CF20C + 8 * shintbuf)) - 0x4) - 0x8) + 0xE), 24, &charint);
 								for (int i = 0; i < 24; i++)
 								{
-									if (espwep[i] == 0x40)
-										espwep[i] = 0x0;
+									if (charint[i] == 0x40)
+										charint[i] = 0x0;
 								}
-
-								DrawString((char*)espwep, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 4, color, pFont);
+								DrawString((char*)charint, xl - 10000 / enemyDistance + 20000 / enemyDistance + 7, yl - 6 + 12 * 4, color, pFont);
+								charint[0] = 0x0;
 
 								pFont->Release();
 							}
@@ -1092,9 +1289,11 @@ void myDraw() {
 					closest_final = -2;
 				}
 
-				if (cheat("Radarhack & Bombtimer") == 1)
-				{
+				if (cheat("Radarhack")==1)
 					DrawFilledRectangle(144, 144, 151, 151, 100, 0, 255, 255); //white square on the center of the radar
+
+				if (cheat("Serverinfo & Bombtimer") == 1)
+				{
 					bombplanted = rpm(0x24000000 + 0x3FAB68); //we have a bomb?
 					if (bombplanted) {
 						if (xd == 0) {
@@ -1109,10 +1308,10 @@ void myDraw() {
 								entity = rpm(entity - 0x4);
 								entity = rpm(entity - 0x8);
 
-								espwep[0] = 0x0;
-								rvm(PVOID(entity + 0x8), 24, &espwep);
+								charint[0] = 0x0;
+								rvm(PVOID(entity + 0x8), 24, &charint);
 
-								if (!strcmp((char*)espwep, (char*)".?AVC_PlantedC4@@"))
+								if (!strcmp((char*)charint, (char*)".?AVC_PlantedC4@@"))
 								{
 #ifdef DEBUG
 									cout << "We have a bomb (id " << hex << i << dec << ") ";
@@ -1126,12 +1325,15 @@ void myDraw() {
 								}
 							}
 						}
-						ID3DXFont* pFont;
-						D3DXCreateFont(p_Device, 20, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
-						DrawBorderBox(Width / 2 - 285, Height / 2 + 295, 565, 45, 5, D3DCOLOR_XRGB(7, 231, 171));
-						DrawFilledRectangle(Width / 2 - 280, Height / 2 + 300, Width / 2 - 280 + xd, Height / 2 + 340, D3DCOLOR_ARGB(150, 10, 45, 41));
-						DrawString((char*)(std::to_string(bomb).c_str()), Width / 2 - 5, Height / 2 + 310, 4, D3DCOLOR_XRGB(255, 255, 255), pFont);
-						pFont->Release();
+
+						if (bomb > 0) {
+							ID3DXFont* pFont;
+							D3DXCreateFont(p_Device, 20, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
+							DrawBorderBox(Width / 2 - 280 - border, Height / 2 + 300 - border, 565, 40+border, border, colorprim);
+							DrawFilledRectangle(Width / 2 - 280, Height / 2 + 300, Width / 2 - 280 + xd, Height / 2 + 340, colorsec);
+							DrawString((char*)(std::to_string(bomb).c_str()), Width / 2 - 5, Height / 2 + 310, 4, D3DCOLOR_XRGB(255, 255, 255), pFont);
+							pFont->Release();
+						}
 
 						deltaX = myposX - bombcoords[0];
 						deltaY = myposY - bombcoords[1];
@@ -1149,8 +1351,9 @@ void myDraw() {
 						DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, D3DCOLOR_XRGB(200, 200, 200));
 					}
 				}
-
 			} //esp,radar,aim enabled?
+			if (cheat("Serverinfo & Bombtimer") == 1 && GetAsyncKeyState(VK_TAB) < 0)
+				Tab();
 		} //we on server? 
 		else
 		cheat("Play HLDJ") = 0;
@@ -1295,14 +1498,14 @@ void TriggerCheck()
 
 			if (cheat("Speedhack").enabled != 100) {
 				wpm(timescaleptr + 0x108, speed);
-				wpm(engine_dll_base + 0x4D2860 - enginedelta, 500.0f / speed); //fps max/timescale
+				//wpm(engine_dll_base + 0x4D2860 - enginedelta, 300.0f / speed); //framerate = fps/timescale
 			}
 			else 
 			{
 				byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes2), bytes2);
 				wpm(timescaleptr + 0x108, 100.0f);
-				wpm(engine_dll_base + 0x4D2860 - enginedelta, 50.0f); 
+				//wpm(engine_dll_base + 0x4D2860 - enginedelta, 50.0f); 
 			}
 
 			//waiting
@@ -1453,11 +1656,11 @@ void TriggerCheck()
 			cheat.Update("Play HLDJ");
 		}
 
-		if (cheat.Triggered("Radarhack & Bombtimer"))
+		if (cheat.Triggered("Radarhack"))
 		{
-			cheat.Update("Radarhack & Bombtimer");
+			cheat.Update("Radarhack");
 
-			if (cheat("Radarhack & Bombtimer") == 1)
+			if (cheat("Radarhack") == 1)
 				//radaralpha = 1
 				wpm(0x24000000 + 0x3FF464, 1);
 			else {
@@ -1465,7 +1668,7 @@ void TriggerCheck()
 				wpm(0x24000000 + 0x3FF464, 255);
 			}
 
-			if (cheat("Radarhack & Bombtimer") != 3)
+			if (cheat("Radarhack") == 0 || cheat("Radarhack") == 2)
 			{
 				wpm(spec1, 0x085E89);
 				wpm(spec1 + 3, 0x90909090);
@@ -1478,7 +1681,7 @@ void TriggerCheck()
 				wpm(localplayer + 0xD80, 0); //spec type
 			}
 
-			if (cheat("Radarhack & Bombtimer") == 3)
+			if (cheat("Radarhack") == 3)
 			{
 				wpm(spec1, 0x0846C7);
 				wpm(spec1 + 3, 0x00000001);
@@ -1601,7 +1804,6 @@ void TriggerCheck()
 			wpm(engine_dll_base + 0x394BF0 - enginedelta, rand()*rand()); //Cupa's 
 			wpm(rpm(rpm(rpm(0x24000000 + 0x403060) + 0x350) + 0x44) + 0x868, 0x160000); //no motd
 		}
-
 
 		Sleep(10);
 	}
