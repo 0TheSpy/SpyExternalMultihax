@@ -146,12 +146,10 @@ void Namestealer() {
 	while (true) {
 
 		if (cheat("Namestealer") == 1) {
-
 			rvm(PVOID(engine_dll_base + 0x366E74), 4, &maxplayers);
-
 			rando = rand() % maxplayers;
-
 			rvm(PVOID(0x24000000 + 0x39D4FC), 1, &myid);
+
 			if (rando + 1 == (int)myid)
 				continue;
 
@@ -160,9 +158,9 @@ void Namestealer() {
 
 			name[0] = 0x0;
 			if (enginedelta)
-				rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958A8) + 0x38) + 0x24) + 0x14 + (0x28 * (rando+i)))), 32, &name);
+				rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958A8) + 0x38) + 0x24) + 0x14 + (0x28 * (rando) ))), 32, &name);
 			else
-				rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958C8) + 0x38) + 0x24) + 0x14 + (0x28 * (rando+i)))), 32, &name);
+				rvm(PVOID(rpm(rpm(rpm(rpm(engine_dll_base + 0x3958C8) + 0x38) + 0x24) + 0x14 + (0x28 * (rando) ))), 32, &name);
 
 			if ((int)name[0] > 0x20 || (int)name[0] < 0)
 			{
@@ -1062,7 +1060,6 @@ void myDraw() {
 
 			if (cheat("Aimbot").enabled > 0 || cheat("Radarhack").enabled == 1 || cheat("ESP").enabled > 0 || cheat("Serverinfo & Bombtimer") == 1)
 			{
-
 				rvm(PVOID(0x24000000 + 0x3FD5C4), 4, &myposX);
 				rvm(PVOID(0x24000000 + 0x3EE0C8), 4, &myposY);
 				rvm(PVOID(0x24000000 + 0x3FD550), 4, &myangY);
