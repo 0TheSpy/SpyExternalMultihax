@@ -85,7 +85,7 @@ float myposX, myposY, myangY, deltaX, deltaY, fi = 0.08, coords[3], radarcoords[
 xl_closest_final = 0, yl_closest_final = 0, viewmatrix[4][4], hyp1, hyp2, deltaXold, deltaYold, deltaZ, myposZ, enemyDistance, 
  bomb, xd = 0, bombcoords[3], prevX, prevY, flickerCheck;
 int closest, closest_final, aimfov, menutop = 340, i, hp, team, myteam, maxentityid, offs, playerscount;
-char esphp[4], *cstr = &s[0];
+char *cstr = &s[0];
 BOOL boostsleep = 0, angleshack = 0, bombplanted = 0, fullbright = 0;
 PVOID rotating, freevisangX, freevisangY, freevisangZ, asmWHcave, fixPredict, whlight;
 byte sf[] = { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
