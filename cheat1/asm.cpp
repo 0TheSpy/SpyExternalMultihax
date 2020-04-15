@@ -1,6 +1,19 @@
 #pragma once
 #define endfunc __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC
 
+__declspec(naked) void TabDisable(void)
+{
+	__asm {
+		mov esi, dword ptr ds:[esp + 0x00000410]
+		cmp esi, 0x9
+		jne exitt
+		mov esi, 0x0
+		exitt:
+	}
+	endfunc
+}
+
+
 __declspec(naked) void FakeLag(void)
 {
 	__asm {
