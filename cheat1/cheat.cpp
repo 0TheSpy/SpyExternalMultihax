@@ -179,7 +179,6 @@ void Namestealer() {
 	}
 }
 
-#include <bitset>
 void Bunnyhop()
 {
 	#define FORCE_JUMP_BITMASK (1<<0)
