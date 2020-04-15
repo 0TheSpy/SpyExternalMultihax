@@ -25,12 +25,16 @@
 #include <stdlib.h>     /* srand, rand */
 #include "checksum_md5.h"
 #include "random.h"
+#include <bitset>
+#include <locale>         // std::wstring_convert
+#include <codecvt>        // std::codecvt_utf8
 
 using namespace std;
 using std::stringstream;
 
 #include "spymemory.h"
 #include "d3d9.h"
+
 
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
@@ -197,8 +201,7 @@ bool operator!=(int enabled, Feature f)
 void MenuSelect();
 void DisExit();
 
-#include <locale>         // std::wstring_convert
-#include <codecvt>        // std::codecvt_utf8
+
 template <typename T>
 void fromUTF8(const string& source, basic_string<T, char_traits<T>, allocator<T>>& result)
 {
