@@ -96,9 +96,10 @@ void fakeLag() {
 				wpm(engine_dll_base + 0x3953bc - enginedelta, 22);
 				wpm(engine_dll_base + 0x3953c0 - enginedelta, 31);
 
-				wpm(svcheatsptr + 0x314, 1); //sv cheats 1
-				wpm(timescaleptr + 0x108, 38.0f); //host_timescale
+				wpm(engine_dll_base + 0x51f794 - enginedelta, 1); //sv cheats 1
+				wpm(engine_dll_base + 0x4D28F0 - enginedelta, 38.0f); //host_timescale
 				wpm(engine_dll_base + 0x4D2860 - enginedelta, 12.0f); //host_framerate
+				SendCMD("cl_predictweapons 0");
 			}
 
 			if (cheat("Fake Lag") != 2) 
@@ -110,8 +111,8 @@ void fakeLag() {
 				byte bytes4[] = { 0xA3, dw2b4.bytes[0],dw2b4.bytes[1],dw2b4.bytes[2],dw2b4.bytes[3], 0xC7, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x00, 0x00, 0x00, 0x00 };
 				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes4), bytes4);
 
-				wpm(svcheatsptr + 0x314, 0); //sv cheats 0
-				wpm(timescaleptr + 0x108, 1.0f);	//host_timescale
+				wpm(engine_dll_base + 0x51f794 - enginedelta, 0); //sv cheats 0
+				wpm(engine_dll_base + 0x4D28F0 - enginedelta, 1.0f);	//host_timescale
 				wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
 				wpm(0x24000000 + 0x3E71E4, 4);
 			}
@@ -646,8 +647,8 @@ void Aimbot()
 
 			if (cheat("No Recoil & No Spread") == 2 )
 			{
-				wpm(svcheatsptr + 0x314, 1);
-				wpm(timescaleptr + 0x108, 2.0f); 
+				wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
+				wpm(engine_dll_base + 0x4D28F0 - enginedelta, 2.0f);
 				wpm(engine_dll_base + 0x4D2860 - enginedelta, 200.0f); //host_framerate
 
 				//set sequence
@@ -659,8 +660,8 @@ void Aimbot()
 
 				Sleep(5);
 
-				wpm(svcheatsptr + 0x314, 0);
-				wpm(timescaleptr + 0x108, 1.0f);
+				wpm(engine_dll_base + 0x51f794 - enginedelta, 0);
+				wpm(engine_dll_base + 0x4D28F0 - enginedelta, 1.0f);
 				wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //host_framerate
 				Sleep(10); 
 			}
@@ -697,20 +698,20 @@ void noHandsSky() {
 		wpm(0x24000000 + 0x3EEDFC, 0);
 		wpm(0x24000000 + 0x3EE78C, 1);
 
-		wpm(svcheatsptr + 0x314, 1);
+		wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
 		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
 		Sleep(500);
-		wpm(svcheatsptr + 0x314, 0);
+		wpm(engine_dll_base + 0x51f794 - enginedelta, 0);
 	}
 
 	if (cheat("No Hands & No Sky") == 0) {
 		wpm(0x24000000 + 0x3EEDFC, 1);
 		wpm(0x24000000 + 0x3EE78C, 0);
 
-		wpm(svcheatsptr + 0x314, 1);
+		wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
 		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
 		Sleep(500);
-		wpm(svcheatsptr + 0x314, 0);
+		wpm(engine_dll_base + 0x51f794 - enginedelta, 0);
 	}
 }
 
@@ -1441,9 +1442,6 @@ void TriggerCheck()
 
 	while (true)
 	{
-		svcheatsptr = rpm(0x24000000 + 0x3BEA44);
-		timescaleptr = rpm(0x24000000 + 0x3E1D20);
-
 		if (GetAsyncKeyState(VK_LBUTTON) < 0)
 		{
 			if (tWnd == GetForegroundWindow())
@@ -1494,27 +1492,27 @@ void TriggerCheck()
 		if (cheat("Speedhack").enabled != 10 && tWnd == GetForegroundWindow() && GetAsyncKeyState(0x12) < 0) //alt pressed
 		{
 			speed = (float)cheat("Speedhack").enabled / 10;
-			wpm(svcheatsptr + 0x314, 1);
+			wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
 
 			if (cheat("Speedhack").enabled != 100) {
-				wpm(timescaleptr + 0x108, speed);
+				wpm(engine_dll_base + 0x4D28F0 - enginedelta, speed);
 				//wpm(engine_dll_base + 0x4D2860 - enginedelta, 300.0f / speed); //framerate = fps/timescale
 			}
 			else 
 			{
 				byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes2), bytes2);
-				wpm(timescaleptr + 0x108, 100.0f);
-				//wpm(engine_dll_base + 0x4D2860 - enginedelta, 50.0f); 
+				wpm(engine_dll_base + 0x4D28F0 - enginedelta, 100.0f);
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 50.0f); //framerate
 			}
 
 			//waiting
 			while (GetAsyncKeyState(0x12) < 0)
 				Sleep(1);
 
-			wpm(svcheatsptr + 0x314, 0);
-			wpm(timescaleptr + 0x108, 1.0f);
-			wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); 
+			wpm(engine_dll_base + 0x51f794 - enginedelta, 0); //svcheats
+			wpm(engine_dll_base + 0x4D28F0 - enginedelta, 1.0f); //timescale
+			//wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //framerate
 			if (cheat("Speedhack").enabled == 100) {
 				dword2bytes dw2b3 = { engine_dll_base + 0x3953C0 - enginedelta };
 				dword2bytes dw2b4 = { engine_dll_base + 0x3953bc - enginedelta };
