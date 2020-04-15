@@ -12,7 +12,8 @@ Features:
 - ESP
 (position, team, name, hp, armor, money, steamid, weapon, ping)
 - Chameleon Wallhack, Fullbright (button F)
-- Radarhack (custom, regular, spectator), Bombtimer
+- Radarhack (custom, regular, spectator)
+- Serverinfo & Bombtimer
 - Smart Crosshair
 - No Visual Recoil, No Recoil, No Spread
 - No Smoke, No Flash
