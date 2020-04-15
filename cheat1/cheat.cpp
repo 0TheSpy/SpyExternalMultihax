@@ -1514,6 +1514,7 @@ void TriggerCheck()
 				dword2bytes dw2b4 = { engine_dll_base + 0x3953bc - enginedelta };
 				byte bytes4[] = { 0xA3, dw2b4.bytes[0],dw2b4.bytes[1],dw2b4.bytes[2],dw2b4.bytes[3], 0xC7, 0x05, dw2b3.bytes[0],dw2b3.bytes[1],dw2b3.bytes[2],dw2b3.bytes[3], 0x00, 0x00, 0x00, 0x00 };
 				wvm(PVOID(engine_dll_base + 0x426D9 + enginedelta), sizeof(bytes4), bytes4);
+				wpm(engine_dll_base + 0x4D2860 - enginedelta, 0.0f); //framerate
 			}
 		}
 
