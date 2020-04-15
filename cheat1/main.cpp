@@ -123,10 +123,7 @@ void myInit() {
 #ifdef DEBUG
 	printf("Sequence delta = %0x\n", enginedelta);
 #endif
-	//enginedelta:
-	//0x0 -> build 3945
-	//0x20 -> build 4044
-	
+
 	char pattern3[] = "\xF3\xA4\x8B\x43\x40";
 	char mask3[] = "xxxxx";
 	aobconsole = ExternalAoBScan(hProcess, engine_dll_base, pattern3, mask3);
