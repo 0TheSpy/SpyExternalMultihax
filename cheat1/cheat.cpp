@@ -138,6 +138,8 @@ void WH() {
 }
 
 void Namestealer() {
+
+	int maxplayers;
 	TCHAR name[32];
 
 	int rando, old = 65;
@@ -145,11 +147,12 @@ void Namestealer() {
 
 		if (cheat("Namestealer") == 1) {
 
-			rando = rand() % 64;
-			rando -= 1;
+			rvm(PVOID(engine_dll_base + 0x366E74), 4, &maxplayers);
+
+			rando = rand() % maxplayers;
 
 			rvm(PVOID(0x24000000 + 0x39D4FC), 1, &myid);
-			if (rando + 2 == (int)myid)
+			if (rando + 1 == (int)myid)
 				continue;
 
 			if (rando == old)
