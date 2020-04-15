@@ -1298,9 +1298,6 @@ void myDraw() {
 					bombplanted = rpm(0x24000000 + 0x3FAB68); //we have a bomb?
 					if (bombplanted) {
 						if (xd == 0) {
-#ifdef DEBUG
-							cout << "Finding bomb ID..\n";
-#endif
 							maxentityid = rpm(0x24000000 + 0x3CF208);
 							if (maxentityid > 0x1000) maxentityid = 0x1000;
 							for (i = 64; i <= maxentityid; i++) {
