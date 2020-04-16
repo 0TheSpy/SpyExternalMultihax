@@ -752,7 +752,6 @@ void timer() {
 	xd = 0;
 }
 
-
 void Tab() {
 	wchar_t shield[3] = L"\U0001F6E1", cross[3] = L"\U0001F7A7", skull[3] = L"\u2620", gun[3] = L"\U0001F5E1", net[3] = L"\U0001F5B3", bomb[3] = L"\U0001f4a3";
 	wstring ustr;
@@ -810,6 +809,34 @@ void Tab() {
 
 	wpm(rpm(rpm(rpm(0x24000000 + 0x3E1A54) + 0x44) + 0x168) - 0x6d66, 6); //close showscores
 
+	//Sort by kils
+	vector<PlayerScore> CT, T;
+	for (int i = 0; i < maxplayers; i++)
+	{
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xF91 + i), 1, &bytebuf); //isconnected
+		if (bytebuf == 0) continue;
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xFD8 + 4 * i), 4, &intbuf1); 
+		if (intbuf1 == 1 || intbuf1 == 0) continue;
+		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xD8c + 4 * i), 4, &intbuf2);
+
+		PlayerScore f;
+		f.id = i;
+		f.kills = intbuf2;
+		if (intbuf1 == 3)
+			CT.push_back(f);
+		else
+			T.push_back(f);
+	}
+	sort(CT.begin(), CT.end(), compareKills );
+	for (int i = 0; i < CT.size(); i++)
+		CT.at(i).place = i;
+	sort(CT.begin(), CT.end(), compareID);
+
+	sort(T.begin(), T.end(), compareKills);
+	for (int i = 0; i < T.size(); i++)
+		T.at(i).place = i;
+	sort(T.begin(), T.end(), compareID);
+
 	for (int i = 0; i < maxplayers; i++) {
 		entityT = rpm(0x24000000 + 0x3CF214 + 8 * (i));
 
@@ -847,7 +874,11 @@ void Tab() {
 			}
 			else
 				colorT = D3DCOLOR_XRGB(255, 0, 0);
-			topT = 55 + topoffset + (ctcount + ti + 2) * charsize;
+
+			if (ti < T.size()) 
+				topT = 55 + topoffset + (ctcount + T.at(ti).place + 2) * charsize;
+			else 
+				topT = 55 + topoffset + (ctcount + ti + 2) * charsize;
 			ti++;
 			break;
 		case(3): //ct
@@ -857,7 +888,12 @@ void Tab() {
 			}
 			else
 				colorT = D3DCOLOR_XRGB(125, 125, 255); 
-			topT = 55 + topoffset + (cti + 1) * charsize;
+
+			if (cti < CT.size())
+				topT = 55 + topoffset + (CT.at(cti).place + 1) * charsize;
+			else 
+				topT = 55 + topoffset + (cti + 1) * charsize;
+			
 			cti++;
 			break;
 		}
