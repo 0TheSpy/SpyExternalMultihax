@@ -28,14 +28,13 @@
 #include <bitset>
 #include <locale>         // std::wstring_convert
 #include <codecvt>        // std::codecvt_utf8
+#include <algorithm> //vector sort
 
 using namespace std;
 using std::stringstream;
 
 #include "spymemory.h"
 #include "d3d9.h"
-
-
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, INT nCmdShow);
@@ -201,7 +200,6 @@ bool operator!=(int enabled, Feature f)
 void MenuSelect();
 void DisExit();
 
-
 template <typename T>
 void fromUTF8(const string& source, basic_string<T, char_traits<T>, allocator<T>>& result)
 {
@@ -209,6 +207,18 @@ void fromUTF8(const string& source, basic_string<T, char_traits<T>, allocator<T>
 	result = convertor.from_bytes(source);
 }
 
+struct PlayerScore {
+	int id, kills, place;
+};
+// Compares two players according to their frags. 
+bool compareKills(PlayerScore i1, PlayerScore i2)
+{
+	return (i1.kills > i2.kills);
+}
+bool compareID(PlayerScore i1, PlayerScore i2)
+{
+	return (i1.id < i2.id);
+}
 
 #include "cheat.cpp"
 
