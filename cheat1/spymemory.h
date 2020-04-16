@@ -156,8 +156,15 @@ template <class dataType>
 #endif
 	WriteProcessMemory(hProcess, Cave, p, funcsize, 0);
 
+	DWORD dBack = (DWORD)to + 0x5;
+	BYTE *pushbytes = new BYTE[6];
+	pushbytes[0] = 0x68;
+	pushbytes[5] = 0xC3;
+	memcpy(pushbytes + 1, &dBack, sizeof(DWORD));
+	wvm(LPVOID((DWORD)Cave + funcsize), 6, pushbytes);
+	delete[] pushbytes;
+	 
 	DWORD dCave = 0xFFFFFFFF - ((DWORD)to + 0x4 - (DWORD)Cave);
-
 	BYTE *jumpbytes = new BYTE[5 + nops];
 	jumpbytes[0] = 0xE9;
 	memcpy(jumpbytes + 1, &dCave, sizeof(DWORD));
@@ -165,15 +172,6 @@ template <class dataType>
 		jumpbytes[5 + i] = 0x90;
 	wvm(LPVOID(to), 5 + nops, jumpbytes);
 	delete[] jumpbytes;
-
-	DWORD dBack = (DWORD)to + 0x5;
-
-	BYTE *pushbytes = new BYTE[6];
-	pushbytes[0] = 0x68;
-	pushbytes[5] = 0xC3;
-	memcpy(pushbytes + 1, &dBack, sizeof(DWORD));
-	wvm(LPVOID((DWORD)Cave + funcsize), 6, pushbytes);
-	delete[] pushbytes;
 	
 	return Cave;
 }
