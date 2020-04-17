@@ -699,12 +699,6 @@ void noHandsSky() {
 		wpm(0x24000000 + 0x3EE78C, 1);
 
 		SpyInjectAndJump(NoHands, PVOID(materialsystem_dll_base + 0x1D193), 1); 
-		/*
-		wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
-		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
-		Sleep(500);
-		wpm(engine_dll_base + 0x51f794 - enginedelta, 0);
-		*/
 	}
 
 	if (cheat("No Hands & No Sky") == 0) {
@@ -713,12 +707,6 @@ void noHandsSky() {
 
 		BYTE sixbytes[] = { 0x8B, 0x41, 0x0C, 0x83, 0xC4, 0x08 };
 		wpm(PVOID(materialsystem_dll_base + 0x1D193), sizeof(sixbytes), &sixbytes); 
-		/*
-		wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
-		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
-		Sleep(500);
-		wpm(engine_dll_base + 0x51f794 - enginedelta, 0);
-		*/
 	}
 }
 
