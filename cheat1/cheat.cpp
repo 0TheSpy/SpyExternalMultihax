@@ -698,7 +698,7 @@ void noHandsSky() {
 		wpm(0x24000000 + 0x3EEDFC, 0);
 		wpm(0x24000000 + 0x3EE78C, 1);
 
-		SpyInjectAndJump(NoHands, PVOID(materialsystem_dll_base + 0x1D193), 1); 
+		SpyInjectAndJump(NoHands, PVOID(materialsystem_dll_base + 0x1D193), 1); //mat_suppress "models/weapons/v_models/hands/v_hands.vmt"
 	}
 
 	if (cheat("No Hands & No Sky") == 0) {
