@@ -1,18 +1,22 @@
 #pragma once
 #define endfunc __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC
 
-__declspec(naked) void TabDisable(void)
+__declspec(naked) void NoHands(void)
 {
 	__asm {
-		mov esi, dword ptr ds:[esp + 0x00000410]
-		cmp esi, 0x9
+		mov eax, [ecx + 0x0C]
+		cmp eax, 0x400800//4196352
 		jne exitt
-		mov esi, 0x0
-		exitt:
+		cmp word ptr ds:[ecx + 0x10], 0xC810
+		jne exitt
+		cmp word ptr ds: [ecx + 0x50], 0xC810
+		je exitt
+		mov eax, 0x400804
+		exitt :
+		add esp, 0x08
 	}
 	endfunc
 }
-
 
 __declspec(naked) void FakeLag(void)
 {
