@@ -163,7 +163,7 @@ template <class dataType>
 	memcpy(pushbytes + 1, &dBack, sizeof(DWORD));
 	wvm(LPVOID((DWORD)Cave + funcsize), 6, pushbytes);
 	delete[] pushbytes;
-	 
+
 	DWORD dCave = 0xFFFFFFFF - ((DWORD)to + 0x4 - (DWORD)Cave);
 	BYTE *jumpbytes = new BYTE[5 + nops];
 	jumpbytes[0] = 0xE9;
@@ -172,7 +172,7 @@ template <class dataType>
 		jumpbytes[5 + i] = 0x90;
 	wvm(LPVOID(to), 5 + nops, jumpbytes);
 	delete[] jumpbytes;
-	
+
 	return Cave;
 }
 
@@ -213,7 +213,7 @@ template <class dataType>
  }
 
  extern char tWindowName[256];
- extern DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base, steam_dll_base;
+ extern DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base, steam_dll_base, materialsystem_dll_base;
 
  HANDLE get_process_handle()
  {
@@ -292,6 +292,14 @@ template <class dataType>
 					 printf("steam.dll base: %08X\n", hMods[i]);
 #endif
 					 steam_dll_base = (DWORD)hMods[i];
+				 }
+
+				 if (_tcsstr(szModName, _T("materialsystem.dll")) != NULL)
+				 {
+#ifdef DEBUG
+					 printf("materialsystem.dll base: %08X\n", hMods[i]);
+#endif
+					 materialsystem_dll_base = (DWORD)hMods[i];
 				 }
 				 
 			 }
