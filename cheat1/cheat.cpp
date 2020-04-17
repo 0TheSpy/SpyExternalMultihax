@@ -804,7 +804,7 @@ void Tab() {
 
 	wpm(rpm(rpm(rpm(0x24000000 + 0x3E1A54) + 0x44) + 0x168) - 0x6d66, 6); //close showscores
 
-	//Sort by kils
+	//Sort by kills
 	vector<PlayerScore> CT, T;
 	for (int i = 0; i < maxplayers; i++)
 	{
