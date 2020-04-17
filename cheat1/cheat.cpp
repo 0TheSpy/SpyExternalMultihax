@@ -686,7 +686,7 @@ void noSmokeFlash() {
 		BYTE twobytes[] = { 0x0F, 0x8B };
 		wpm(PVOID(0x24000000 + 0x1D1D5D), 2, &twobytes);
 		BYTE fivebytes[] = { 0x8B, 0x01, 0xFF, 0x50, 0x04 };
-		wpm(PVOID(0x24000000 + 0x8E4F3), sizeof(fivebytes), &fivebytes); //0x24000000 + 0x1D1D4A
+		wpm(PVOID(0x24000000 + 0x8E4F3), sizeof(fivebytes), &fivebytes); 
 	}
 #ifdef DEBUG
 	std::cout << "NoSmoke & NoFlash triggered\n";
@@ -698,20 +698,27 @@ void noHandsSky() {
 		wpm(0x24000000 + 0x3EEDFC, 0);
 		wpm(0x24000000 + 0x3EE78C, 1);
 
+		SpyInjectAndJump(NoHands, PVOID(materialsystem_dll_base + 0x1D193), 1); 
+		/*
 		wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
 		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
 		Sleep(500);
 		wpm(engine_dll_base + 0x51f794 - enginedelta, 0);
+		*/
 	}
 
 	if (cheat("No Hands & No Sky") == 0) {
 		wpm(0x24000000 + 0x3EEDFC, 1);
 		wpm(0x24000000 + 0x3EE78C, 0);
 
+		BYTE sixbytes[] = { 0x8B, 0x41, 0x0C, 0x83, 0xC4, 0x08 };
+		wpm(PVOID(materialsystem_dll_base + 0x1D193), sizeof(sixbytes), &sixbytes); 
+		/*
 		wpm(engine_dll_base + 0x51f794 - enginedelta, 1);
 		SendCMD("mat_suppress \"models/weapons/v_models/hands/v_hands.vmt\" ");
 		Sleep(500);
 		wpm(engine_dll_base + 0x51f794 - enginedelta, 0);
+		*/
 	}
 }
 
@@ -733,7 +740,6 @@ bool WorldToScreen(float viewmatrix[][4], float coords[], float *x, float *y, fl
 
 	return 1;
 }
-
 
 void timer() {
 	float c4timer = rpm(0x22000000 + 0x5A4A7C);
