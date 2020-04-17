@@ -698,7 +698,7 @@ void noHandsSky() {
 		wpm(0x24000000 + 0x3EEDFC, 0);
 		wpm(0x24000000 + 0x3EE78C, 1);
 
-		SpyInjectAndJump(NoHands, PVOID(materialsystem_dll_base + 0x1D193), 1); //mat_suppress "models/weapons/v_models/hands/v_hands.vmt"
+		SpyInjectAndJump(NoHands, PVOID(materialsystem_dll_base + 0x1D193), 1); 
 	}
 
 	if (cheat("No Hands & No Sky") == 0) {
@@ -748,8 +748,6 @@ void timer() {
 
 void Tab() {
 	wchar_t shield[3] = L"\U0001F6E1", cross[3] = L"\U0001F7A7", skull[3] = L"\u2620", gun[3] = L"\U0001F5E1", net[3] = L"\U0001F5B3", bomb[3] = L"\U0001f4a3";
-	wstring ustr;
-	string str;
 
 	int charsize;
 	int maxplayers;
@@ -763,7 +761,7 @@ void Tab() {
 	DWORD entityT;
 	int ctcount, tcount, speccount;
 	int cti = 0, ti = 0, si = 0, ui = 0, topT, alivet = 0, alivect = 0;
-	int intbuf1, intbuf2; char charint[32]; byte bytebuf; __int16 twobytebuf;
+	int intbuf1, intbuf2; char charint[32]; byte bytebuf; WORD twobytebuf;
 	D3DCOLOR colorT;
 	
 	int topoffset = (64 - maxplayers) * 4;
@@ -790,10 +788,13 @@ void Tab() {
 	charint[0] = 0x0;
 	RECT FontPos{ 305,27 + topoffset,310 + (charsize*117.6) / 2,40 + topoffset };
 
-	str = (char*)towrite;
-	fromUTF8(str, ustr);
-	pFont->DrawTextW(0, (wchar_t*)ustr.c_str(), ustr.length(), &FontPos, DT_CENTER, D3DCOLOR_XRGB(10, 45, 41));
-	
+	// UTF8 to UTF16
+	intbuf1 = MultiByteToWideChar(CP_UTF8, 0, towrite, -1, NULL, 0);
+	wchar_t* wstr = new wchar_t[intbuf1];
+	MultiByteToWideChar(CP_UTF8, 0, towrite, -1, wstr, intbuf1);
+	pFont->DrawTextW(0, wstr, intbuf1, &FontPos, DT_CENTER, D3DCOLOR_XRGB(10, 45, 41));
+	delete[] wstr;
+
 	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0x8) + 0x46C ), 4, &tcount);
 	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0xC) + 0x46C), 4, &ctcount);
 	rvm(PVOID(rpm(rpm(0x24000000 + 0x3BDE14) + 0x4) + 0x46C), 4, &speccount);
@@ -906,11 +907,12 @@ void Tab() {
 
 		//NAME
 		rvm(PVOID(ptr + offset - 0x138 + i * PLRSZ), 32, &charint);
-		// Unicode <-> UTF8
-		str = (char*)charint;
-		fromUTF8(str, ustr);
-		DrawStringW((wchar_t*)ustr.c_str(), 330, topT, ustr.length(), colorT, pFont); 
-		charint[0] = 0x0;
+		// UTF8 to UTF16
+		intbuf1 = MultiByteToWideChar(CP_UTF8, 0, charint, -1, NULL, 0);
+		wchar_t* wstr = new wchar_t[intbuf1];
+		MultiByteToWideChar(CP_UTF8, 0, charint, -1, wstr, intbuf1);
+		DrawStringW(wstr, 330, topT, intbuf1, colorT, pFont);
+		delete[] wstr;
 
 		if (i+1 == hasbomb)
 		DrawStringW(bomb, 310 + (charsize * 32) / 2, topT, 2, colorT, pFont); //BOMB 
@@ -1100,8 +1102,7 @@ void myDraw() {
 
 				yl_closest = 1000; xl_closest = 1000;
 
-				char charint[32]; int intbuf; short int shintbuf; byte bytebuf;
-				string str; wstring ustr;
+				char charint[32]; int intbuf; WORD shintbuf; byte bytebuf;
 
 				if (cheat("ESP") == 3) {
 					ID3DXFont* pFont;
@@ -1240,9 +1241,11 @@ void myDraw() {
 								charint[20] = 0x0;
 
 								rvm(PVOID(ptr + offset - 0x138 + i * PLRSZ), 32, &charint);
-								str = (char*)charint;
-								fromUTF8(str, ustr);
-								DrawStringW((wchar_t*)ustr.c_str(), xl - 10000 / enemyDistance + 20000 / enemyDistance + 21, yl - 6 + 12 * 0, ustr.length(), color, pFont);
+								intbuf = MultiByteToWideChar(CP_UTF8, 0, charint, -1, NULL, 0);
+								wchar_t* wstr = new wchar_t[intbuf];
+								MultiByteToWideChar(CP_UTF8, 0, charint, -1, wstr, intbuf);
+								DrawStringW(wstr, xl - 10000 / enemyDistance + 20000 / enemyDistance + 21, yl - 6 + 12 * 0, intbuf, color, pFont);
+								delete[] wstr;
 								charint[20] = 0x0;
 
 								itoa(hp, charint, 10);
