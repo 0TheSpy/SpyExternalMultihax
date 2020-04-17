@@ -26,8 +26,6 @@
 #include "checksum_md5.h"
 #include "random.h"
 #include <bitset>
-#include <locale>         // std::wstring_convert
-#include <codecvt>        // std::codecvt_utf8
 #include <algorithm> //vector sort
 
 using namespace std;
@@ -199,13 +197,6 @@ bool operator!=(int enabled, Feature f)
 
 void MenuSelect();
 void DisExit();
-
-template <typename T>
-void fromUTF8(const string& source, basic_string<T, char_traits<T>, allocator<T>>& result)
-{
-	wstring_convert<codecvt_utf8_utf16<T>, T> convertor;
-	result = convertor.from_bytes(source);
-}
 
 struct PlayerScore {
 	int id, kills, place;
