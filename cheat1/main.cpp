@@ -60,7 +60,7 @@ void DisExit() {
 	wvm(PVOID(engine_dll_base + 0x2E15C8), size, static_cast<void*>(discmsg));
 #endif
 
-	Sleep(1000);
+	Sleep(1500);
 	p_Device->Release();
 	p_Object->Release();
 
