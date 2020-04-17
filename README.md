@@ -13,7 +13,7 @@ Features:
 (position, team, name, hp, armor, money, steamid, weapon, ping)
 - Chameleon Wallhack, Fullbright (button F)
 - Radarhack (custom, regular, spectator)
-- Serverinfo & Bombtimer
+- Serverinfo (button TAB) & Bombtimer 
 - Smart Crosshair
 - No Visual Recoil, No Recoil, No Spread
 - No Smoke, No Flash
