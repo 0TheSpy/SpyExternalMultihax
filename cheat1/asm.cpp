@@ -7,10 +7,8 @@ __declspec(naked) void NoHands(void)
 		mov eax, [ecx + 0x0C]
 		cmp eax, 0x400800//4196352
 		jne exitt
-		cmp word ptr ds:[ecx + 0x10], 0xC810
+		cmp esp, 0x19DB08
 		jne exitt
-		cmp word ptr ds: [ecx + 0x50], 0xC810
-		je exitt
 		mov eax, 0x400804
 		exitt :
 		add esp, 0x08
