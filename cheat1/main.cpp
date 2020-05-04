@@ -105,7 +105,8 @@ void myInit() {
 	rvm(PVOID(gameui_dll_base + 0x1BB95C), 4, &colorifptr);
 	rvm(PVOID(colorifptr + 0x3A4), 4, &colorifptr);
 
-	DWORD concol = 0xFFABE707;
+	//DWORD concol = 0xFFABE707;
+	DWORD concol = 0xFF6F6FCB;
 	wpm(PVOID(colorifptr + 0x4CC), 4, &concol); //set console text color
 	SendCMD("echo Spy External Multihax ACTIVATED");
 	Sleep(100);
@@ -185,7 +186,7 @@ void myInit() {
 	cheat.New("Chameleon Wallhack");
 	cheat.New("Radarhack", 3);
 	cheat.New("Serverinfo & Bombtimer");
-	cheat.New("Smart Crosshair");
+	cheat.New("Triggerbot & Crosshair",2);
 	cheat.New("No Recoil & No Spread", 3);
 	cheat.New("No Smoke & No Flash");
 	cheat.New("No Hands & No Sky");
@@ -194,11 +195,12 @@ void myInit() {
 	cheat("Speedhack") = 10;
 	cheat("Speedhack").sleep = 60;
 	cheat.New("Spinbot & AntiAim",3); 
-	cheat.New("Namestealer");
-	cheat.New("Fake Lag", 2);
+	cheat.New("Silent FastLadder",2);
+	cheat.New("Fake Lag", 3);
 	cheat.New("SteamID Spoof & No MOTD");
-	cheat.New("Visual Flyhack");
-	cheat.New("Play HLDJ");
+	cheat.New("Inputfromfile & Loopback");
+	cheat.New("Namestealer | Light Spam",2);
+	cheat.New("Free Cam");
 	cheat.New("Disable All & Exit");
 
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MenuSelect, 0, 0, 0);
@@ -319,7 +321,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hSecInstance, LPSTR nCmdLine, 
 	DWORD hD3D9 = (DWORD)GetModuleHandle("d3d9.dll");
 	dip9 = vtablePtr[82] - (DWORD)hD3D9; //DrawIndexedPrimitive
 	reset9 = vtablePtr[16] - (DWORD)hD3D9; //RESET
-	asmWHcave = SpyInject(asmWH, PVOID(d3d9_dll_base + dip9 + 0xCE));
+	asmWHcave = SpyInject(asmWH, PVOID(d3d9_dll_base + dip9)); 
 	wpm(0x12440, d3d9_dll_base + dip9);
 #ifdef DEBUG
 	cout << "DrawIndexedPrimitive9 = d3d9.dll+0x" << hex << dip9 << endl;
