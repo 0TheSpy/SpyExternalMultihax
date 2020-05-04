@@ -30,7 +30,7 @@ void menu()
 	ID3DXFont* pFont;
 	D3DXCreateFont(p_Device, 20, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
 
-	DrawString((char*)"Spy External Multihax", 5, 5, 25, 255, 255, 255, pFont);
+	DrawString((char*)"Spy External Multihax 1.1", 5, 5, 25, 255, 255, 255, pFont);
 
 	if (drawmenu == 1) {
 		DrawFilledRectangle(20, 300, 275 + border, 345 + border + cheat.Count() * 25, colorprim);
@@ -79,7 +79,7 @@ void fakeLag() {
 	
 			if (cheat("Fake Lag") == 1)
 				SpyInjectAndJump(FakeLag, PVOID(aobfakelag), 1);
-			if (cheat("Fake Lag") != 1)
+			if (cheat("Fake Lag") != 1 && cheat("Fake Lag").trigger == 1)
 			{
 				byte bytes[] = { 0x0F, 0x94, 0xC0, 0x88, 0x45, 0xF4 };
 				wvm(PVOID(aobfakelag), sizeof(bytes), bytes);
@@ -102,7 +102,7 @@ void fakeLag() {
 				SendCMD("cl_predictweapons 0");
 			}
 
-			if (cheat("Fake Lag") != 2) 
+			if (cheat("Fake Lag") != 2 && cheat("Fake Lag").trigger == 2) 
 			{
 				dword2bytes dw2b3 = { engine_dll_base + 0x3953C0 - enginedelta };
 				dword2bytes dw2b4 = { engine_dll_base + 0x3953bc - enginedelta };
@@ -117,21 +117,26 @@ void fakeLag() {
 				wpm(0x24000000 + 0x3E71E4, 4);
 			}
 
+			if (cheat("Fake Lag") == 3) //fake ping
+				wpm(engine_dll_base + 0x4F5988 - enginedelta, 500.0f);
+			if (cheat("Fake Lag") != 3 && cheat("Fake Lag").trigger == 3)
+				wpm(engine_dll_base + 0x4F5988 - enginedelta, 0);
+
 }
 
 void WH() {
 	if (cheat("Chameleon Wallhack") == 1) {
-		SpyJmp(PVOID(d3d9_dll_base + dip9 + 0xCE), asmWHcave, 0);
+		SpyJmp(PVOID(d3d9_dll_base + dip9), asmWHcave, 0); 
 		SendCMD("cl_ragdoll_physics_enable 0; cl_min_ct 3; cl_min_t 3");
 		wpm(0x24000000 + 0x3F95EC, 1); //minmodels 1
 
 		if (rpm(d3d9_dll_base + reset9) == 0x8B55FF8B)
-		SpyInjectAndJump(d3d9Reset, PVOID(d3d9_dll_base + reset9), 0);
+			SpyInjectAndJump(d3d9Reset, PVOID(d3d9_dll_base + reset9), 0);
 
 	}
 	if (cheat("Chameleon Wallhack") == 0) {
-		byte bytes[] = { 0xFF, 0xD7, 0x83, 0xC4, 0x1c };
-		wvm(PVOID(d3d9_dll_base + dip9 + 0xCE), sizeof(bytes), bytes);
+		byte bytes[] = { 0x8B, 0xFF, 0x55, 0x8B, 0xEC };
+		wvm(PVOID(d3d9_dll_base + dip9), sizeof(bytes), bytes);
 		SendCMD("cl_ragdoll_physics_enable 1");
 		wpm(0x24000000 + 0x3F95EC, 0); //minmodels 0
 	}
@@ -144,8 +149,8 @@ void Namestealer() {
 
 	int rando, old = 65;
 	while (true) {
-
-		if (cheat("Namestealer") == 1) {
+		
+		if (cheat("Namestealer | Light Spam") == 1) {
 			rvm(PVOID(engine_dll_base + 0x366E74), 4, &maxplayers);
 			rando = rand() % maxplayers;
 			rvm(PVOID(0x24000000 + 0x39D4FC), 1, &myid);
@@ -176,7 +181,13 @@ void Namestealer() {
 				Sleep(500);
 			}
 		}
-		Sleep(10);
+		
+		if (cheat("Namestealer | Light Spam") == 2)
+		{
+			SendCMD("impulse 100");
+			Sleep(10);
+		}
+		Sleep(1);
 	}
 }
 
@@ -203,7 +214,7 @@ void Bunnyhop()
 				if (VisY != VisYnew) //Y changed?
 				{
 					boostsleep = 1;
-					VisYd = 1 * (VisY - VisYnew); //5
+					VisYd = VisY - VisYnew; 
 
 					if (cheat("Spinbot & AntiAim") == 0) {
 						if (VisYd < 0.0f)
@@ -233,6 +244,7 @@ void Bunnyhop()
 					}
 
 					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
+					wpm(0x1234D, 5 * VisYd); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 					VisY = VisYnew; //set New Y as old Y
 				}
 
@@ -256,6 +268,7 @@ void Bunnyhop()
 			wpm(0x24000000 + 0x3E7250, 0); //-moveright 
 			wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 			wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
+			wpm(0x1234D, 0); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 		}
 
 
@@ -283,9 +296,9 @@ void Flyhack()
 	flycave = DWORD(SpyInject(Fly, LPVOID(0x24000000 + 0xB841B)));
 	float vispos[3], flyangX, flyangY;
 	while (true) {
-		if (cheat("Visual Flyhack") == 1) {
+		if (cheat("Free Cam") == 1) {
 			rvm((PVOID)(localplayer + 0x29C), 12, &vispos);
-			while (cheat("Visual Flyhack") == 1) {
+			while (cheat("Free Cam") == 1 && tWnd == GetForegroundWindow()) {
 				rvm(PVOID(0x24000000 + 0x3FD550 - 4), 4, &flyangX);
 				rvm(PVOID(0x24000000 + 0x3FD550), 4, &flyangY);
 
@@ -477,6 +490,133 @@ void CalcAngle(float *src, float *dst, float *angles)
 	if (delta[0] >= 0.0) angles[1] += 180.0f;
 }
 
+void FastLadder(int z)
+{
+#ifdef DEBUG
+	cout << "onladder\n";
+#endif
+	switch (z)
+	{
+	case 1:
+		float myang[3];
+		wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //set z ang
+
+		while (rpm(localplayer + 0x134) == 9) {
+			rvm(PVOID(0x24000000 + 0x3FD54C), 12, &myang);
+			myang[0] = 0.0f;
+			myang[2] = -90.0f;
+			if (GetAsyncKeyState(0x57) < 0) //w pressed
+			{
+				wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+				wpm(0x24000000 + 0x3E7250, 1); //+moveright
+			}
+
+			else if (GetAsyncKeyState(0x53) < 0) //s pressed
+			{
+				wpm(0x24000000 + 0x3E725C, 1); //+moveleft
+				wpm(0x24000000 + 0x3E7250, 0); //-moveright
+			}
+			else
+			{
+				wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+				wpm(0x24000000 + 0x3E7250, 0); //-moveright
+			}
+			wpm(PVOID(0x12345), 12, &myang);
+		}
+		wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+		wpm(0x24000000 + 0x3E7250, 0); //-moveright
+		wpm(0x1234D, 0);
+
+		//smooth x ang
+		float realang, r;
+		do {
+			r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+			rvm(PVOID(0x24000000 + 0x3FD54C), 4, &myang);
+			rvm(PVOID(0x12345), 4, &realang);
+
+			if (myang[0] > realang)
+				realang += r;
+			else realang -= r;
+
+			wpm(0x12345, realang);
+			Sleep(1);
+		} while (abs(myang[0] - realang) > 3.0f);
+		break;
+	case 2:
+		while (rpm(localplayer + 0x134) == 9) {
+			rvm(PVOID(0x24000000 + 0x3FD54C), 8, &myang);
+			float Up_down;
+			if (myang[0] < 15.0f)
+				Up_down = -89.0f;
+			else Up_down = 89.0f;
+
+			if (GetAsyncKeyState(0x57) < 0) //w pressed
+			{
+				myang[0] = Up_down;
+				if (myang[1] > 135.0f && myang[1] <= 180.0f)
+				{
+					myang[1] = 90.0f;
+					wpm(0x24000000 + 0x3E725C, 1); //+moveleft
+					wpm(0x24000000 + 0x3E7250, 0); //-moveright
+				}
+				else if (myang[1] <= 135.0f && myang[1] >= 90.0f)
+				{
+					myang[1] = 179.0f;
+					wpm(0x24000000 + 0x3E7250, 1); //+moveright
+					wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+				}
+				else if (myang[1] <= -135.0f && myang[1] >= -180.0f)
+				{
+					myang[1] = -90.f;
+					wpm(0x24000000 + 0x3E7250, 1); //+moveright
+					wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+				}
+				else if (myang[1] <= 90.0f && myang[1] >= 45.0f)
+				{
+					myang[1] = 0;
+					wpm(0x24000000 + 0x3E725C, 1); //+moveleft
+					wpm(0x24000000 + 0x3E7250, 0); //-moveright
+				}
+				else if (myang[1] >= -90.0f && myang[1] <= -45.0f)
+				{
+					myang[1] = -0;
+					wpm(0x24000000 + 0x3E7250, 1); //+moveright
+					wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+				}
+				else if (myang[1] <= -90.0f && myang[1] >= -135.0f)
+				{
+					myang[1] = -179.0f;
+					wpm(0x24000000 + 0x3E725C, 1); //+moveleft
+					wpm(0x24000000 + 0x3E7250, 0); //-moveright
+				}
+				else if (myang[1] <= 45.0f && myang[1] > 0.0f)
+				{
+					myang[1] = 90.0f;
+					wpm(0x24000000 + 0x3E7250, 1); //+moveright
+					wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+				}
+				else if (myang[1] <= -0.0f && myang[1] >= -45.0f)
+				{
+					myang[1] = -90.0f;
+					wpm(0x24000000 + 0x3E725C, 1); //+moveleft
+					wpm(0x24000000 + 0x3E7250, 0); //-moveright
+				}
+				//duck
+			}
+			else
+			{
+				wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+				wpm(0x24000000 + 0x3E7250, 0); //-moveright
+			}
+			wpm(PVOID(0x12345), 8, &myang);
+		}
+		wpm(0x24000000 + 0x3E725C, 0); //-moveleft
+		wpm(0x24000000 + 0x3E7250, 0); //-moveright
+		break;
+	}
+}
+
+
 void Aimbot()
 {
 	byte four = 4, five = 5, six = 6;
@@ -503,22 +643,26 @@ void Aimbot()
 
 	while (true)
 	{
-		if (angleshack && GetAsyncKeyState(VK_LBUTTON) == 0 && cheat("Spinbot & AntiAim") == 0 ||
-			angleshack && cheat("No Recoil & No Spread").enabled == 1 && cheat("Spinbot & AntiAim") == 0)
+		if (cheat("Triggerbot & Crosshair") == 1)
+		{
+			if (rpm(0x243E7208) == 0x00000002) 
+			{
+				Sleep(rand() % 15 + 100);
+				wpm(0x243E71D8, 6);
+				Sleep(rand() % 100 + 30);
+			}
+		}
+
+
+		if (angleshack && GetAsyncKeyState(VK_LBUTTON) == 0  && cheat("Spinbot & AntiAim") == 0)
 		{
 			rvm(PVOID(0x24000000 + 0x3FD54C), 8, &myang);
 
-			if (isnan(myang[0]))
-			{
-				myang[0] = 0;
-				wpm(PVOID(0x24000000 + 0x3FD54C), 4, &myang[0]);
-			}
-			if (isnan(myang[1]))
-			{
-				myang[1] = 0;
-				wpm(PVOID(0x24000000 + 0x3FD54C + 4), 4, &myang[1]);
-			}
-			wpm(PVOID(0x12345), 8, &myang);
+			if (rpm(localplayer + 0x134) == 9 && cheat("Silent FastLadder").enabled > 0)
+				FastLadder(cheat("Silent FastLadder").enabled);
+			else	
+				wpm(PVOID(0x12345), 8, &myang);
+
 			Sleep(1);
 		}
 
@@ -624,7 +768,9 @@ void Aimbot()
 				}
 			}
 
-			if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("No Recoil & No Spread") != 1 && cheat("Spinbot & AntiAim") != 0)
+			if (GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("No Recoil & No Spread") != 1 && cheat("Spinbot & AntiAim") != 0 
+				|| GetAsyncKeyState(VK_LBUTTON) < 0 && cheat("No Recoil & No Spread") != 1 && cheat("Silent FastLadder") != 0
+				)
 			{
 				if (!aiming)
 				{
@@ -634,9 +780,22 @@ void Aimbot()
 						myang[0] = -(myang[0] + 180.0f);
 						myang[1] = myang[1] + 180.0f;
 					}
+					else
+					{
+						if (cheat("No Recoil & No Spread") != 2)
+						{
+							//read punch
+							punchptr = rpm(0x24000000 + 0x3FB2F0);
+							rvm(PVOID(punchptr + 0xBB0), 8, &punch);
+							myang[0] = myang[0] - punch[0];
+							myang[1] = myang[1] - punch[1];
+						}
+						
+					}
 				}
 				else
 				{
+					
 					myang[0] = newangle[0];
 					myang[1] = newangle[1];
 
@@ -747,7 +906,7 @@ void timer() {
 }
 
 void Tab() {
-	wchar_t shield[3] = L"\U0001F6E1", cross[3] = L"\U0001F7A7", skull[3] = L"\u2620", gun[3] = L"\U0001F5E1", net[3] = L"\U0001F5B3", bomb[3] = L"\U0001f4a3";
+	wchar_t shield[3] = L"\U0001F6E1", cross[3] = L"\U0001F7A7", skull[3] = L"\u2620", gun[3] = L"\U0001F5E1", net[3] = L"\U0001F5B3", bomb[3] = L"\U0001f4a3", tool[3] = L"\U0001F6E0";
 
 	int charsize;
 	int maxplayers;
@@ -833,7 +992,7 @@ void Tab() {
 	sort(T.begin(), T.end(), compareID);
 
 	for (int i = 0; i < maxplayers; i++) {
-		entityT = rpm(0x24000000 + 0x3CF214 + 8 * (i));
+		entityT = rpm(0x24000000 + 0x3CF214 + 8 * i);
 
 		//STEAMID
 		intbuf2 = rpm(rpm(engine_dll_base + 0x3958C8) + 0x38);
@@ -915,7 +1074,10 @@ void Tab() {
 		delete[] wstr;
 
 		if (i+1 == hasbomb)
-		DrawStringW(bomb, 310 + (charsize * 32) / 2, topT, 2, colorT, pFont); //BOMB 
+			DrawStringW(bomb, 310 + (charsize * 32) / 2, topT, 2, colorT, pFont); //BOMB 
+
+		if (rpm(entityT + 0x1020))
+			DrawStringW(tool, 310 + (charsize * 32) / 2, topT, 2, colorT, pFont); //DEFUSER 
 
 		//KILLS
 		rvm(PVOID(rpm(0x24000000 + 0x3BA3C0) + 0xD8c + 4 * i), 4, &intbuf1);
@@ -944,7 +1106,7 @@ void Tab() {
 
 		if (entityT) {
 			//ARMOR
-			rvm(PVOID(entityT + 0xA4C + 0x5c4), 4, &intbuf1);
+			rvm(PVOID(entityT + 0x1010), 4, &intbuf1);
 			itoa(intbuf1, charint, 10);
 			DrawStringW(shield, 310 + (charsize * 60.8) / 2, topT, 2, colorT, pFont); //SHIELD 
 			DrawString((char*)charint, 310 + (charsize*62.6) / 2, topT, colorT, pFont);
@@ -1036,7 +1198,7 @@ void Tab() {
 void myDraw() {
 
 		menu();
-		if (rpm(engine_dll_base + 0x53B55C - enginedelta)) //in server?
+		if (!rpm(vguimatsurface_dll_base + 0xB10F8)) 
 		{
 			
 			if (cheat("Radarhack") == 2) {
@@ -1062,7 +1224,7 @@ void myDraw() {
 			if (myteam == 2) myteam = 64;
 			if (myteam == 3) myteam = 255;
 
-			if (cheat("Smart Crosshair") == 1) {
+			if (cheat("Triggerbot & Crosshair").enabled >= 1) {
 				wpm(0x22000000 + 0x5A4764, 1); //mp_playerid = 1
 				rvm(PVOID(0x243E7208), 1, &who);
 				switch (who)
@@ -1163,8 +1325,13 @@ void myDraw() {
 					if (i + 1 == (int)myid)
 						continue;
 
-					if (cheat("Aimbot") != 2)
-						rvm((PVOID)(ptr + 0x118 + i * 0x140), 12, &coords);
+					entity = rpm(0x24000000 + 0x3CF214 + 8 * i);
+
+					if (cheat("Aimbot") != 2) {
+						//rvm((PVOID)(ptr + 0x118 + i * 0x140), 12, &coords);
+						rvm((PVOID)(entity + 0x1CC), 12, &coords);
+						coords[2] = coords[2] + 65;
+					}
 					else {
 						rvm(PVOID(0x24000000 + 0x3BF1E4 + 0x10 * i ), 4, &boneptr);
 						rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
@@ -1212,7 +1379,7 @@ void myDraw() {
 						//get3Ddist
 						enemyDistance = sqrtss(deltaXold*deltaXold + deltaYold * deltaYold + deltaZ * deltaZ);
 
-						entity = rpm(0x24000000 + 0x3CF214 + 8 * i );
+						
 						rvm(PVOID(entity + 0x138), 1, &bDormant);
 
 						if ((int)team == (int)myteam)
@@ -1225,9 +1392,9 @@ void myDraw() {
 								DrawBorderBox(xl - 10000 / enemyDistance, yl - 10, 20000 / enemyDistance, 40000 / enemyDistance, 3, color);
 								DrawFilledRectangle(
 									xl - 10000 / enemyDistance,
-									yl - 18,
+									yl - 16,
 									xl - (10000 / enemyDistance) + (20000 / enemyDistance / 100 * hp) + 3,
-									yl - 15,
+									yl - 13,
 									D3DCOLOR_XRGB(255, 255, 255));
 							}
 
@@ -1325,7 +1492,7 @@ void myDraw() {
 				if (cheat("Radarhack")==1)
 					DrawFilledRectangle(144, 144, 151, 151, 100, 0, 255, 255); //white square on the center of the radar
 
-				if (cheat("Serverinfo & Bombtimer") == 1)
+				if (cheat("Serverinfo & Bombtimer") == 1 || cheat("Radarhack") == 1)
 				{
 					bombplanted = rpm(0x24000000 + 0x3FAB68); //we have a bomb?
 					if (bombplanted) {
@@ -1356,7 +1523,8 @@ void myDraw() {
 							}
 						}
 
-						if (bomb > 0) {
+						if (bomb > 0 && cheat("Serverinfo & Bombtimer") == 1) 
+						{
 							ID3DXFont* pFont;
 							D3DXCreateFont(p_Device, 20, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
 							DrawBorderBox(Width / 2 - 280 - border, Height / 2 + 300 - border, 565, 40+border, border, colorprim);
@@ -1378,15 +1546,26 @@ void myDraw() {
 							deltaX = k * deltaX;
 							deltaY = k * deltaY;
 						}
-						DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, D3DCOLOR_XRGB(200, 200, 200));
+						if (cheat("Radarhack") == 1)
+							DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, D3DCOLOR_XRGB(200, 200, 200));
 					}
 				}
 			} //esp,radar,aim enabled?
 			if (cheat("Serverinfo & Bombtimer") == 1 && GetAsyncKeyState(VK_TAB) < 0)
 				Tab();
-		} //we on server? 
+			
+		} //not in menu? 
+		if (rpm(engine_dll_base + 0x53B55C - enginedelta)) //in server ?
+		{
+			if (angleshack)
+				wpm(rpm(0x24000000 + 0x3EA8C0), 0x00000031); //vispredict
+		}
 		else
-		cheat("Play HLDJ") = 0;
+		{
+			cheat("Inputfromfile & Loopback") = 0;
+			if (angleshack)
+				wpm(rpm(0x24000000 + 0x3EA8C0), 0x00000030); //vispredict
+		}
 }
 
 
@@ -1500,12 +1679,13 @@ void TriggerCheck()
 					wpm(0x24000000 + 0x3E7250, 0); //-moveright
 					wpm(0x24000000 + 0x3E725C, 1); //+moveleft
 					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, boostang); //set z ang
+					wpm(0x1234D, boostang);
 					Sleep(sleeptim);
 					wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 					wpm(0x24000000 + 0x3E7250, 1); //+moveright
 					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, -boostang); //set z ang
+					wpm(0x1234D, -boostang);
 					Sleep(sleeptim);
-
 				}
 				else
 				{
@@ -1514,6 +1694,8 @@ void TriggerCheck()
 				}
 
 			}
+			wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
+			wpm(0x1234D, 0); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 			wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 			wpm(0x24000000 + 0x3E7250, 0); //-moveright
 		}
@@ -1579,7 +1761,20 @@ void TriggerCheck()
 					Angleshack(1);
 
 			if (cheat("No Recoil & No Spread") != 1)
-				if (cheat("Spinbot & AntiAim") == 0 && angleshack) 
+				if (cheat("Spinbot & AntiAim") == 0 && cheat("Silent FastLadder") == 0 && angleshack)
+					Angleshack(0);
+		}
+
+		if (cheat.Triggered("Silent FastLadder"))
+		{
+			cheat.Update("Silent FastLadder");
+
+			if (cheat("Silent FastLadder").enabled > 0)
+				if (!angleshack)
+					Angleshack(1);
+
+			if (cheat("Silent FastLadder") == 0)
+				if (cheat("Spinbot & AntiAim") == 0 && cheat("No Recoil & No Spread") != 1 && angleshack)
 					Angleshack(0);
 		}
 
@@ -1656,22 +1851,21 @@ void TriggerCheck()
 				wpm(0x243E785C + 0x18, 0x240F6B30);
 				wpm(0x243E7880 + 0x18, 0x240F6B40);
 				StopMoving();
-				if (cheat("No Recoil & No Spread") != 1)
+				if (cheat("No Recoil & No Spread") != 1 && cheat("Silent FastLadder") == 0)
 					Angleshack(0);
 			}
 		}
 
-		if (cheat.Triggered("Play HLDJ"))
+		if (cheat.Triggered("Inputfromfile & Loopback"))
 		{
 			DWORD thisptr;
 			rvm(PVOID(0x24000000 + 0x3EDD00), 4, &thisptr);
-			if (cheat("Play HLDJ") == 1) {
+			if (cheat("Inputfromfile & Loopback") == 1) {
 				wpm(PVOID(aobconsole), 1, &nop);
 				wpm(PVOID(aobconsole + 1), 1, &nop);
 				wpm(thisptr + 0xD7C, 1);
-				SendCMD("voice_loopback 1");
-				Sleep(100);
-				SendCMD("+voicerecord");
+				SendCMD("voice_loopback 1; +voicerecord");
+				Sleep(100); 
 				byte bytes[] = { 0xF3, 0xA4 };
 				wpm(PVOID(aobconsole), 2, &bytes);
 			}
@@ -1680,8 +1874,8 @@ void TriggerCheck()
 				SendCMD("voice_loopback 0");
 				SendCMD("-voicerecord");
 			}
-			cheat("Play HLDJ").trigger = cheat("Play HLDJ").enabled;
-			cheat.Update("Play HLDJ");
+			cheat("Inputfromfile & Loopback").trigger = cheat("Inputfromfile & Loopback").enabled;
+			cheat.Update("Inputfromfile & Loopback");
 		}
 
 		if (cheat.Triggered("Radarhack"))
@@ -1726,10 +1920,10 @@ void TriggerCheck()
 			}
 		}
 
-		if (cheat.Triggered("Visual Flyhack"))
+		if (cheat.Triggered("Free Cam"))
 		{
-			cheat.Update("Visual Flyhack");
-			if (cheat("Visual Flyhack") == 1)
+			cheat.Update("Free Cam");
+			if (cheat("Free Cam") == 1)
 			{
 				byte dontmove[] = { 0x90, 0x90, 0x90 };
 				wpm(PVOID(0x24000000 + 0xF657C), 3, &dontmove);
@@ -1759,10 +1953,10 @@ void TriggerCheck()
 #endif
 		}
 
-		if (cheat.Triggered("Smart Crosshair"))
+		if (cheat.Triggered("Triggerbot & Crosshair"))
 		{
-			cheat.Update("Smart Crosshair");
-			if (cheat("Smart Crosshair") == 1)
+			cheat.Update("Triggerbot & Crosshair");
+			if (cheat("Triggerbot & Crosshair").enabled >= 1)
 				wpm(0x24000000 + 0x3E208C, 0);
 			else wpm(0x24000000 + 0x3E208C, 1);
 #ifdef DEBUG
