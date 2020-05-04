@@ -126,6 +126,7 @@ __declspec(naked) void d3d9Reset(void)
 		mov edx, dword ptr ds : [ecx + 0x08]
 		call edx
 		cmp esi, esp
+		
 
 		orig:
 		pop esp
@@ -145,6 +146,10 @@ __declspec(naked) void d3d9Reset(void)
 __declspec(naked) void asmWH(void)
 {
 	__asm {
+		mov edi, edi
+		push ebp
+		mov ebp, esp
+
 		cmp dword ptr ds : [0x12435], 0x1
 		je backs
 
@@ -279,9 +284,6 @@ __declspec(naked) void asmWH(void)
 
 			backs :
 		mov dword ptr ds : [0x12435], 0x0
-			call edi
-			add esp, 0x1C
-
 			
 	}
 	endfunc
@@ -291,31 +293,24 @@ __declspec(naked) void asmWH(void)
 __declspec(naked) void Fly(void)
 {
 	__asm {
+		push eax
+		mov eax, dword ptr ds:[0x243B51C4]
+		add eax, 0x29C
+		cmp ecx, eax
+		pop eax
+		je exitt
+
+		mov[ecx], edx
 		mov edx, [eax + 0x08]
-		mov eax, [eax + 0x0C]
+		mov[ecx + 0x04], edx
+		mov eax, [eax + 0x0c]
+		mov[ecx + 0x08], eax
+
+		exitt :
 	}
 	endfunc
 }
 
-
-__declspec(naked) void TransparentWalls(void)
-{
-	__asm {
-		jmp skiplight
-		cmp esi, 0xc2 //lighting
-		je skipit
-
-		skiplight :
-		jmp skipwh
-		cmp esi, 0x17 //transparent
-		je skipit
-
-		skipwh:
-		mov[edx + esi * 4 + 0x000013A8], eax
-		skipit :
-	}
-	endfunc
-}
 
 __declspec(naked) void OngroundToZero(void)
 {
