@@ -14,6 +14,7 @@ Features:
 - Chameleon Wallhack, Fullbright (button F)
 - Radarhack (custom, regular, spectator)
 - Serverinfo (button TAB) & Bombtimer 
+- Triggerbot
 - Smart Crosshair
 - No Visual Recoil, No Recoil, No Spread
 - No Smoke, No Flash
@@ -22,7 +23,9 @@ Features:
 - Speedhack (button ALT) (freeze, slow, fast, superfast)
 - Spinbot, Antiaim
 - Namestealer
+- Flashlight Spam
+- Fastladder
 - Fake Lag
 - SteamID Spoofer (hCupa's, RevEmu), No MOTD
-- Visual Flyhack
+- Free Cam
 - Anti-HLDJ bypass
