@@ -1198,7 +1198,7 @@ void Tab() {
 void myDraw() {
 
 		menu();
-		if (!rpm(vguimatsurface_dll_base + 0xB10F8)) 
+		if (!rpm(vguimatsurface_dll_base + 0xB4274)) //0xB10F8
 		{
 			
 			if (cheat("Radarhack") == 2) {
@@ -1489,49 +1489,34 @@ void myDraw() {
 					closest_final = -2;
 				}
 
-				if (cheat("Radarhack")==1)
-					DrawFilledRectangle(144, 144, 151, 151, 100, 0, 255, 255); //white square on the center of the radar
-
-				if (cheat("Serverinfo & Bombtimer") == 1 || cheat("Radarhack") == 1)
+				if (cheat("Serverinfo & Bombtimer") == 1)
 				{
 					bombplanted = rpm(0x24000000 + 0x3FAB68); //we have a bomb?
-					if (bombplanted) {
-						if (xd == 0) {
-							maxentityid = rpm(0x24000000 + 0x3CF208);
-							if (maxentityid > 0x1000) maxentityid = 0x1000;
-							for (i = 64; i <= maxentityid; i++) {
-								entity = rpm(0x24000000 + 0x3CF20C + 8 * i);
-								entity = rpm(entity);
-								entity = rpm(entity - 0x4);
-								entity = rpm(entity - 0x8);
-
-								charint[0] = 0x0;
-								rvm(PVOID(entity + 0x8), 24, &charint);
-
-								if (!strcmp((char*)charint, (char*)".?AVC_PlantedC4@@"))
-								{
-#ifdef DEBUG
-									cout << "We have a bomb (id " << hex << i << dec << ") ";
-#endif
-									CreateThread(0, 0, (LPTHREAD_START_ROUTINE)timer, 0, 0, 0);
-									rvm(PVOID(0x24000000 + 0x3BF1D4 + 0x10 * i), 4, &boneptr);
-									rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
-									rvm(PVOID(boneptr + 0x0c), 4, &bombcoords[0]);
-									rvm(PVOID(boneptr + 0x1c), 4, &bombcoords[1]);
-									break;
-								}
-							}
-						}
-
-						if (bomb > 0 && cheat("Serverinfo & Bombtimer") == 1) 
+					if (bombplanted) 
+					{
+						if (!xd) 
 						{
+							CreateThread(0, 0, (LPTHREAD_START_ROUTINE)timer, 0, 0, 0);
+							rvm(PVOID(0x24000000 + 0x3BF1D4 + 0x10 * i), 4, &boneptr);
+							rvm(PVOID(boneptr + 0x4A8), 4, &boneptr);
+							rvm(PVOID(boneptr + 0x0c), 4, &bombcoords[0]);
+							rvm(PVOID(boneptr + 0x1c), 4, &bombcoords[1]);
+						}
+						if (bomb > 0) {
 							ID3DXFont* pFont;
 							D3DXCreateFont(p_Device, 20, 0, FW_BOLD, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &pFont);
-							DrawBorderBox(Width / 2 - 280 - border, Height / 2 + 300 - border, 565, 40+border, border, colorprim);
+							DrawBorderBox(Width / 2 - 280 - border, Height / 2 + 300 - border, 565, 40 + border, border, colorprim);
 							DrawFilledRectangle(Width / 2 - 280, Height / 2 + 300, Width / 2 - 280 + xd, Height / 2 + 340, colorsec);
 							DrawString((char*)(std::to_string(bomb).c_str()), Width / 2 - 5, Height / 2 + 310, 4, D3DCOLOR_XRGB(255, 255, 255), pFont);
 							pFont->Release();
 						}
+					}
+				}
+				
+					if (cheat("Radarhack") == 1)
+					{
+						radar3ptr = rpm(0x24000000 + 0x4035c0);
+						rvm(PVOID(radar3ptr + 0x63c4), 12, &bombcoords);
 
 						deltaX = myposX - bombcoords[0];
 						deltaY = myposY - bombcoords[1];
@@ -1546,10 +1531,10 @@ void myDraw() {
 							deltaX = k * deltaX;
 							deltaY = k * deltaY;
 						}
-						if (cheat("Radarhack") == 1)
-							DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, D3DCOLOR_XRGB(200, 200, 200));
+
+						DrawFilledRectangle(144, 144, 151, 151, 100, 0, 255, 255); //white square on the center of the radar
+						DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, D3DCOLOR_XRGB(200, 200, 200));
 					}
-				}
 			} //esp,radar,aim enabled?
 			if (cheat("Serverinfo & Bombtimer") == 1 && GetAsyncKeyState(VK_TAB) < 0)
 				Tab();
