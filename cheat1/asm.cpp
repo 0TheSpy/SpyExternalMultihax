@@ -70,16 +70,16 @@ __declspec(naked) void d3d9Reset(void)
 		push esi
 		push esp
 
-		cmp byte ptr ds : [0x173DB], 0
+		cmp byte ptr ds : [0x30173DB], 0
 		je orig 
 
-		mov byte ptr ds:[0x173DB], 00 //17403
+		mov byte ptr ds:[0x30173DB], 00 //17403
 		mov eax, 0x00000004
 		imul ecx, eax, 00
-		mov edx, dword ptr ds : [ecx + 0x17574] //17570
+		mov edx, dword ptr ds : [ecx + 0x3017574] //17570
 		mov eax, 0x00000004
 		imul ecx, eax, 00
-		mov eax, dword ptr ds : [ecx + 0x17574] //
+		mov eax, dword ptr ds : [ecx + 0x3017574] //
 		mov ecx, [edx]
 		mov esi, esp
 		push eax
@@ -89,10 +89,10 @@ __declspec(naked) void d3d9Reset(void)
 
 		mov eax, 0x00000004
 		shl eax, 00
-		mov ecx, dword  ptr ds : [eax + 0x17574]//
+		mov ecx, dword  ptr ds : [eax + 0x3017574]//
 		mov edx, 00000004
 		shl edx, 00
-		mov eax, dword ptr ds : [edx + 0x17574]//
+		mov eax, dword ptr ds : [edx + 0x3017574]//
 		mov ecx, [ecx]
 		mov esi, esp
 		push eax
@@ -102,10 +102,10 @@ __declspec(naked) void d3d9Reset(void)
 
 		mov eax, 0x00000004
 		shl eax, 1
-		mov ecx, dword ptr ds : [eax + 0x17574]//
+		mov ecx, dword ptr ds : [eax + 0x3017574]//
 		mov edx, 0x00000004
 		shl edx, 1
-		mov eax, dword ptr ds : [edx + 0x17574]//
+		mov eax, dword ptr ds : [edx + 0x3017574]//
 		mov ecx, [ecx]
 		mov esi, esp
 		push eax
@@ -116,10 +116,10 @@ __declspec(naked) void d3d9Reset(void)
 
 		mov eax, 0x00000004
 		imul ecx, eax, 0x03
-		mov edx, dword ptr ds : [ecx + 0x17574]//
+		mov edx, dword ptr ds : [ecx + 0x3017574]//
 		mov eax, 0x00000004
 		imul ecx, eax, 0x03
-		mov eax, dword ptr ds : [ecx + 0x17574]//
+		mov eax, dword ptr ds : [ecx + 0x3017574]//
 		mov ecx, [edx]
 		mov esi, esp
 		push eax
@@ -150,7 +150,7 @@ __declspec(naked) void asmWH(void)
 		push ebp
 		mov ebp, esp
 
-		cmp dword ptr ds : [0x12435], 0x1
+		cmp dword ptr ds : [0x3012435], 0x1
 		je backs
 
 		//ebp+0x20 - PrimCount, ebp+0x18 - NumVert
@@ -218,19 +218,19 @@ __declspec(naked) void asmWH(void)
 			je paintT
 
 			paintCT :
-		mov BYTE PTR ds : [0x173E1], 0x00
+		mov BYTE PTR ds : [0x30173E1], 0x00
 			jmp paint
 
 			paintT :
-		mov byte ptr ds : [0x173e1], 0x02
+		mov byte ptr ds : [0x30173e1], 0x02
 
 			paint :
-			call dword ptr ds : [0x12420] //call ColorsCave
-			mov dword ptr ds : [0x12410], 0
+			call dword ptr ds : [0x3012420] //call ColorsCave
+			mov dword ptr ds : [0x3012410], 0
 
 			zdisable :
 			mov esi, esp
-			mov eax, dword ptr ds : [0x12410]
+			mov eax, dword ptr ds : [0x3012410]
 			push eax
 			push 0x07
 			mov eax, [ebp + 0x08]
@@ -242,10 +242,10 @@ __declspec(naked) void asmWH(void)
 			cmp esi, esp
 
 			//settexture :
-		movzx eax, byte ptr ds : [0x173e1] //ct or t
-			add eax, dword ptr ds : [0x12410]
+		movzx eax, byte ptr ds : [0x30173e1] //ct or t
+			add eax, dword ptr ds : [0x3012410]
 			mov esi, esp
-			mov ecx, dword ptr ds : [eax * 4 + 0x17574]//
+			mov ecx, dword ptr ds : [eax * 4 + 0x3017574]//
 			push ecx
 			push 00
 			mov edx, [ebp + 0x08]
@@ -272,18 +272,18 @@ __declspec(naked) void asmWH(void)
 			push edx
 			mov eax, [ebp + 0x08]
 			push eax
-			mov dword ptr ds : [0x12435], 0x1
-			call dword ptr ds : [0x12440] //call drawindexedprimitive
+			mov dword ptr ds : [0x3012435], 0x1
+			call dword ptr ds : [0x3012440] //call drawindexedprimitive
 			cmp esi, esp
 
 			//zenable :
-		cmp dword ptr ds : [0x12410], 1
+		cmp dword ptr ds : [0x3012410], 1
 			je backs
-			add dword ptr ds : [0x12410], 1
+			add dword ptr ds : [0x3012410], 1
 			jmp zdisable
 
 			backs :
-		mov dword ptr ds : [0x12435], 0x0
+		mov dword ptr ds : [0x3012435], 0x0
 			
 	}
 	endfunc
