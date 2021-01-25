@@ -126,17 +126,18 @@ void fakeLag() {
 
 void WH() {
 	if (cheat("Chameleon Wallhack") == 1) {
-		SpyJmp(PVOID(d3d9_dll_base + dip9), asmWHcave, 0); 
+		SpyJmp(PVOID(whAddr), asmWHcave, 0); //d3d9_dll_base + dip9
 		SendCMD("cl_ragdoll_physics_enable 0; cl_min_ct 3; cl_min_t 3");
 		wpm(0x24000000 + 0x3F95EC, 1); //minmodels 1
 
-		if (rpm(d3d9_dll_base + reset9) == 0x8B55FF8B)
-			SpyInjectAndJump(d3d9Reset, PVOID(d3d9_dll_base + reset9), 0);
-
+		if (rpm(d3d9_dll_base + reset9) == 0x8B55FF8B) {
+			SpyJmp(PVOID(d3d9_dll_base + reset9), (PVOID)d3d9Resetcave, 0);
+		}
+		
 	}
 	if (cheat("Chameleon Wallhack") == 0) {
 		byte bytes[] = { 0x8B, 0xFF, 0x55, 0x8B, 0xEC };
-		wvm(PVOID(d3d9_dll_base + dip9), sizeof(bytes), bytes);
+		wvm(PVOID(whAddr), sizeof(bytes), bytes);
 		SendCMD("cl_ragdoll_physics_enable 1");
 		wpm(0x24000000 + 0x3F95EC, 0); //minmodels 0
 	}
