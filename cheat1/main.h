@@ -1,6 +1,6 @@
 #pragma once
 
-//#define DEBUG
+#define DEBUG
 #define DISCMSG
 
 #include <Windows.h>
@@ -47,6 +47,7 @@ const MARGINS Margin = { 0, 0, Width, Height };
 char lWindowName[256] = " ";
 HWND hWnd;
 char tWindowName[256] = "Counter-Strike Source";
+//char tWindowName[256] = "CS:S v34 ClientMod v3";
 HWND tWnd;
 RECT tSize;
 MSG Message;
@@ -77,7 +78,7 @@ string s;
 BYTE who = 0, zero = 0, ret = 0xC3, jmp = 0xE9, nop = 0x90, call = 0xE8, push = 0x68, drawmenu = 0, menuselect = 0, myid, wepid, bDormant;
 DWORD engine_dll_base, gameui_dll_base, vgui2_dll_base, vguimatsurface_dll_base, d3d9_dll_base, steam_dll_base, materialsystem_dll_base,
 localplayer, ptr, cmdptr, aobconsole, aobcmdnum, aobfakelag, enginedelta, boneptr, vmatrixptr, entity, spec1, spec2, radarhackptr, 
-scrCenterX, scrCenterY, entptr, radar3ptr, dip9, reset9, flycave;
+scrCenterX, scrCenterY, entptr, radar3ptr, dip9, reset9, flycave, whAddr, shaderapidx9_dll, d3d9Resetcave;
 float myposX, myposY, myangY, deltaX, deltaY, fi = 0.08, coords[3], radarcoords[2], xl, yl, wl, xl_closest = 0, yl_closest = 0,
 xl_closest_final = 0, yl_closest_final = 0, viewmatrix[4][4], hyp1, hyp2, deltaXold, deltaYold, deltaZ, myposZ, enemyDistance, 
  bomb, xd = 0, bombcoords[3], prevX, prevY, flickerCheck;
