@@ -24,7 +24,7 @@ const auto sqrtss = [](float in)
 
 void menu()
 {
-	SetLayeredWindowAttributes(hWnd, NULL, NULL, NULL);
+	//SetLayeredWindowAttributes(hWnd, NULL, NULL, NULL);
 	DwmEnableBlurBehindWindow(hWnd, &bb);
 
 	ID3DXFont* pFont;
@@ -87,7 +87,7 @@ void fakeLag() {
 
 			if (cheat("Fake Lag") == 2) //EXPERIMENTAL
 			{
-				wpm(0x12345, 0);
+				wpm(allocmem + 0x12345, 0);
 				byte bytes1[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 				wvm(PVOID(engine_dll_base + 0x42727 + enginedelta), sizeof(bytes1), bytes1); //comment for burst-fire
 				byte bytes2[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
@@ -245,7 +245,7 @@ void Bunnyhop()
 					}
 
 					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
-					wpm(0x1234D, 5 * VisYd); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+					wpm(allocmem + 0x1234D, 5 * VisYd); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 					VisY = VisYnew; //set New Y as old Y
 				}
 
@@ -269,7 +269,7 @@ void Bunnyhop()
 			wpm(0x24000000 + 0x3E7250, 0); //-moveright 
 			wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 			wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
-			wpm(0x1234D, 0); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+			wpm(allocmem + 0x1234D, 0); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 		}
 
 
@@ -363,9 +363,9 @@ void Spinbot()
 
 	SpyInjectAndJump(ZetToZero, PVOID(0x24000000 + 0x192B0), 4); 
 
-	wpm(0x12300, 180.0f);
-	wpm(0x12304, -180.0f);
-	wpm(0x12308, 360.0f);
+	wpm(allocmem + 0x12300, 180.0f);
+	wpm(allocmem + 0x12304, -180.0f);
+	wpm(allocmem + 0x12308, 360.0f);
 
 	while (true)
 	{
@@ -373,16 +373,16 @@ void Spinbot()
 		if (cheat("Spinbot & AntiAim") == 1)
 		{
 			SpyJmp(PVOID(0x24000000 + 0xF85A4), rotating, 5);			
-			wpm(0x12334, 45.0f); //set spinhack speed
-			wpm(0x12345, 90.0f); //set X ang
-			wpm(0x12220, 1); //semaphore
+			wpm(allocmem + 0x12334, 45.0f); //set spinhack speed
+			wpm(allocmem + 0x12345, 90.0f); //set X ang
+			wpm(allocmem + 0x12220, 1); //semaphore
 			while (cheat("Spinbot & AntiAim") == 1) {
 				
 				if (GetAsyncKeyState(VK_LBUTTON) == 0)
 				{	
-					rvm(PVOID(0x12345), 4, &visX);
+					rvm(PVOID(allocmem + 0x12345), 4, &visX);
 					if (visX != 90.0f && visX != -90.0f)
-					wpm(0x12345, 90.0f);
+					wpm(allocmem + 0x12345, 90.0f);
 				}
 
 				if (GetAsyncKeyState(0x57) < 0 || GetAsyncKeyState(0x53) < 0) //w/s
@@ -403,29 +403,29 @@ void Spinbot()
 					else
 						if (GetAsyncKeyState(0x53) < 0 && GetAsyncKeyState(0x44) < 0) //s+d
 							visYd -= 45.0f;
-					wpm(0x12330, visYd);
+					wpm(allocmem + 0x12330, visYd);
 				}
 				else
 				{
 					if (GetAsyncKeyState(0x41) < 0) //a
 					{
 						visYd = 0;
-						wpm(0x12330, visYd);
+						wpm(allocmem + 0x12330, visYd);
 					}
 					if (GetAsyncKeyState(0x44) < 0) //d
 					{
 						visYd = 180;
-						wpm(0x12330, visYd);
+						wpm(allocmem + 0x12330, visYd);
 					}
 				}
 
 				wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //z
 				Sleep(1);
 			}
-			wpm(0x12204, 1);
+			wpm(allocmem + 0x12204, 1);
 
-			wpm(0x12334, 0); //rotation to 0
-			wpm(0x1234D, 0); //z to 0
+			wpm(allocmem + 0x12334, 0); //rotation to 0
+			wpm(allocmem + 0x1234D, 0); //z to 0
 
 			byte bytes2[] = { 0x8b, 0x4c, 0x24, 0x14, 0x89, 0x0b, 0x8b, 0x54, 0x24, 0x18 };
 			wvm(PVOID(0x24000000 + 0xF85A4), sizeof(bytes2), bytes2);
@@ -434,7 +434,7 @@ void Spinbot()
 		if (cheat("Spinbot & AntiAim") == 2) //UPSIDE-DOWN
 		{
 			wpm(DWORD(freevisangX) + 1, 0xA13E9090);
-			wpm(0x12345, 179.99f);
+			wpm(allocmem + 0x12345, 179.99f);
 			while (cheat("Spinbot & AntiAim") == 2)
 			{
 				if (GetAsyncKeyState(VK_LBUTTON) == 0)
@@ -443,11 +443,11 @@ void Spinbot()
 					visY += 180.0f;
 					if (visY > 180.0f) visY -= 360.0f;
 					if (visY < -180.0f) visY += 360.0f;
-					wpm(0x12349, visY);
+					wpm(allocmem + 0x12349, visY);
 
-					rvm(PVOID(0x12345), 4, &visX);
+					rvm(PVOID(allocmem + 0x12345), 4, &visX);
 					if (visX != 178.3999939f && visX != 178.5f)
-						wpm(0x12345, 178.3999939f);
+						wpm(allocmem + 0x12345, 178.3999939f);
 				}
 
 				Sleep(1);
@@ -468,8 +468,8 @@ void Spinbot()
 					if (visY > 180.0f) visY -= 360.0f;
 					if (visY < -180.0f) visY += 360.0f;
 
-					wpm(0x12345, 88.0f);
-					wpm(0x12349, visY);
+					wpm(allocmem + 0x12345, 88.0f);
+					wpm(allocmem + 0x12349, visY);
 				}
 				Sleep(1);
 			}
@@ -522,24 +522,24 @@ void FastLadder(int z)
 				wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 				wpm(0x24000000 + 0x3E7250, 0); //-moveright
 			}
-			wpm(PVOID(0x12345), 12, &myang);
+			wpm(PVOID(allocmem + 0x12345), 12, &myang);
 		}
 		wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 		wpm(0x24000000 + 0x3E7250, 0); //-moveright
-		wpm(0x1234D, 0);
+		wpm(allocmem + 0x1234D, 0);
 
 		//smooth x ang
 		float realang, r;
 		do {
 			r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 			rvm(PVOID(0x24000000 + 0x3FD54C), 4, &myang);
-			rvm(PVOID(0x12345), 4, &realang);
+			rvm(PVOID(allocmem + 0x12345), 4, &realang);
 
 			if (myang[0] > realang)
 				realang += r;
 			else realang -= r;
 
-			wpm(0x12345, realang);
+			wpm(allocmem + 0x12345, realang);
 			Sleep(1);
 		} while (abs(myang[0] - realang) > 3.0f);
 		break;
@@ -609,7 +609,7 @@ void FastLadder(int z)
 				wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 				wpm(0x24000000 + 0x3E7250, 0); //-moveright
 			}
-			wpm(PVOID(0x12345), 8, &myang);
+			wpm(PVOID(allocmem + 0x12345), 8, &myang);
 		}
 		wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 		wpm(0x24000000 + 0x3E7250, 0); //-moveright
@@ -662,7 +662,7 @@ void Aimbot()
 			if (rpm(localplayer + 0x134) == 9 && cheat("Silent FastLadder").enabled > 0)
 				FastLadder(cheat("Silent FastLadder").enabled);
 			else	
-				wpm(PVOID(0x12345), 8, &myang);
+				wpm(PVOID(allocmem + 0x12345), 8, &myang);
 
 			Sleep(1);
 		}
@@ -701,7 +701,7 @@ void Aimbot()
 								newangle[0] = -(newangle[0] + 180.0f);
 								newangle[1] = newangle[1] + 180.0f;
 							}
-							wpm(PVOID(0x12345), 8, &newangle);
+							wpm(PVOID(allocmem + 0x12345), 8, &newangle);
 						}
 						if (!angleshack)
 						{
@@ -760,7 +760,7 @@ void Aimbot()
 					if (newangg[1] > 180.0f) newangg[1] -= 360.0f;
 					if (newangg[1] < -180.0f) newangg[1] += 360.0f;
 
-					wpm(PVOID(0x12345), 8, &newangg);
+					wpm(PVOID(allocmem + 0x12345), 8, &newangg);
 
 					//fire
 					wpm((LPVOID)0x243E71D8, 1, &six);
@@ -801,7 +801,7 @@ void Aimbot()
 					myang[1] = newangle[1];
 
 				}
-				wpm(PVOID(0x12345), 8, &myang);
+				wpm(PVOID(allocmem + 0x12345), 8, &myang);
 
 			}
 
@@ -1639,13 +1639,13 @@ void TriggerCheck()
 		if (GetAsyncKeyState(VK_LBUTTON) < 0)
 		{
 			if (tWnd == GetForegroundWindow())
-				wpm(0x12204, 1);
+				wpm(allocmem + 0x12204, 1);
 			if (cheat("Fake Lag") == 2)
 				wpm(0x24000000 + 0x3E71E4, 4); //jump
 		}
 		else
 		{
-			wpm(0x12204, 0);
+			wpm(allocmem + 0x12204, 0);
 			if (cheat("Fake Lag") == 2)
 				wpm(0x24000000 + 0x3E71E4, 5); //unjump
 		}
@@ -1665,23 +1665,23 @@ void TriggerCheck()
 					wpm(0x24000000 + 0x3E7250, 0); //-moveright
 					wpm(0x24000000 + 0x3E725C, 1); //+moveleft
 					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, boostang); //set z ang
-					wpm(0x1234D, boostang);
+					wpm(allocmem + 0x1234D, boostang);
 					Sleep(sleeptim);
 					wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 					wpm(0x24000000 + 0x3E7250, 1); //+moveright
 					wpm(engine_dll_base + 0x39541c + 4 - enginedelta, -boostang); //set z ang
-					wpm(0x1234D, -boostang);
+					wpm(allocmem + 0x1234D, -boostang);
 					Sleep(sleeptim);
 				}
 				else
 				{
-					wpm(0x12330, 180.0f);
+					wpm(allocmem + 0x12330, 180.0f);
 					Sleep(sleeptim);
 				}
 
 			}
 			wpm(engine_dll_base + 0x39541c + 4 - enginedelta, 1.0f); //reset Z angle
-			wpm(0x1234D, 0); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+			wpm(allocmem + 0x1234D, 0); //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
 			wpm(0x24000000 + 0x3E725C, 0); //-moveleft
 			wpm(0x24000000 + 0x3E7250, 0); //-moveright
 		}
