@@ -1,6 +1,8 @@
 #pragma once
 #define endfunc __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC __asm _emit 0xCC
 
+#define allocmem_ 0x19000000
+
 __declspec(naked) void NoHands(void)
 {
 	__asm {
@@ -22,11 +24,11 @@ __declspec(naked) void FakeLag(void)
 		push eax
 		push edx
 
-		mov eax, dword ptr ds:[0x12444]
+		mov eax, dword ptr ds:[allocmem_ + 0x12444]
 		cmp eax, 0x10 //// if packet number == 0x10
 		je yes
 
-		mov edx, dword ptr ds:[0x12204] //if we fire
+		mov edx, dword ptr ds:[allocmem_ + 0x12204] //if we fire
 		cmp edx, 1
 		je yes
 
@@ -34,13 +36,13 @@ __declspec(naked) void FakeLag(void)
 		jmp nexttt
 
 		yes :
-		mov dword ptr ds:[0x12444], 0
+		mov dword ptr ds:[allocmem_ + 0x12444], 0
 		mov eax, 0
 		mov[ebp - 0x0C], 1 //bSendPacket = 0
 
 		nexttt:
 		inc eax
-		mov dword ptr ds:[0x12444], eax
+		mov dword ptr ds:[allocmem_ + 0x12444], eax
 
 		pop edx
 		pop eax
@@ -328,11 +330,11 @@ __declspec(naked) void FreeVisualAnglesX(void)
 		push eax
 		jmp nospin2
 
-		mov eax, dword ptr ds : [0x12204]
+		mov eax, dword ptr ds : [allocmem_ + 0x12204]
 		cmp eax, 1
 		je nospin2
 
-		mov eax, dword ptr ds : [0x12345]
+		mov eax, dword ptr ds : [allocmem_ + 0x12345]
 		cmp eax, 0x43326666//178.4f
 		je plusx
 		mov eax, 0x43326666//178.4f
@@ -340,11 +342,11 @@ __declspec(naked) void FreeVisualAnglesX(void)
 		plusx :
 		mov eax, 0x43328000 // 178.5f
 			movx :
-			mov dword ptr ds : [0x12345], eax
+			mov dword ptr ds : [allocmem_ + 0x12345], eax
 		nospin2 :
 		pop eax
 
-		mov ecx, dword ptr ds : [0x12345]
+		mov ecx, dword ptr ds : [allocmem_ + 0x12345]
 		push 0x10
 	}
 	endfunc
@@ -355,11 +357,11 @@ __declspec(naked) void FreeVisualAnglesY(void)
 	__asm {
 		push eax
 		mov eax, 0
-		sub eax, dword ptr ds : [0x12220]
-		mov dword ptr ds : [0x12220], eax
+		sub eax, dword ptr ds : [allocmem_ + 0x12220]
+		mov dword ptr ds : [allocmem_ + 0x12220], eax
 		pop eax
 
-		mov ecx, dword ptr ds : [0x12349]
+		mov ecx, dword ptr ds : [allocmem_ + 0x12349]
 		push 0x10
 	}
 	endfunc
@@ -368,7 +370,7 @@ __declspec(naked) void FreeVisualAnglesY(void)
 __declspec(naked) void FreeVisualAnglesZ(void)
 {
 	__asm {
-		mov ecx, dword ptr ds : [0x1234D]
+		mov ecx, dword ptr ds : [allocmem_ + 0x1234D]
 		push 0x08
 	}
 	endfunc
@@ -378,58 +380,58 @@ __declspec(naked) void Rotatingg(void)
 {
 	__asm {
 		push eax
-		mov eax, dword ptr ds : [0x12204]
+		mov eax, dword ptr ds : [allocmem_ + 0x12204]
 		cmp eax, 1
 		je aktion
 
 		//ROTATE OUR PLAYER
-		fld dword ptr ds : [0x12349] //real Y
-		fadd dword ptr ds : [0x12334] //33.0f
+		fld dword ptr ds : [allocmem_ + 0x12349] //real Y
+		fadd dword ptr ds : [allocmem_ + 0x12334] //33.0f
 
-		fcom dword ptr ds : [0x12300] //180.0
+		fcom dword ptr ds : [allocmem_ + 0x12300] //180.0
 		fnstsw ax
 		test ah, 0x41
 		jne next1
-		fsub dword ptr ds : [0x12308] //360.0
+		fsub dword ptr ds : [allocmem_ + 0x12308] //360.0
 		next1 :
-		fcom dword ptr ds : [0x12304] //-180.0
+		fcom dword ptr ds : [allocmem_ + 0x12304] //-180.0
 		fnstsw ax
 		test ah, 0x05
 		jp next2
-		fadd dword ptr ds : [0x12308] //360.0
+		fadd dword ptr ds : [allocmem_ + 0x12308] //360.0
 		next2 :
-		fstp dword ptr ds : [0x12349]
+		fstp dword ptr ds : [allocmem_ + 0x12349]
 
 		//FLIP X
-		mov eax, dword ptr ds : [0x12220]
-		cmp eax, dword ptr ds : [0x12224]
+		mov eax, dword ptr ds : [allocmem_ + 0x12220]
+		cmp eax, dword ptr ds : [allocmem_ + 0x12224]
 		je noflip
-		fild dword ptr ds : [0x12200] //0
-		fsub dword ptr ds : [0x12345] //x*(-1)
-		fstp dword ptr ds : [0x12345]
+		fild dword ptr ds : [allocmem_ + 0x12200] //0
+		fsub dword ptr ds : [allocmem_ + 0x12345] //x*(-1)
+		fstp dword ptr ds : [allocmem_ + 0x12345]
 		noflip :
-		mov dword ptr ds : [0x12224], eax
+		mov dword ptr ds : [allocmem_ + 0x12224], eax
 
 		aktion :
 
 		//CALCULATE Z ANG
 		mov eax, 0x42B40000 //90.0f
-		cmp eax, dword ptr ds : [0x12345]
+		cmp eax, dword ptr ds : [allocmem_ + 0x12345]
 		je bigger
 
-		fld dword ptr ds : [0x12200] //0
-		fsub dword ptr ds : [0x12330] // load -z angle
+		fld dword ptr ds : [allocmem_ + 0x12200] //0
+		fsub dword ptr ds : [allocmem_ + 0x12330] // load -z angle
 		fadd dword ptr ds : [0x243FD550] // plus visual y 
-		fsub dword ptr ds : [0x12349] // minus real y 
+		fsub dword ptr ds : [allocmem_ + 0x12349] // minus real y 
 		jmp store
 
 		bigger :
-		fld dword ptr ds : [0x12330] // load z angle 
+		fld dword ptr ds : [allocmem_ + 0x12330] // load z angle 
 		fsub dword ptr ds : [0x243FD550] // minus visual x
-		fadd dword ptr ds : [0x12349] // plus real x
+		fadd dword ptr ds : [allocmem_ + 0x12349] // plus real x
 
 		store :
-		fstp dword ptr ds : [0x1234D] //store Z
+		fstp dword ptr ds : [allocmem_ + 0x1234D] //store Z
 
 		pop eax
 		//originalcode
@@ -455,12 +457,12 @@ __declspec(naked) void FixPredict(void) //visual z
 		push eax
 		pop eax
 
-		mov edx, dword ptr ds : [0x12345]
+		mov edx, dword ptr ds : [allocmem_ + 0x12345]
 		mov[eax + 0x0C], edx
-		mov edx, dword ptr ds : [0x12349]
+		mov edx, dword ptr ds : [allocmem_ + 0x12349]
 
 		mov[eax + 0x10], edx
-		mov edx, dword ptr ds : [0x1234D]
+		mov edx, dword ptr ds : [allocmem_ + 0x1234D]
 	}
 	endfunc
 }
