@@ -67,11 +67,27 @@ void DisExit() {
 	_Exit(1);
 }
 
-void myInit() {
+
+void ReplaceCode(PVOID addr, WORD repl, size_t size = 1000)
+{
+	printf("replacing %x %x\n", addr, repl);
+	vector<int> sig = { 0xAA, 0xCC };
+	vector<DWORD> findall = SpyFindAllOccurences(sig, (DWORD)addr, (DWORD)addr+size);
+	if (findall.size() > 0) {
+		printf("size %d\n", findall.size());
+		for (int i = 0; i < findall.size(); i++)
+			WriteProcessMemory(hProcess, (PVOID)findall.at(i), &repl, 2, NULL);
+	}
+}
+
+void myInit() { 
 
 	position.x = 20;
 	position.y = 20;
 	
+	DWORD oldProtect = 0;
+	VirtualProtectEx(hProcess, (LPVOID)0x700000, 0x10000, PAGE_EXECUTE_READWRITE, &oldProtect);
+
 	ptr = rpm( rpm(0x24000000 + 0x3E1A44) + 0x4);
 
 	rvm(PVOID(vgui2_dll_base + 0x6cbc8), 4, &cmdptr);
@@ -96,9 +112,12 @@ void myInit() {
 	DWORD dxhairCave = 0xFFFFFFFF - (0x24000000 + 0x1BE2A2 + 0x4 - (DWORD)xhairCave);
 	memcpy(caveaddr, &dxhairCave, sizeof(DWORD));
 
+	//can cause crash 
+	///*
 	WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x1BE2A2), &jmp, sizeof(BYTE), NULL);
 	WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x1BE2A2 + sizeof(BYTE)), &caveaddr, sizeof(DWORD), NULL);
 	WriteProcessMemory(hProcess, LPVOID(0x24000000 + 0x1BE2A2 + sizeof(BYTE) + sizeof(DWORD)), &nop, sizeof(BYTE), NULL);
+	//*/
 
 	DWORD colorifptr;
 	rvm(PVOID(gameui_dll_base + 0x1BB95C), 4, &colorifptr);
@@ -132,7 +151,7 @@ void myInit() {
 	spec1 = DWORD(SpyInjectAndJump(Spec1, LPVOID(0x24000000 + 0x2076BE), 4));
 	spec2 = DWORD(SpyInject(Spec2, LPVOID(0x24000000 + 0x257351))); //2
 
-	rotating = SpyInject(Rotatingg, PVOID(0x24000000 + 0xF85A4));
+	
 
 
 #ifdef DISCMSG
@@ -165,13 +184,56 @@ void myInit() {
 	cheat("Speedhack") = 10;
 	cheat("Speedhack").sleep = 60;
 	cheat.New("Spinbot & AntiAim",3); 
-	cheat.New("Silent FastLadder",2);
+	cheat.New("FastLadder",2);
 	cheat.New("Fake Lag", 3);
-	cheat.New("SteamID Spoof & No MOTD");
-	cheat.New("Inputfromfile & Loopback");
-	cheat.New("Namestealer | Light Spam",2);
+	cheat.New("SteamID Spoof");
+	cheat.New("Stealth HLDJ");
+	cheat.New("Namestealer",2);
 	cheat.New("Free Cam");
 	cheat.New("Disable All & Exit");
+
+	//fix
+	/*
+	allocmem = (DWORD)VirtualAllocEx(hProcess, NULL, 0x15000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	if (allocmem % 0x10000 != 0)
+		printf("badalloc\n");
+	else printf("goodalloc\n");
+	*/
+
+	do {
+		allocmem = (DWORD)VirtualAllocEx(hProcess, NULL, 0x15000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+		printf("allocated memory at %x\n", allocmem);
+	} while (allocmem % 0x1000 != 0);
+	 
+	 
+	memcpy(&allocmem_word, (void*)((DWORD)&allocmem+2), 2);
+
+	/*
+	uint32_t sum = allocmem;
+	uint16_t* p = (uint16_t*)&sum;
+	uint16_t checksum = p[2];
+
+	dword2bytes dw2b_allocmem = { allocmem };
+	dword2bytes* p = (dword2bytes*)&dw2b_allocmem;
+	WORD wAllocmem[0] =
+	*/
+
+	cout << "allocmemshort " << hex << allocmem_word << endl;
+
+	freevisangX = SpyInject(FreeVisualAnglesX, PVOID(0x2415D32E));
+	ReplaceCode(freevisangX, allocmem_word);
+	freevisangY = SpyInject(FreeVisualAnglesY, PVOID(0x2415D3A0));
+	ReplaceCode(freevisangY, allocmem_word);
+	freevisangZ = SpyInject(FreeVisualAnglesZ, PVOID(0x2415D412));
+	ReplaceCode(freevisangZ, allocmem_word);
+	fixPredict = SpyInject(FixPredict, PVOID(0x240D46F9));
+	ReplaceCode(fixPredict, allocmem_word);
+	
+	rotating = SpyInject(Rotatingg, PVOID(0x24000000 + 0xF85A4));
+	ReplaceCode(rotating, allocmem_word);
+	fklg = SpyInject(FakeLag, PVOID(aobfakelag));
+	ReplaceCode(fklg, allocmem_word);
+	//
 
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MenuSelect, 0, 0, 0);
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Aimbot, 0, 0, 0);
