@@ -1,6 +1,12 @@
 # SpyExternalMultihax
 Cheat for Counter-Strike: Source v34
  
+ ** Important: it's my first cheat and first big C++ project. 
+ It contains many bad code practices 
+ and published exclusively for archival purposes** 
+ 
+ ![image](https://i.imgur.com/cyUpebJ.png)
+ 
  Game must be running in windowed mode
  
  Press Insert to open menu
