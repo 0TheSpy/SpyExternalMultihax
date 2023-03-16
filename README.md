@@ -1,9 +1,9 @@
 # SpyExternalMultihax
 Cheat for Counter-Strike: Source v34
  
- ** Important: it's my first cheat and first big C++ project.<br>
+ **Important: it's my first cheat and first big C++ project.<br>
  It contains many bad code practices <br>
- and published exclusively for archival purposes<br>** 
+ and published only for archival purposes**<br>
  
  ![image](https://i.imgur.com/cyUpebJ.png)
  
