@@ -192,14 +192,6 @@ void myInit() {
 	cheat.New("Free Cam");
 	cheat.New("Disable All & Exit");
 
-	//fix
-	/*
-	allocmem = (DWORD)VirtualAllocEx(hProcess, NULL, 0x15000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	if (allocmem % 0x10000 != 0)
-		printf("badalloc\n");
-	else printf("goodalloc\n");
-	*/
-
 	do {
 		allocmem = (DWORD)VirtualAllocEx(hProcess, NULL, 0x15000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 		printf("allocated memory at %x\n", allocmem);
@@ -207,16 +199,6 @@ void myInit() {
 	 
 	 
 	memcpy(&allocmem_word, (void*)((DWORD)&allocmem+2), 2);
-
-	/*
-	uint32_t sum = allocmem;
-	uint16_t* p = (uint16_t*)&sum;
-	uint16_t checksum = p[2];
-
-	dword2bytes dw2b_allocmem = { allocmem };
-	dword2bytes* p = (dword2bytes*)&dw2b_allocmem;
-	WORD wAllocmem[0] =
-	*/
 
 	cout << "allocmemshort " << hex << allocmem_word << endl;
 
@@ -233,8 +215,7 @@ void myInit() {
 	ReplaceCode(rotating, allocmem_word);
 	fklg = SpyInject(FakeLag, PVOID(aobfakelag));
 	ReplaceCode(fklg, allocmem_word);
-	//
-
+	
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MenuSelect, 0, 0, 0);
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Aimbot, 0, 0, 0);
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Bunnyhop, 0, 0, 0);
