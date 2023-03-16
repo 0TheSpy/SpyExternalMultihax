@@ -3,7 +3,8 @@ Cheat for Counter-Strike: Source v34
  
  **Important: it's my first cheat and first big C++ project.<br>
  It contains many bad code practices <br>
- and published only for archival purposes**<br>
+ and published only for archival purposes<br>
+ Addresses is hardcoded because game is never be updated**<br>
  
  ![image](https://i.imgur.com/cyUpebJ.png)
  
