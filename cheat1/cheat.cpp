@@ -1377,11 +1377,13 @@ void myDraw() {
 							else
 								color = D3DCOLOR_ARGB(255, 255, 0, 0);
 							DrawFilledRectangle(-fi * deltaX + 147 - 3, fi*deltaY + 147 - 3, -fi * deltaX + 147 + 3, fi*deltaY + 147 + 3, color);
-						}
-
+						} 
+						 
 						rvm(PVOID(vmatrixptr + 0x5a0), 4, &flickerCheck);
 						if (flickerCheck <= -1.0f)
 							rvm(PVOID(vmatrixptr + 0x5B4), 64, &viewmatrix);
+
+						//printf("vmatrix %x\n", vmatrixptr + 0x5B4); 
 
 						//get3Ddist
 						enemyDistance = sqrtss(deltaXold*deltaXold + deltaYold * deltaYold + deltaZ * deltaZ);
@@ -1996,9 +1998,9 @@ void TriggerCheck()
 			cheat.Update("Fake Lag");
 		}
 
-		if (cheat.Triggered("SteamID Spoof"))
+		if (cheat.Triggered("SteamID Spoof & NoMOTD"))
 		{
-			if (cheat("SteamID Spoof") == 1) 
+			if (cheat("SteamID Spoof & NoMOTD") == 1) 
 			{
 				byte bytes[] = { 0x90, 0x90, 0x90 };
 				wvm(PVOID(steam_dll_base + 0xB715), sizeof(bytes), bytes);
@@ -2015,14 +2017,18 @@ void TriggerCheck()
 				//byte bytes51[] = { 0x51 };
 				//wvm(PVOID(steam_dll_base + 0x17e8c), sizeof(bytes51), bytes51);
 			}
-			cheat.Update("SteamID Spoof");
+			cheat.Update("SteamID Spoof & NoMOTD");
 		}
-		if (cheat("SteamID Spoof") == 1) {
+		if (cheat("SteamID Spoof & NoMOTD") == 1) {
 			wpm(steam_dll_base + 0x4B170, rand()*rand()); //RevCrew's 
 			wpm(steam_dll_base + 0x6138c, rand()* rand()); //RevCrew's 4
 			wpm(engine_dll_base + 0x394BF0 - enginedelta, rand()*rand()); //Cupa's 
 			wpm(rpm(rpm(rpm(0x24000000 + 0x403060) + 0x350) + 0x44) + 0x868, 0x160000); //no motd
 		}
+
+		if (cheat("SteamID Spoof & NoMOTD") == 2) { 
+			wpm(rpm(rpm(rpm(0x24000000 + 0x403060) + 0x350) + 0x44) + 0x868, 0x160000); //no motd
+		} 
 
 		Sleep(10);
 	}
