@@ -181,16 +181,24 @@ void myInit() {
 	cheat.New("No Hands & No Sky");
 	cheat.New("Bunnyhop & Autostrafe", 2);
 	cheat.New("Speedhack",100);
-	cheat("Speedhack") = 10;
+	cheat("Speedhack") = 10; 
 	cheat("Speedhack").sleep = 60;
 	cheat.New("Spinbot & AntiAim",3); 
 	cheat.New("FastLadder",2);
 	cheat.New("Fake Lag", 3);
-	cheat.New("SteamID Spoof");
+	cheat.New("SteamID Spoof & NoMOTD", 2);
 	cheat.New("Stealth HLDJ");
 	cheat.New("Namestealer",2);
 	cheat.New("Free Cam");
 	cheat.New("Disable All & Exit");
+
+	//fix
+	/*
+	allocmem = (DWORD)VirtualAllocEx(hProcess, NULL, 0x15000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	if (allocmem % 0x10000 != 0)
+		printf("badalloc\n");
+	else printf("goodalloc\n");
+	*/
 
 	do {
 		allocmem = (DWORD)VirtualAllocEx(hProcess, NULL, 0x15000, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
@@ -199,6 +207,16 @@ void myInit() {
 	 
 	 
 	memcpy(&allocmem_word, (void*)((DWORD)&allocmem+2), 2);
+
+	/*
+	uint32_t sum = allocmem;
+	uint16_t* p = (uint16_t*)&sum;
+	uint16_t checksum = p[2];
+
+	dword2bytes dw2b_allocmem = { allocmem };
+	dword2bytes* p = (dword2bytes*)&dw2b_allocmem;
+	WORD wAllocmem[0] =
+	*/
 
 	cout << "allocmemshort " << hex << allocmem_word << endl;
 
@@ -215,7 +233,8 @@ void myInit() {
 	ReplaceCode(rotating, allocmem_word);
 	fklg = SpyInject(FakeLag, PVOID(aobfakelag));
 	ReplaceCode(fklg, allocmem_word);
-	
+	//
+
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MenuSelect, 0, 0, 0);
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Aimbot, 0, 0, 0);
 	CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Bunnyhop, 0, 0, 0);
